@@ -1,16 +1,19 @@
 import { Wallet } from '@ethersproject/wallet';
+import { ed25519 } from '@noble/curves/ed25519';
 import { mnemonicToSeedSync } from 'bip39';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { base58Encode } from '@/features/solana/core/address';
+import { base58Decode, base58Encode } from '@/features/solana/core/address';
 import * as derivation from '@/features/solana/core/derivation';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { decodeSolanaKey } from '@/features/wallet/core/solanaAccount';
 import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { SolanaCluster, type SolanaSigner } from '@rainbow-me/solana-sdk';
 
 import { enableSolanaAccount, getSolanaSource } from './enableSolanaAccount';
+import { withSolanaSigner } from './loadSolanaSigner';
 import { readSolanaKey, saveSolanaKey } from './solanaKeychain';
 import { getSolanaAccount, publishSolanaAccount, useAccountMetadataStore } from './stores/accountMetadataStore';
 import { getSeedPhrase } from './walletKeychain';
@@ -163,5 +166,23 @@ describe('additive Solana wallet lifecycle', () => {
     state.wallets.test.addresses[0].address = state.accountAddress;
     await expect(enableSolanaAccount()).rejects.toThrow('does not match');
     expect(saveSolanaKey).not.toHaveBeenCalled();
+  });
+
+  it('signs with the stored key and destroys the signer capability when its scope ends', async () => {
+    publishSolanaAccount(record);
+    const bytes = decodeSolanaKey(key, key.address);
+    vi.mocked(readSolanaKey).mockResolvedValue(bytes);
+    let retained: SolanaSigner | undefined;
+    const messageBytes = new Uint8Array([1, 2]);
+    await withSolanaSigner(record, async signer => {
+      retained = signer;
+      const signature = await signer.signTransactionMessage({ cluster: SolanaCluster.Mainnet, messageBytes });
+      expect(ed25519.verify(signature, messageBytes, base58Decode(record.address)!)).toBe(true);
+      await expect(signer.signTransactionMessage({ cluster: SolanaCluster.Devnet, messageBytes })).rejects.toThrow();
+      state.accountAddress = '0x0000000000000000000000000000000000000002';
+      await expect(signer.signTransactionMessage({ cluster: SolanaCluster.Mainnet, messageBytes })).rejects.toThrow();
+    });
+    expect(bytes.every(byte => byte === 0)).toBe(true);
+    await expect(retained!.signTransactionMessage({ cluster: SolanaCluster.Mainnet, messageBytes })).rejects.toThrow();
   });
 });
