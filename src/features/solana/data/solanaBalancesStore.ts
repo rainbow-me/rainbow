@@ -1,6 +1,5 @@
 import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 
-import { IS_STORE_INSTALL } from '@/env';
 import { type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { type SolanaBalances } from '@/features/solana/core/balances';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
@@ -17,7 +16,7 @@ export const useSolanaBalancesAddress = createDerivedStore($ => {
   const anvil = $(useConnectedToAnvilStore, state => state.connectedToAnvil);
   const state = $(useWalletsStore);
   $(useAccountMetadataStore, state => state.accounts);
-  if (IS_STORE_INSTALL || !enabled || anvil || !state.selected) return null;
+  if (!enabled || anvil || !state.selected) return null;
   const wallet = state.wallets[state.selected.id];
   const account = wallet?.addresses.find(item => item.address.toLowerCase() === state.accountAddress.toLowerCase());
   return account ? (getSolanaAccount(wallet.id, account.index)?.address ?? null) : null;

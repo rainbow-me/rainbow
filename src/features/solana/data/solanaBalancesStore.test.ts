@@ -117,11 +117,19 @@ describe('isolated Solana balances lifecycle', () => {
     expect(useSolanaWalletBalances.getState().data).toBeNull();
     expect(useSolanaWalletBalances.getState().message).toBeNull();
   });
-  it('disables store installs, removed mappings, and damaged wallets', async () => {
+  it('allows store installs only while the Solana flag is enabled', async () => {
     controls.storeInstall = true;
     useWalletsStore.setState({ wallets: { [wallet.id]: { ...wallet } } });
+    expect(useSolanaBalancesAddress.getState()).toBe(address);
+    await refreshSolanaBalances();
+    expect(fetchSolanaBalances).toHaveBeenCalledWith(address, 'USD', expect.any(AbortController));
+    flags.setState(false, true);
+    vi.mocked(fetchSolanaBalances).mockClear();
+    await refreshSolanaBalances();
+    expect(fetchSolanaBalances).not.toHaveBeenCalled();
     expect(useSolanaBalancesAddress.getState()).toBeNull();
-    controls.storeInstall = false;
+  });
+  it('disables removed mappings and damaged wallets', async () => {
     useWalletsStore.setState({ wallets: { [wallet.id]: { ...wallet, damaged: true } } });
     expect(useSolanaBalancesAddress.getState()).toBeNull();
     useWalletsStore.setState({ wallets: { [wallet.id]: { ...wallet } } });
