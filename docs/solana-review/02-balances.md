@@ -44,4 +44,6 @@ This guide and its listed 21 implementation/configuration/test files define this
 
 The newer HTTP client forwards cancellation through its own signal; tests now verify cancellation behavior rather than signal identity. Stores 0.13 rebuilds unlocked derived dependencies; the balances view has unconditional dependencies, so it locks them to retain the query subscription and avoid immediate refetch on failed refresh. The regression checks preserved data/error reporting and one new request per forced refresh.
 
-Validation: 24 focused tests, TypeScript and dependency checks passed. Native rendering checks remain pending.
+Validation: 25 focused tests, TypeScript and dependency checks passed. Native rendering checks remain pending.
+
+Balance requests use the shared Solana feature gate regardless of store installation. The regression verifies an enabled store build can fetch and that disabling the flag blocks further requests and hides holdings.
