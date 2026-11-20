@@ -2,15 +2,19 @@ import { type RecyclerListView, type RecyclerListViewProps } from 'recyclerlistv
 import { type RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
+import { type NativeCurrencyKey } from '@/features/currency/types';
 import { type PerpsPosition } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type RainbowPosition } from '@/features/positions/types';
+import { type SolanaBalance } from '@/features/solana/core/balances';
 import { type NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { type Claimable } from '@/resources/addys/claimables/types';
 
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
+  SOLANA_COIN = 'SOLANA_COIN',
+  SOLANA_STATUS = 'SOLANA_STATUS',
   COIN_DIVIDER = 'COIN_DIVIDER',
   PROFILE_ACTION_BUTTONS_ROW = 'PROFILE_ACTION_BUTTONS_ROW',
   PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER = 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
@@ -93,6 +97,9 @@ export type AssetsHeaderExtraData = {
   value: string;
   isLoadingBalance: boolean;
 };
+export type SolanaCoinExtraData = { type: CellType.SOLANA_COIN; balance: SolanaBalance; currency: NativeCurrencyKey };
+export type SolanaStatusExtraData = { type: CellType.SOLANA_STATUS; message: string };
+
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {
   type: CellType.NFT;
@@ -192,6 +199,8 @@ export type CellExtraData =
   | LegacyNFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
+  | SolanaCoinExtraData
+  | SolanaStatusExtraData
   | NFTExtraData
   | LegacyNFTExtraData
   | NFTsHeaderExtraData
