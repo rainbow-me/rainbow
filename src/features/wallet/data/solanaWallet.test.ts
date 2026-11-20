@@ -76,16 +76,48 @@ describe('additive Solana wallet lifecycle', () => {
     expect(state.wallets.test).toEqual(wallet);
   });
 
-  it('does not publish on persistence failure, cancellation or selection change', async () => {
-    vi.mocked(saveSolanaKey).mockRejectedValueOnce(new Error('cancelled'));
+  it('does not publish on persistence failure or authentication cancellation', async () => {
+    vi.mocked(saveSolanaKey).mockRejectedValueOnce(new Error('save failed'));
+    await expect(enableSolanaAccount()).rejects.toThrow('save failed');
+    expect(getSolanaAccount('test', 2)).toBeUndefined();
+    vi.mocked(getSeedPhrase).mockRejectedValueOnce(new Error('cancelled'));
     await expect(enableSolanaAccount()).rejects.toThrow('cancelled');
     expect(getSolanaAccount('test', 2)).toBeUndefined();
-    vi.mocked(getSeedPhrase).mockImplementationOnce(async () => {
-      state.accountAddress = '0x0000000000000000000000000000000000000002';
-      return { id: 'test', seedphrase: phrase, version: 1 };
+  });
+
+  it.each(['authentication', 'key persistence'])('enables the captured account when selection changes during %s', async stage => {
+    const switchWallet = () => {
+      const other = {
+        ...wallet,
+        id: 'other',
+        addresses: [{ ...wallet.addresses[0], address: '0x0000000000000000000000000000000000000002' as const }],
+      };
+      state.wallets.other = other;
+      state.selected = other;
+      state.accountAddress = other.addresses[0].address;
+    };
+    if (stage === 'authentication') {
+      vi.mocked(getSeedPhrase).mockImplementationOnce(async () => {
+        switchWallet();
+        return { id: 'test', seedphrase: phrase, version: 1 };
+      });
+    } else {
+      vi.mocked(saveSolanaKey).mockImplementationOnce(async () => switchWallet());
+    }
+    expect(await enableSolanaAccount()).toEqual(record);
+    expect(getSeedPhrase).toHaveBeenCalledWith('test');
+    expect(saveSolanaKey).toHaveBeenCalledWith(key);
+    expect(getSolanaAccount('test', 2)).toEqual(record);
+    expect(getSolanaAccount('other', 2)).toBeUndefined();
+    expect(state.selected?.id).toBe('other');
+  });
+
+  it('does not publish if the captured wallet is deleted during persistence', async () => {
+    vi.mocked(saveSolanaKey).mockImplementationOnce(async () => {
+      state.wallets = {};
     });
-    await expect(enableSolanaAccount()).rejects.toThrow();
-    expect(getSolanaAccount('test', 2)).toBeUndefined();
+    await expect(enableSolanaAccount()).rejects.toThrow('The source account changed');
+    expect(useAccountMetadataStore.getState().accounts).toEqual({});
   });
 
   it('rejects unsupported, disabled, damaged and deleted sources', () => {

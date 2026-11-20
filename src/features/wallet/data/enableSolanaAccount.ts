@@ -51,16 +51,13 @@ export async function enableSolanaAccount(): Promise<EnabledSolanaAccount> {
   let seed: Uint8Array | undefined;
   try {
     const data = await getSeedPhrase(source.walletId);
-    assertSolanaSource(source);
     if (!data || data.id !== source.walletId || !isValidMnemonic(data.seedphrase)) throw new Error('Unable to unlock the recovery phrase.');
     seed = new Uint8Array(await mnemonicToSeed(data.seedphrase));
-    assertSolanaSource(source);
     const evmAddress = HDNode.fromSeed(seed).derivePath(getHdPath({ type: WalletLibraryType.bip39, index: source.index })).address;
     if (evmAddress.toLowerCase() !== source.sourceEvmAddress.toLowerCase())
       throw new Error('The recovery phrase does not match this EVM account.');
     const key = solanaKeyFromSeed(seed, source.index);
     await saveSolanaKey(key);
-    assertSolanaSource(source);
     const record: EnabledSolanaAccount = { ...source, namespace: 'solana', address: key.address, version: 1 };
     publishSolanaAccount(record);
     return record;

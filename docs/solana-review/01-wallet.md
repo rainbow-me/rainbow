@@ -14,7 +14,7 @@ An internal user with an existing mnemonic wallet can enable a Solana address fo
 
 ## Manual checks (not run for this reorganization)
 
-Enable subaccounts 0 and 1 and confirm stable, distinct Solana addresses; cancel authentication and confirm no mapping is published; switch wallets during authentication; verify private-key, hardware, watched and damaged wallets are rejected; verify flag-off EVM behavior.
+Enable subaccounts 0 and 1 and confirm stable, distinct Solana addresses; cancel authentication and confirm no mapping is published; switch wallets during authentication and verify enablement completes for the original account without changing the new selection; delete the original wallet during persistence and verify no mapping is published; verify private-key, hardware, watched and damaged wallets are rejected; verify flag-off EVM behavior.
 
 The broader WalletDescriptor/source-material proposals remain on the original branches. No secret record format or derivation path is migrated here.
 
@@ -38,6 +38,8 @@ The broader WalletDescriptor/source-material proposals remain on the original br
 - `src/features/wallet/types.ts`
 - `yarn.lock`
 
-Validation: 77 focused tests passed; TypeScript and dependency checks passed. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
+Validation: 80 focused tests passed; TypeScript and dependency checks passed. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
 
 Solana eligibility uses the existing `useIsSolanaEnabled` gate, with no store-install restriction. Store builds use remote `solana_enabled`; internal builds also honor the existing local experimental override. Wallet eligibility, authentication and account validation are unchanged.
+
+Enablement captures its source account once. Selection changes during authentication, derivation or key persistence do not cancel it; mnemonic ownership is verified against the captured EVM address. Existing `publishSolanaAccount` validation still rejects deleted or invalidated source accounts. `assertSolanaSource` remains for signing and transaction operations.
