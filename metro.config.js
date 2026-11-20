@@ -88,6 +88,8 @@ const rainbowConfig = {
 };
 
 const config = mergeConfig(getDefaultConfig(__dirname), rainbowConfig);
+// Metro resolves lazy SDK bundle URLs without their original .mjs extension.
+config.resolver.sourceExts.push('mjs');
 const sentryConfig = withSentryConfig(config, {
   annotateReactComponents: true,
 });

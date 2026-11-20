@@ -1,0 +1,50 @@
+diff --git a/node_modules/@rainbow-me/solana-sdk/dist/index.js b/node_modules/@rainbow-me/solana-sdk/dist/index.js
+--- a/node_modules/@rainbow-me/solana-sdk/dist/index.js
++++ b/node_modules/@rainbow-me/solana-sdk/dist/index.js
+@@ -8230,7 +8230,7 @@
+     inputAmount,
+     output: routeOutput,
+     sponsorship: quoteTerms.sponsorship,
+-    gasless: !requiresWalletSubmission(preparedExecution.walletProgram),
++    gasless: preparedExecution.sourceExecution.kind !== "instruction-batch" && !requiresWalletSubmission(preparedExecution.walletProgram),
+     feeEstimate
+   });
+ }
+@@ -8710,6 +8710,12 @@
+   preparedExecution,
+   sponsorship
+ }) {
++  // Provider-backed Solana routes currently require the wallet as fee payer.
++  if (request.gasless && request.intent.source.asset.location === "solana") {
++    throw policyError(
++      "Solana source transaction fees are wallet-paid; gasless Solana routes require a backend fee sponsor."
++    );
++  }
+   if (request.gasless && requiresWalletSubmission(preparedExecution.walletProgram)) {
+     throw policyError(
+       "Route requires gasless execution, but this execution requires wallet submission."
+diff --git a/node_modules/@rainbow-me/solana-sdk/dist/chunk-RCG3FF6F.mjs b/node_modules/@rainbow-me/solana-sdk/dist/chunk-RCG3FF6F.mjs
+--- a/node_modules/@rainbow-me/solana-sdk/dist/chunk-RCG3FF6F.mjs
++++ b/node_modules/@rainbow-me/solana-sdk/dist/chunk-RCG3FF6F.mjs
+@@ -6090,7 +6090,7 @@
+     inputAmount,
+     output: routeOutput,
+     sponsorship: quoteTerms.sponsorship,
+-    gasless: !requiresWalletSubmission(preparedExecution.walletProgram),
++    gasless: preparedExecution.sourceExecution.kind !== "instruction-batch" && !requiresWalletSubmission(preparedExecution.walletProgram),
+     feeEstimate
+   });
+ }
+@@ -6545,6 +6545,12 @@
+   preparedExecution,
+   sponsorship
+ }) {
++  // Provider-backed Solana routes currently require the wallet as fee payer.
++  if (request.gasless && request.intent.source.asset.location === "solana") {
++    throw policyError(
++      "Solana source transaction fees are wallet-paid; gasless Solana routes require a backend fee sponsor."
++    );
++  }
+   if (request.gasless && requiresWalletSubmission(preparedExecution.walletProgram)) {
+     throw policyError(
+       "Route requires gasless execution, but this execution requires wallet submission."
