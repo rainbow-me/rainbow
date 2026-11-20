@@ -19,9 +19,6 @@ import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
 import { GestureHandlerButton, type GestureHandlerButtonProps } from '@/components/buttons/GestureHandlerButton';
 import { AnimatedText, Box, Column, Columns, Cover, globalColors, Stack, useColorMode, useForegroundColor } from '@/design-system';
 import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
-import { type DepositContextType } from '@/systems/funding/types';
-
-import { useSwapContext } from '../providers/swap-provider';
 
 const getSwapButtonPadding = ({ outline, rightIcon, small }: { outline?: boolean; rightIcon?: string; small?: boolean }) => {
   const horizontalPadding = small ? 14 : 20 - (outline ? 2 : 0);
@@ -46,7 +43,7 @@ function SwapButton({
   children,
   testID,
 }: {
-  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | DepositContextType['minifiedAsset'];
+  asset: { readonly value: Pick<ExtendedAnimatedAssetWithColors, 'textColor' | 'highContrastColor'> | null };
   borderRadius?: number;
   disableShadow?: boolean;
   icon?: string | SharedOrDerivedValueText;
@@ -224,12 +221,17 @@ function SwapButton({
   );
 }
 
-const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) => {
+const HoldProgress = ({
+  holdProgress,
+  asset,
+}: {
+  holdProgress: SharedValue<number>;
+  asset: { readonly value: Pick<ExtendedAnimatedAssetWithColors, 'textColor' | 'highContrastColor'> | null };
+}) => {
   const { isDarkMode } = useColorMode();
-  const { internalSelectedOutputAsset } = useSwapContext();
 
   const [brightenedColor, setBrightenedColor] = useState<string>(
-    transformColor(getColorValueForThemeWorklet(internalSelectedOutputAsset.value?.highContrastColor, isDarkMode), false)
+    transformColor(getColorValueForThemeWorklet(asset.value?.highContrastColor, isDarkMode), false)
   );
 
   const holdProgressStyle = useAnimatedStyle(() => {
@@ -249,7 +251,7 @@ const HoldProgress = ({ holdProgress }: { holdProgress: SharedValue<number> }) =
   }
 
   useAnimatedReaction(
-    () => internalSelectedOutputAsset.value?.highContrastColor,
+    () => asset.value?.highContrastColor,
     (current, previous) => {
       if (current && current !== previous) {
         runOnJS(transformColor)(getColorValueForThemeWorklet(current, isDarkMode));
@@ -289,6 +291,7 @@ export const SwapActionButton = ({
   hugContent,
   longPressDuration,
   onLongPressEndWorklet,
+  onLongPressJS,
   onLongPressWorklet,
   onPressJS,
   onPressStartWorklet,
@@ -301,7 +304,7 @@ export const SwapActionButton = ({
   rightIcon,
   ...props
 }: {
-  asset: DerivedValue<ExtendedAnimatedAssetWithColors | null> | DepositContextType['minifiedAsset'];
+  asset: { readonly value: Pick<ExtendedAnimatedAssetWithColors, 'textColor' | 'highContrastColor'> | null };
   borderRadius?: number;
   disableShadow?: boolean;
   holdProgress?: SharedValue<number>;
@@ -311,6 +314,7 @@ export const SwapActionButton = ({
   label: string | SharedOrDerivedValueText;
   longPressDuration?: GestureHandlerButtonProps['longPressDuration'];
   onLongPressEndWorklet?: GestureHandlerButtonProps['onLongPressEndWorklet'];
+  onLongPressJS?: GestureHandlerButtonProps['onLongPressJS'];
   onLongPressWorklet?: GestureHandlerButtonProps['onLongPressWorklet'];
   onPressJS?: GestureHandlerButtonProps['onPressJS'];
   onPressStartWorklet?: GestureHandlerButtonProps['onPressStartWorklet'];
@@ -344,6 +348,7 @@ export const SwapActionButton = ({
         <GestureHandlerButton
           longPressDuration={longPressDuration}
           onLongPressEndWorklet={onLongPressEndWorklet}
+          onLongPressJS={onLongPressJS}
           onLongPressWorklet={onLongPressWorklet}
           onPressJS={onPressJS}
           onPressStartWorklet={onPressStartWorklet}
@@ -359,7 +364,7 @@ export const SwapActionButton = ({
             isRightIconPressable={isRightIconPressable}
             rightIcon={rightIcon}
           >
-            {holdProgress && <HoldProgress holdProgress={holdProgress} />}
+            {holdProgress && <HoldProgress holdProgress={holdProgress} asset={props.asset} />}
           </SwapButton>
         </GestureHandlerButton>
         {isRightIconPressable ? (

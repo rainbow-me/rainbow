@@ -17,7 +17,7 @@ export const SwapInput = ({
   otherInputProgress,
   progress,
 }: {
-  asset: SharedValue<ExtendedAnimatedAssetWithColors | null>;
+  asset: { readonly value: Pick<ExtendedAnimatedAssetWithColors, 'highContrastColor' | 'mixedShadowColor'> | null };
   bottomInput?: boolean;
   children?: ReactNode;
   otherInputProgress: SharedValue<number>;
