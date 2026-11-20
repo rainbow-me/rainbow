@@ -13,6 +13,7 @@ import { readSolanaKey, saveSolanaKey } from './solanaKeychain';
 import { getCombinedAccount, getSolanaAccount, publishSolanaAccount, useAccountMetadataStore } from './stores/accountMetadataStore';
 import { getSeedPhrase } from './walletKeychain';
 
+vi.mock('@/env', () => ({ IS_DEV: false, IS_TEST: true, IS_PROD: false, IS_STORE_INSTALL: true }));
 vi.mock('react-native', () => ({ Platform: { OS: 'ios' }, NativeModules: {} }));
 vi.mock('@/state/wallets/walletsStore', () => ({ useWalletsStore: { getState: vi.fn() } }));
 vi.mock('@/features/solana/hooks/useIsSolanaEnabled', () => ({ useIsSolanaEnabled: { getState: vi.fn() } }));
@@ -58,6 +59,12 @@ beforeEach(() => {
 });
 
 describe('additive Solana wallet lifecycle', () => {
+  it('allows store installs only while the Solana flag is enabled', () => {
+    expect(getSolanaSource()).toEqual({ walletId: 'test', index: 2, sourceEvmAddress: evm });
+    vi.mocked(useIsSolanaEnabled.getState).mockReturnValue(false);
+    expect(getSolanaSource).toThrow();
+  });
+
   it('derives the selected index, verifies persistence before publication and joins existing profile fields', async () => {
     expect(await enableSolanaAccount()).toEqual(record);
     expect(saveSolanaKey).toHaveBeenCalledWith(key);

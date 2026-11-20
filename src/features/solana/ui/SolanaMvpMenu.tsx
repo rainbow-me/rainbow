@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 
-import { IS_STORE_INSTALL } from '@/env';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { enableSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -9,7 +8,7 @@ import { MenuItem } from '@/screens/SettingsSheet/components/MenuItem';
 
 export function SolanaMvpMenu() {
   const enabled = useIsSolanaEnabled();
-  return !IS_STORE_INSTALL && enabled ? <SolanaMvpControls /> : null;
+  return enabled ? <SolanaMvpControls /> : null;
 }
 
 function SolanaMvpControls() {
@@ -32,7 +31,7 @@ function SolanaMvpControls() {
   };
 
   return (
-    <Menu header="Solana MVP · mainnet · internal only">
+    <Menu header="Solana MVP · mainnet">
       <MenuItem
         disabled={busy}
         size={60}

@@ -1,7 +1,6 @@
 import { HDNode, isValidMnemonic } from '@ethersproject/hdnode';
 import { mnemonicToSeed } from 'bip39';
 
-import { IS_STORE_INSTALL } from '@/env';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { solanaKeyFromSeed } from '@/features/wallet/core/solanaAccount';
 import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
@@ -15,7 +14,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 export type SolanaSource = AccountRef & { sourceEvmAddress: string };
 
 export function getSolanaSource(): SolanaSource {
-  if (IS_STORE_INSTALL || !useIsSolanaEnabled.getState()) throw new Error('Enable the Solana developer flag in an internal build.');
+  if (!useIsSolanaEnabled.getState()) throw new Error('Enable the Solana feature flag.');
   const state = useWalletsStore.getState();
   const wallet = state.selected && state.wallets[state.selected.id];
   const account = wallet?.addresses.find(item => item.address.toLowerCase() === state.accountAddress.toLowerCase());
