@@ -17,12 +17,13 @@ import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH } from '@/__swaps__/screens/Swap/co
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
+import { AnimatedText, Box, useColorMode } from '@/design-system';
 import * as i18n from '@/languages';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 import { AnimatedSwapCoinIcon } from './AnimatedSwapCoinIcon';
 import { CopyPasteMenu } from './CopyPasteMenu';
+import { SwapAssetFields } from './SwapAssetFields';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -125,23 +126,13 @@ export function SwapInputAsset() {
   return (
     <SwapInput asset={internalSelectedInputAsset} otherInputProgress={outputProgress} progress={inputProgress}>
       <Box testID={'swap-asset-input'} as={Animated.View} style={AnimatedSwapStyles.inputStyle}>
-        <Stack space="16px">
-          <Columns alignHorizontal="justify" alignVertical="center">
-            <Column width="content">
-              <SwapInputIcon />
-            </Column>
-            <SwapInputAmount />
-            <Column width="content">
-              <SwapInputActionButton />
-            </Column>
-          </Columns>
-          <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <SwapNativeInput nativeInputType="inputNativeValue" />
-            <Column width="content">
-              <InputAssetBalanceBadge />
-            </Column>
-          </Columns>
-        </Stack>
+        <SwapAssetFields
+          icon={<SwapInputIcon />}
+          amount={<SwapInputAmount />}
+          action={<SwapInputActionButton />}
+          nativeValue={<SwapNativeInput nativeInputType="inputNativeValue" />}
+          balance={<InputAssetBalanceBadge />}
+        />
       </Box>
       <Box
         as={Animated.View}

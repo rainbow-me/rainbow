@@ -1,4 +1,5 @@
 import React from 'react';
+import { type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 
 import Animated, { useAnimatedStyle, useDerivedValue, withSpring } from 'react-native-reanimated';
 
@@ -6,6 +7,7 @@ import { SwapWarningType } from '@/__swaps__/screens/Swap/hooks/useSwapWarning';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
 import { AnimatedText, Box } from '@/design-system';
+import { type SharedOrDerivedValueText } from '@/design-system/components/Text/AnimatedText';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 export const SwapWarning = () => {
@@ -61,18 +63,37 @@ export const SwapWarning = () => {
   });
 
   return (
-    <Box
-      as={Animated.View}
-      gap={12}
-      justifyContent="center"
-      style={[{ maxWidth: DEVICE_WIDTH - 120 - 40 }, AnimatedSwapStyles.hideWhenInputsExpanded, warningAlignment]}
-    >
-      <AnimatedText style={warningTitleStyles} size="15pt" weight="heavy">
-        {warningTitle}
+    <SwapWarningView
+      title={warningTitle}
+      subtitle={warningSubtitle}
+      titleStyle={warningTitleStyles}
+      subtitleStyle={warningSubtitleStyles}
+      style={[AnimatedSwapStyles.hideWhenInputsExpanded, warningAlignment]}
+    />
+  );
+};
+
+export function SwapWarningView({
+  title,
+  subtitle,
+  titleStyle,
+  subtitleStyle,
+  style,
+}: {
+  title: SharedOrDerivedValueText;
+  subtitle: SharedOrDerivedValueText;
+  titleStyle: StyleProp<TextStyle>;
+  subtitleStyle: StyleProp<TextStyle>;
+  style?: StyleProp<ViewStyle>;
+}) {
+  return (
+    <Box as={Animated.View} gap={12} justifyContent="center" style={[{ maxWidth: DEVICE_WIDTH - 120 - 40 }, style]}>
+      <AnimatedText style={titleStyle} size="15pt" weight="heavy">
+        {title}
       </AnimatedText>
-      <AnimatedText style={warningSubtitleStyles} color="labelQuaternary" size="13pt" weight="bold">
-        {warningSubtitle}
+      <AnimatedText style={subtitleStyle} color="labelQuaternary" size="13pt" weight="bold">
+        {subtitle}
       </AnimatedText>
     </Box>
   );
-};
+}

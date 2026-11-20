@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, type ReactNode } from 'react';
 import { type GestureResponderEvent } from 'react-native';
 
 import { startCase } from 'lodash';
@@ -117,10 +117,53 @@ export function CoinRow({
   if (!address || !chainId) return null;
 
   return (
+    <CoinRowView
+      height={height}
+      testID={testID}
+      output={!!output}
+      name={name}
+      subtitle={output ? symbol : `${inputAsset?.balance.display}`}
+      balance={inputAsset?.native?.balance.display}
+      onPress={onPressHandler}
+      icon={<RainbowCoinIcon size={36} icon={icon_url} chainId={chainId} symbol={symbol || ''} color={colors?.primary} chainSize={16} />}
+      actions={
+        output ? (
+          <>
+            <InfoButton address={address} chainId={chainId} isSupportedChain={isSupportedChain} isVerified={isVerified} />
+            {!hideFavoriteButton && <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />}
+          </>
+        ) : undefined
+      }
+    />
+  );
+}
+
+export function CoinRowView({
+  height = COIN_ROW_WITH_PADDING_HEIGHT,
+  testID,
+  output,
+  name,
+  subtitle,
+  balance,
+  onPress,
+  icon,
+  actions,
+}: {
+  height?: number;
+  testID?: string;
+  output: boolean;
+  name?: string;
+  subtitle?: string;
+  balance?: string;
+  onPress: (event?: GestureResponderEvent) => void;
+  icon: ReactNode;
+  actions?: ReactNode;
+}) {
+  return (
     <Box testID={testID} style={{ height, width: '100%' }}>
       <Columns alignVertical="center">
         <Column>
-          <ButtonPressAnimation onPress={onPressHandler} scaleTo={0.95}>
+          <ButtonPressAnimation onPress={onPress} scaleTo={0.95}>
             <HitSlop vertical="10px">
               <Box
                 alignItems="center"
@@ -133,26 +176,19 @@ export function CoinRow({
                 gap={12}
               >
                 <Box flexDirection="row" gap={10} flexShrink={1} justifyContent="center">
-                  <RainbowCoinIcon
-                    size={36}
-                    icon={icon_url}
-                    chainId={chainId}
-                    symbol={symbol || ''}
-                    color={colors?.primary}
-                    chainSize={16}
-                  />
+                  {icon}
                   <Box gap={10} flexShrink={1} justifyContent="center">
                     <Text color="label" size="17pt" weight="semibold" numberOfLines={1} ellipsizeMode="tail">
                       {name}
                     </Text>
                     <Inline alignVertical="center" space={{ custom: 5 }} wrap={false}>
                       <Text color="labelTertiary" numberOfLines={1} size="13pt" weight="semibold">
-                        {output ? symbol : `${inputAsset?.balance.display}`}
+                        {subtitle}
                       </Text>
                     </Inline>
                   </Box>
                 </Box>
-                {!output && <BalancePill balance={inputAsset?.native?.balance.display ?? ''} />}
+                {!output && <BalancePill balance={balance ?? ''} />}
               </Box>
             </HitSlop>
           </ButtonPressAnimation>
@@ -160,10 +196,7 @@ export function CoinRow({
         {output && (
           <Column width="content">
             <Box paddingLeft="12px" paddingRight="20px">
-              <Inline space="10px">
-                <InfoButton address={address} chainId={chainId} isSupportedChain={isSupportedChain} isVerified={isVerified} />
-                {!hideFavoriteButton && <CoinRowButton color={favoritesIconColor} onPress={handleToggleFavorite} icon="􀋃" weight="black" />}
-              </Inline>
+              <Inline space="10px">{actions}</Inline>
             </Box>
           </Column>
         )}
