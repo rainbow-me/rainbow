@@ -148,3 +148,4 @@ deps-comment.md
 
 # Vitest reports and diagnostics
 .vitest/
+.claude/settings.local.json
