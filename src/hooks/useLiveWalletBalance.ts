@@ -4,6 +4,7 @@ import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDi
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { add, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -47,7 +48,8 @@ export const useLiveWalletBalance = createDerivedStore(
 
     const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
     const otherBalances = add(add(add(positionsBalance, claimablesBalance), perpsBalanceNative), polymarketAccountValue);
-    const totalBalanceAmount = add(liveAssetBalance, otherBalances);
+    const solanaBalance = $(useSolanaWalletBalances, state => state.data?.total ?? '0');
+    const totalBalanceAmount = add(add(liveAssetBalance, otherBalances), solanaBalance);
     const isLoading = initialBalance === 0 && isFetching;
 
     return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);

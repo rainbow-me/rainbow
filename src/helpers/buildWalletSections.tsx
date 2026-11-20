@@ -54,6 +54,7 @@ const EMPTY_ARRAY: CellTypes[] = [];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
+  solanaRows?: CellTypes[];
   accountBalanceDisplay: string | undefined;
   hiddenAssets: Set<UniqueId>;
   isCoinListEdited: boolean;
@@ -85,6 +86,7 @@ export type WalletSectionsState = {
   isDismissedRnbwFeatureCard?: boolean;
 };
 
+const solanaRowsSelector = (state: WalletSectionsState) => state.solanaRows ?? EMPTY_ARRAY;
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
 const accountBalanceDisplaySelector = (state: WalletSectionsState) => state.accountBalanceDisplay;
 const hiddenAssetsSelector = (state: WalletSectionsState) => state.hiddenAssets;
@@ -390,7 +392,11 @@ const withTokensHeaderSection = ({
 }): CellTypes[] => {
   // Only show tokens header if we have token content (not empty wallet state)
   const hasTokenContent = contentSection.some(
-    item => item.type === CellType.COIN || item.type === CellType.COIN_DIVIDER || item.type === CellType.LOADING_ASSETS
+    item =>
+      item.type === CellType.COIN ||
+      item.type === CellType.SOLANA_COIN ||
+      item.type === CellType.COIN_DIVIDER ||
+      item.type === CellType.LOADING_ASSETS
   );
   const hasPerpsContent = perpsSection[0]?.type !== CellType.EMPTY_ROW;
 
@@ -419,11 +425,12 @@ const withBriefBalanceSection = (
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
   collections: Map<CollectionId, Collection> | null,
-  discoverEnabled: boolean
+  discoverEnabled: boolean,
+  solanaRows: CellTypes[]
 ): BalanceSectionResult => {
   const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
-  const hasTokens = briefAssets?.length;
+  const hasTokens = briefAssets?.length || solanaRows.some(row => row.type === CellType.SOLANA_COIN);
   const hasNFTs = (collections?.size ?? 0) > 0;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
@@ -500,7 +507,10 @@ const withBriefBalanceSection = (
   let content: CellTypes[] = CONTENT_PLACEHOLDER;
 
   if (hasTokens) {
-    content = briefAssets;
+    // shortcut: Keep Solana above small balances for internal testing; use normal placement before rollout.
+    const divider = briefAssets.findIndex(row => row.type === CellType.COIN_DIVIDER);
+    const insertion = divider < 0 ? briefAssets.length : divider;
+    content = isCoinListEdited ? briefAssets : [...briefAssets.slice(0, insertion), ...solanaRows, ...briefAssets.slice(insertion)];
   } else if (isLoadingUserAssets) {
     content = CONTENT_PLACEHOLDER;
   } else if (hasNFTsOnly) {
@@ -508,6 +518,8 @@ const withBriefBalanceSection = (
   } else if (isEmpty) {
     content = discoverEnabled ? EMPTY_WALLET_CONTENT_WITH_DISCOVER : EMPTY_WALLET_CONTENT;
   }
+
+  if (!hasTokens && !isCoinListEdited && solanaRows.length) content = [...solanaRows, ...content];
 
   const result = {
     headerSection: header,
@@ -547,6 +559,7 @@ const briefBalanceSectionSelector = createSelector(
     hiddenAssetsSelector,
     collectionsSelector,
     discoverEnabledSelector,
+    solanaRowsSelector,
   ],
   withBriefBalanceSection
 );

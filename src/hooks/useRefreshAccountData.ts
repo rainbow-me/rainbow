@@ -8,6 +8,7 @@ import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAc
 import { usePolymarketBalanceStore } from '@/features/polymarket/stores/polymarketBalanceStore';
 import { usePolymarketPositionsStore } from '@/features/polymarket/stores/polymarketPositionsStore';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { refreshSolanaBalances } from '@/features/solana/data/solanaBalancesStore';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
@@ -33,6 +34,7 @@ export const refreshAccountData = async () => {
 
   await Promise.allSettled([
     delay(MIN_REFRESH_DURATION),
+    refreshSolanaBalances(),
     refreshWalletInfo({ addresses: [accountAddress] }),
     hyperliquidAccountActions.fetch(undefined, { force: true }),
     useUserAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
