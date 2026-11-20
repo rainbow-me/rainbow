@@ -39,6 +39,6 @@ The swap-screen conflict was resolved by preserving develop’s memoization, Swa
 
 ## Automated verification
 
-The complete stack passes 353 focused tests across 28 files (wallet, Solana, EVM swaps, network badges and wallet sections), full TypeScript, dependency rules and the JavaScript type baseline (1,373 existing errors, no regressions). Native visuals, authentication and funded settlement have not been rerun on this new stack.
+The complete stack passes 356 focused tests across 28 files (wallet, Solana, EVM swaps, network badges and wallet sections), full TypeScript, dependency rules and the JavaScript type baseline (1,373 existing errors, no regressions). Native visuals, authentication and funded settlement have not been rerun on this new stack.
 
 Store builds use the same Solana gate as wallet access and balances. No Solana-specific `IS_STORE_INSTALL` exclusion remains; the existing global configuration policy still makes store builds rely on remote `solana_enabled`.
