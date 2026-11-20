@@ -9,7 +9,7 @@ Use [solana-swap-test-results.csv](solana-swap-test-results.csv) to record evide
 1. Use **Rainbow Solana MVP**, UDID `2BB81484-C8A3-4D61-9BE9-521BCD81965F`, Metro **8093**. Other simulators/sessions are out of scope.
 2. Use the internal, non-store mainnet build; enable the existing Solana flag and enable the selected mnemonic subaccount. Record its EVM and Solana addresses. Private-key-only/watch-only/hardware sources are outside this MVP.
 3. Check source balances before each case. Fund SOL before Solana-source swaps; the normal-sheet guard retains **0.001 SOL**. A sponsored destination or SOL output does not pay the source wallet's gas automatically.
-4. Review a fresh quote first. Suggested small amounts are test inputs, not a guarantee of provider minimums or balance availability. Normal UI enters token units; the developer ETH-buy button computes about $1 automatically.
+4. Review a fresh quote first. Suggested small amounts are test inputs, not a guarantee of provider minimums or balance availability. Normal UI enters token units; use the displayed ETH price to choose approximately $1 of ETH. The duplicate developer buy buttons have been removed.
 5. The user confirms any mainnet spend. Save the reviewed amount/minimum, execution ID, source and destination receipts, and before/after balances. A quote or PENDING status alone is not a pass.
 
 ## Route cases
@@ -27,7 +27,7 @@ Use [solana-swap-test-results.csv](solana-swap-test-results.csv) to record evide
 | S09 | BONK → Solana USDC | Normal swap sheet | 100,000 BONK if available and quoted | User pays source network fee in SOL; provider fees required sponsored | Exercise token-to-token return path and disappearance of a fully spent token row. |
 | S10 | SOL → Base USDC | Developer Settings button | Fixed 0.01 SOL plus source fee | User pays source network fee in SOL; provider fees required sponsored | Not selectable in normal sheet yet; verify Base USDC credit to the paired EVM address and both-chain receipts. |
 
-Run S01 first to establish SOL, then S02–S03 to establish token balances. Run S04–S09 while retaining enough SOL for subsequent fees. S10 needs at least its fixed 0.01 SOL input plus gas; replenish before running if needed. The normal sheet's BONK amount is user-entered; the developer BONK sell button separately caps its amount at 100,000 BONK.
+Run S01 first to establish SOL, then S02–S03 to establish token balances. Run S04–S09 while retaining enough SOL for subsequent fees. S10 needs at least its fixed 0.01 SOL input plus gas; replenish before running if needed. The normal sheet's BONK amount is user-entered; the duplicate developer BONK sell button has been removed.
 
 ## Five checks for each route
 

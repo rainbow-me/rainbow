@@ -75,3 +75,9 @@ The Solana footer now uses `SwapActionButton` for Review, Hold to Swap, and pend
 The user-paid fee is visible beside the action button before Review through the shared gas layout and icon. It stays read-only, with no gas-speed selector or custom-gas controls; the detailed review retains the fee row. Quote preparation, fee calculations, and signing remain unchanged. Focused tests cover the fee before review, Review without submission, and submission only through the hold callback. Simulator interaction remains unverified; no transaction was submitted.
 
 Fully sponsored, gasless quotes now reuse the EVM Free label and crossed-out fee styling. Until the SDK exposes a pre-sponsorship network-gas estimate, the crossed-out value uses the existing `--` placeholder; the provider fee subtotal is not substituted for network gas. Solana-source quotes retain their user-paid network fee even when provider fees are fully sponsored.
+
+## Developer menu cleanup — November 20, 2026
+
+The Base ETH → SOL, Base ETH → BONK, and BONK → Solana USDC buttons have been removed from Developer Settings; use the normal swap sheet for those pairs. The normal sheet accepts entered amounts rather than the old fixed test amounts and retains its balance/fee-reserve checks. Both entry points use the shared executor and sponsorship policy.
+
+Keep Enable Solana, Refresh Solana balances, Check execution, and SOL → Base USDC. The last route is still developer-only because the normal output picker supports only Solana assets. Remove that button only after adding the corresponding output route or explicitly retiring the test. This cleanup belongs above the swap UI implementation; it does not remove the harness from the earlier standalone MVP branch.

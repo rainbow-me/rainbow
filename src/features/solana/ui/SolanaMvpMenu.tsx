@@ -108,28 +108,6 @@ function SolanaMvpControls() {
       <MenuItem
         disabled={busy}
         size={60}
-        testID="solana-mvp-buy"
-        titleComponent={<MenuItem.Title text="Buy SOL with $1 of Base ETH" />}
-        onPress={() => run(() => trade('buy'))}
-      />
-      <MenuItem
-        disabled={busy}
-        size={60}
-        testID="solana-mvp-buy-bonk"
-        titleComponent={<MenuItem.Title text="Buy BONK with $1 of Base ETH" />}
-        onPress={() => run(() => trade('buyBonk'))}
-      />
-      <MenuItem
-        disabled={busy}
-        size={60}
-        testID="solana-mvp-sell"
-        titleComponent={<MenuItem.Title text="Swap BONK → Solana USDC" />}
-        labelComponent={<MenuItem.Label text="Up to 100,000 BONK; review before signing" />}
-        onPress={() => run(() => trade('sell'))}
-      />
-      <MenuItem
-        disabled={busy}
-        size={60}
         testID="solana-mvp-sol-to-base"
         titleComponent={<MenuItem.Title text="Swap 0.01 SOL → Base USDC" />}
         labelComponent={<MenuItem.Label text="Review before signing" />}
