@@ -20,6 +20,8 @@ import { palettes } from '@/design-system/color/palettes';
 import { getUniqueId } from '@/entities/assetId';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useSolanaBalancesAddress } from '@/features/solana/data/solanaBalancesStore';
+import { SolanaSwapOptions } from '@/features/solana/ui/SolanaSwapOptions';
 import { equalWorklet } from '@/framework/core/safeMath';
 import * as i18n from '@/languages';
 import { userAssetsStore } from '@/state/assets/userAssets';
@@ -130,6 +132,7 @@ const MemoizedCoinRow = memo(CoinRow, (prevProps, nextProps) => {
 });
 
 export const TokenToBuyList = () => {
+  const solanaAddress = useSolanaBalancesAddress();
   const { internalSelectedInputAsset, internalSelectedOutputAsset, isFetching, isQuoteStale, outputProgress, setAsset } = useSwapContext();
   const { results: sections, isLoading } = useSearchCurrencyLists();
 
@@ -224,17 +227,18 @@ export const TokenToBuyList = () => {
 
   const animatedRef = useAnimatedRef<Animated.FlatList<TokenToBuyListItem>>();
 
-  if (isLoading) return null;
+  if (isLoading && !solanaAddress) return null;
 
   return (
     <Box style={styles.list} testID={'token-to-buy-list'}>
       <ChainSelection animatedRef={animatedRef} output />
       <Animated.FlatList
+        ListHeaderComponent={<SolanaSwapOptions output={true} />}
         ListEmptyComponent={<ListEmpty output />}
         ListFooterComponent={listFooter}
         contentContainerStyle={styles.contentContainer}
         data={sections}
-        getItemLayout={getItemLayout}
+        getItemLayout={solanaAddress ? undefined : getItemLayout}
         initialNumToRender={12}
         keyExtractor={keyExtractor}
         keyboardShouldPersistTaps="always"

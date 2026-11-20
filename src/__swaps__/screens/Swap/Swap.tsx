@@ -20,11 +20,15 @@ import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box } from '@/design-system';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useSolanaBalancesAddress } from '@/features/solana/data/solanaBalancesStore';
+import { useSolanaSwapSelection } from '@/features/solana/data/swapSelection';
+import { SolanaSwapFlow } from '@/features/solana/ui/SolanaSwapFlow';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
 import { userAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { ReviewButton } from './components/ReviewButton';
@@ -74,6 +78,30 @@ import { useSwapsSearchStore } from './resources/search/searchV2';
 export const SwapScreen = memo(
   function SwapScreen() {
     useCleanupOnUnmount();
+    const solanaAddress = useSolanaBalancesAddress();
+    const accountKey = useWalletsStore(state => `${state.selected?.id}:${state.accountAddress.toLowerCase()}`);
+    const selection = useSolanaSwapSelection(state => state.selection);
+    useEffect(() => () => useSolanaSwapSelection.setState({ selection: null }), []);
+    useEffect(() => {
+      if (selection && (selection.address !== solanaAddress || selection.accountKey !== accountKey))
+        useSolanaSwapSelection.setState({ selection: null });
+    }, [selection, solanaAddress, accountKey]);
+    if (selection && selection.address === solanaAddress && selection.accountKey === accountKey) {
+      return (
+        <SolanaSwapFlow
+          key={selection.accountKey}
+          selection={selection}
+          onBack={() => useSolanaSwapSelection.setState({ selection: null })}
+        />
+      );
+    }
+    return <EvmSwapScreen />;
+  },
+  () => true
+);
+
+const EvmSwapScreen = memo(
+  function EvmSwapScreen() {
     return (
       <SwapProvider>
         <Box as={Page} style={styles.rootViewBackground} testID="swap-screen" width="full">
