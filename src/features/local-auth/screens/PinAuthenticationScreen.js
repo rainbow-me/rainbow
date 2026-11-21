@@ -9,6 +9,7 @@ import { ImgixImage } from '@/components/images';
 import { Centered, Column, ColumnWithMargins } from '@/components/layout';
 import { Numpad, PinValue } from '@/components/numpad';
 import { SheetTitle } from '@/components/sheet';
+import { PIN_LOCKOUT_MINUTES, recordFailedPinAttempt, restorePinAttempts } from '@/features/local-auth/pinAttempts';
 import styled from '@/framework/ui/styled-thing';
 import { getAuthTimelock, getPinAuthAttemptsLeft, saveAuthTimelock, savePinAuthAttemptsLeft } from '@/handlers/localstorage/globalSettings';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -16,6 +17,7 @@ import { useBlockBackButton } from '@/hooks/useBlockBackButton';
 import useDimensions from '@/hooks/useDimensions';
 import { useShakeAnimation } from '@/hooks/useShakeAnimation';
 import * as i18n from '@/languages';
+import { logger, RainbowError } from '@/logger';
 import { useNavigation } from '@/navigation/Navigation';
 import { padding } from '@/styles';
 
@@ -27,173 +29,186 @@ const Logo = styled(ImgixImage).attrs({
   width: 80,
 });
 
-const MAX_ATTEMPTS = 10;
-const TIMELOCK_INTERVAL_MINUTES = 5;
+/** @param {import('@/features/local-auth/pinAttempts').PinAttemptState} state */
+function persistPinAttempts(state) {
+  if (state.lockedUntil !== null) {
+    // Persist the deadline first so interruption cannot leave an exhausted budget without its lockout.
+    saveAuthTimelock(state.lockedUntil);
+    savePinAuthAttemptsLeft(state.attemptsLeft);
+  } else {
+    // Reset an expired budget before clearing the deadline.
+    savePinAuthAttemptsLeft(state.attemptsLeft);
+    saveAuthTimelock(null);
+  }
+}
 
 const PinAuthenticationScreen = () => {
   const { params } = useRoute();
   useBlockBackButton(!params.validPin);
-  const { goBack, setParams } = useNavigation();
+  const { goBack } = useNavigation();
   const [errorAnimation, onShake] = useShakeAnimation();
-
   const { isNarrowPhone, isSmallPhone, isTallPhone } = useDimensions();
 
-  const [attemptsLeft, setAttemptsLeft] = useState(MAX_ATTEMPTS);
   const [value, setValue] = useState('');
-  const [isLoading, setLoading] = useState(false);
-  const [initialPin, setInitialPin] = useState('');
   const [actionType, setActionType] = useState(params.validPin ? 'authentication' : 'creation');
-
+  const actionTypeRef = useRef(actionType);
+  const initialPin = useRef('');
+  const valueRef = useRef('');
+  const attemptState = useRef(/** @type {import('@/features/local-auth/pinAttempts').PinAttemptState | null} */ (null));
+  const inputBlocked = useRef(true);
   const finished = useRef(false);
+  const mounted = useRef(false);
+  const timeout = useRef(/** @type {ReturnType<typeof setTimeout> | null} */ (null));
+  const paramsRef = useRef(params);
+  paramsRef.current = params;
+
+  const cancel = useCallback(() => {
+    if (finished.current) return;
+    finished.current = true;
+    inputBlocked.current = true;
+    paramsRef.current.onCancel();
+    goBack();
+  }, [goBack]);
+
+  const handleStorageError = useCallback(() => {
+    logger.error(new RainbowError('[PinAuthenticationScreen]: Unable to restore or persist PIN attempts'));
+    Alert.alert(i18n.t(i18n.l.error_boundary.something_went_wrong));
+    cancel();
+  }, [cancel]);
+
+  const showLockout = useCallback(
+    (lockedUntil, exhausted = false) => {
+      if (exhausted) {
+        Alert.alert(
+          i18n.t(i18n.l.wallet.pin_authentication.too_many_tries),
+          i18n.t(i18n.l.wallet.pin_authentication.you_need_to_wait_minutes_plural, { minutesCount: PIN_LOCKOUT_MINUTES })
+        );
+      } else {
+        const secondsLeft = Math.max(1, Math.ceil((lockedUntil - Date.now()) / 1000));
+        const useMinutes = secondsLeft > 60;
+        Alert.alert(
+          i18n.t(i18n.l.wallet.pin_authentication.still_blocked),
+          i18n.t(i18n.l.wallet.pin_authentication.you_still_need_to_wait, {
+            timeAmount: useMinutes ? Math.ceil(secondsLeft / 60) : secondsLeft,
+            unitName: useMinutes ? i18n.t(i18n.l.time.minutes.long.plural) : i18n.t(i18n.l.time.seconds.long.plural),
+          })
+        );
+      }
+      cancel();
+    },
+    [cancel]
+  );
 
   useEffect(() => {
+    let active = true;
+    mounted.current = true;
+    inputBlocked.current = true;
     Keyboard.dismiss();
-  }, []);
 
-  useEffect(() => {
-    // See if the user previously tried and aborted
-    // If that's the case, we need to update the default
-    // amount of attempts left to prevent abuse
     const init = async () => {
-      const attemptsLeft = await getPinAuthAttemptsLeft();
-      if (!isNaN(attemptsLeft)) {
-        setAttemptsLeft(attemptsLeft);
+      try {
+        const [storedAttempts, storedTimelock] = await Promise.all([getPinAuthAttemptsLeft(), getAuthTimelock()]);
+        if (!active || finished.current) return;
+        const restored = restorePinAttempts(storedAttempts, storedTimelock, Date.now());
+        persistPinAttempts(restored);
+        attemptState.current = restored;
+        if (restored.lockedUntil !== null) {
+          showLockout(restored.lockedUntil);
+          return;
+        }
+        inputBlocked.current = false;
+      } catch {
+        if (active && !finished.current) handleStorageError();
       }
     };
 
     init();
 
     return () => {
+      active = false;
+      mounted.current = false;
+      inputBlocked.current = true;
+      if (timeout.current !== null) clearTimeout(timeout.current);
       if (!finished.current) {
-        params.onCancel();
+        finished.current = true;
+        paramsRef.current.onCancel();
       }
     };
-  }, [params, setParams]);
+  }, [handleStorageError, showLockout]);
 
-  useEffect(() => {
-    const checkTimelock = async () => {
-      // When opening the screen we need to check
-      // if the user wasn't banned for too many tries
-      const timelock = await getAuthTimelock();
-      if (timelock) {
-        const now = Date.now();
-        const stillBanned = now < timelock;
-        if (stillBanned) {
-          const timeLeftMS = timelock - now;
-          const timeAmountSeconds = timeLeftMS / 1000;
-          const unit = timeAmountSeconds > 60 ? i18n.t(i18n.l.time.minutes.long.plural) : i18n.t(i18n.l.time.seconds.long.plural);
-          const timeAmount = timeAmountSeconds > 60 ? Math.ceil(timeAmountSeconds / 60) : Math.ceil(timeAmountSeconds);
+  const clearEntryAfterDelay = useCallback(() => {
+    timeout.current = setTimeout(() => {
+      if (!mounted.current || finished.current) return;
+      valueRef.current = '';
+      setValue('');
+      inputBlocked.current = false;
+    }, 300);
+  }, []);
 
-          Alert.alert(
-            i18n.t(i18n.l.wallet.pin_authentication.still_blocked),
-            i18n.t(i18n.l.wallet.pin_authentication.you_still_need_to_wait, {
-              timeAmount: timeAmount,
-              unitName: unit,
-            })
-          );
-          params.onCancel();
-          finished.current = true;
-          goBack();
-        } else {
-          await saveAuthTimelock(null);
-          await savePinAuthAttemptsLeft(null);
-        }
-      }
-    };
-
-    checkTimelock();
-  }, [goBack, params]);
-
-  useEffect(() => {
-    if (attemptsLeft === 0) {
-      Alert.alert(
-        i18n.t(i18n.l.wallet.pin_authentication.too_many_tries),
-        i18n.t(i18n.l.wallet.pin_authentication.you_need_to_wait_minutes_plural, {
-          minutesCount: TIMELOCK_INTERVAL_MINUTES,
-        })
-      );
-      // Set global
-      saveAuthTimelock(Date.now() + TIMELOCK_INTERVAL_MINUTES * 60 * 1000);
-      params.onCancel();
+  const acceptPin = useCallback(
+    pin => {
       finished.current = true;
-      goBack();
-    }
-  }, [attemptsLeft, goBack, params]);
+      paramsRef.current.onSuccess(pin);
+      timeout.current = setTimeout(() => {
+        if (mounted.current) goBack();
+      }, 300);
+    },
+    [goBack]
+  );
 
   const handleNumpadPress = useCallback(
     newValue => {
+      if (!mounted.current || inputBlocked.current || finished.current || attemptState.current === null) return;
       Platform.OS === 'android' && triggerHaptics('selection');
-      setValue(prevValue => {
-        let nextValue = prevValue;
-        if (nextValue === null) {
-          nextValue = newValue;
-        } else if (newValue === 'back') {
-          // If pressing back while on confirmation and no value
-          // we switch back to "creation" mode so the user can
-          // reenter the original pin in case they did a mistake
-          if (prevValue === '' && actionType === 'confirmation') {
-            setActionType('creation');
-            setInitialPin('');
-            setValue('');
-          } else {
-            nextValue = prevValue.slice(0, -1);
-          }
-        } else {
-          if (nextValue.length <= 3) {
-            nextValue += newValue;
-          }
+
+      const previousValue = valueRef.current;
+      if (newValue === 'back' && previousValue === '' && actionTypeRef.current === 'confirmation') {
+        actionTypeRef.current = 'creation';
+        setActionType('creation');
+        initialPin.current = '';
+        return;
+      }
+
+      const nextValue = newValue === 'back' ? previousValue.slice(0, -1) : (previousValue + newValue).slice(0, 4);
+      valueRef.current = nextValue;
+      setValue(nextValue);
+      if (nextValue.length !== 4) return;
+
+      // Block synchronously: another tap must not submit this completed entry again.
+      inputBlocked.current = true;
+      if (actionTypeRef.current === 'authentication') {
+        if (paramsRef.current.validPin === nextValue) {
+          acceptPin(nextValue);
+          return;
         }
 
-        if (nextValue.length === 4) {
-          if (actionType === 'authentication') {
-            const valid = params.validPin === nextValue;
-            if (!valid) {
-              onShake();
-              setAttemptsLeft(attemptsLeft - 1);
-              savePinAuthAttemptsLeft(attemptsLeft - 1);
-              setTimeout(() => {
-                setValue('');
-              }, 300);
-            } else {
-              params.onSuccess(nextValue);
-              finished.current = true;
-              setTimeout(() => {
-                goBack();
-              }, 300);
-            }
-          } else if (actionType === 'creation') {
-            setLoading(true);
-            // Ask for confirmation
-            setActionType('confirmation');
-            // Store the pin in state so we can compare with the conf.
-            setInitialPin(nextValue);
-
-            // Clear the pin
-            setTimeout(() => {
-              setValue('');
-              setLoading(false);
-              return;
-            }, 300);
-          } else {
-            if (isLoading) return '';
-            // Confirmation
-            const valid = initialPin === nextValue;
-            if (!valid) {
-              onShake();
-            } else {
-              params.onSuccess(nextValue);
-              finished.current = true;
-              setTimeout(() => {
-                goBack();
-              }, 300);
-            }
+        try {
+          const nextState = recordFailedPinAttempt(attemptState.current, Date.now());
+          persistPinAttempts(nextState);
+          attemptState.current = nextState;
+          if (nextState.lockedUntil !== null) {
+            showLockout(nextState.lockedUntil, true);
+            return;
           }
+        } catch {
+          handleStorageError();
+          return;
         }
-
-        return nextValue;
-      });
+        onShake();
+        clearEntryAfterDelay();
+      } else if (actionTypeRef.current === 'creation') {
+        actionTypeRef.current = 'confirmation';
+        setActionType('confirmation');
+        initialPin.current = nextValue;
+        clearEntryAfterDelay();
+      } else if (initialPin.current === nextValue) {
+        acceptPin(nextValue);
+      } else {
+        onShake();
+        clearEntryAfterDelay();
+      }
     },
-    [actionType, attemptsLeft, goBack, initialPin, onShake, params, isLoading]
+    [acceptPin, clearEntryAfterDelay, handleStorageError, onShake, showLockout]
   );
 
   const { colors } = useTheme();
