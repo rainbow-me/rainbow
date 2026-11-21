@@ -2,6 +2,7 @@ import { Wallet } from '@ethersproject/wallet';
 import { mnemonicToSeedSync } from 'bip39';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { base58Encode } from '@/features/solana/core/address';
 import * as derivation from '@/features/solana/core/derivation';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { decodeSolanaKey } from '@/features/wallet/core/solanaAccount';
@@ -37,8 +38,8 @@ let state: ReturnType<typeof useWalletsStore.getState>;
 const node = derivation.deriveSolanaAccountNode(mnemonicToSeedSync(phrase), 2);
 const key = {
   address: node.address,
-  privateKey: Buffer.from(node.privateKey).toString('base64'),
-  format: 'ed25519-seed-base64',
+  privateKey: base58Encode(node.privateKey),
+  format: 'ed25519-seed-base58',
   version: 1,
 };
 const record = {

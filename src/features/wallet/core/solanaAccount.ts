@@ -1,5 +1,5 @@
 import { ed25519 } from '@noble/curves/ed25519';
-import { base64 } from '@scure/base';
+import { base58 } from '@scure/base';
 
 import { base58Encode, requireSolanaAddress } from '@/features/solana/core/address';
 
@@ -12,18 +12,19 @@ export function decodeSolanaKey(value: unknown, expectedAddress: string): Uint8A
     !('version' in value) ||
     value.version !== 1 ||
     !('format' in value) ||
-    value.format !== 'ed25519-seed-base64' ||
+    value.format !== 'ed25519-seed-base58' ||
     !('address' in value) ||
     value.address !== expectedAddress ||
     !('privateKey' in value) ||
     typeof value.privateKey !== 'string' ||
-    value.privateKey.length !== 44
+    value.privateKey.length < 32 ||
+    value.privateKey.length > 44
   )
     throw new Error('Invalid Solana key record.');
   let bytes: Uint8Array | undefined;
   try {
-    bytes = base64.decode(value.privateKey);
-    if (bytes.length !== 32 || base64.encode(bytes) !== value.privateKey || base58Encode(ed25519.getPublicKey(bytes)) !== expectedAddress) {
+    bytes = base58.decode(value.privateKey);
+    if (bytes.length !== 32 || base58.encode(bytes) !== value.privateKey || base58Encode(ed25519.getPublicKey(bytes)) !== expectedAddress) {
       throw new Error('Invalid key');
     }
     return bytes;

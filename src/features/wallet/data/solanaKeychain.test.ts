@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as kc from '@/features/local-auth/keychain';
+import { base58Encode } from '@/features/solana/core/address';
 import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
 
 import { readSolanaKey, saveSolanaKey, SolanaAuthenticationCancelled } from './solanaKeychain';
@@ -16,8 +17,8 @@ vi.mock('@/features/local-auth/keychain', () => ({
 const node = deriveSolanaAccountNode(new Uint8Array(64).fill(1), 0);
 const record = {
   address: node.address,
-  privateKey: Buffer.from(node.privateKey).toString('base64'),
-  format: 'ed25519-seed-base64',
+  privateKey: base58Encode(node.privateKey),
+  format: 'ed25519-seed-base58',
   version: 1,
 };
 const options = { accessControl: 'UserPresence', accessible: 'WhenUnlockedThisDeviceOnly' };
@@ -69,11 +70,18 @@ describe('Solana keychain isolation', () => {
     expect(kc.getObject).not.toHaveBeenCalled();
   });
 
-  it('writes the derived key even when a record already exists', async () => {
+  it('overwrites an existing Base64 record with Base58 without reading it', async () => {
     vi.mocked(kc.has).mockResolvedValue(true);
+    vi.mocked(kc.getObject).mockResolvedValue({
+      value: { ...record, privateKey: Buffer.from(node.privateKey).toString('base64'), format: 'ed25519-seed-base64' },
+      error: undefined,
+    });
     await saveSolanaKey(node.address, node.privateKey);
     expect(kc.has).not.toHaveBeenCalled();
-    expect(kc.setObject).toHaveBeenCalledTimes(1);
+    expect(kc.setObject).toHaveBeenCalledExactlyOnceWith(`rainbow.account-key.v1/solana/${node.address}`, record, {
+      ...options,
+      authenticationPrompt: { title: 'Authenticate to use Solana' },
+    });
     expect(kc.getObject).not.toHaveBeenCalled();
   });
 

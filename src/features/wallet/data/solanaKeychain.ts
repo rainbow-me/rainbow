@@ -1,4 +1,4 @@
-import { base64 } from '@scure/base';
+import { base58 } from '@scure/base';
 
 import * as keychain from '@/features/local-auth/keychain';
 import { requireSolanaAddress, type SolanaAddress } from '@/features/solana/core/address';
@@ -32,8 +32,8 @@ export async function saveSolanaKey(address: SolanaAddress, privateKey: Uint8Arr
     key,
     {
       address,
-      privateKey: base64.encode(privateKey),
-      format: 'ed25519-seed-base64',
+      privateKey: base58.encode(privateKey),
+      format: 'ed25519-seed-base58',
       version: 1,
     } satisfies AccountPrivateKeyData,
     { ...options, authenticationPrompt }

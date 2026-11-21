@@ -85,4 +85,4 @@ export type AccountAddressMetadata = { address: WalletAddress; ens?: string | nu
 export type AccountAddresses = Readonly<Partial<Record<SupportedCaipNamespace, AccountAddressMetadata>>>;
 export type MultiAddressAccount = AccountProfile & { addresses: AccountAddresses; address?: never };
 export type AccountMetadataRecord = AccountRef & { address: WalletAddress; namespace: SupportedCaipNamespace; version: 1 };
-export type AccountPrivateKeyData = { address: WalletAddress; privateKey: string; format: 'ed25519-seed-base64'; version: 1 };
+export type AccountPrivateKeyData = { address: WalletAddress; privateKey: string; format: 'ed25519-seed-base58'; version: 1 };
