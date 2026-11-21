@@ -130,7 +130,7 @@ vi.mock('@/features/solana/ui/SolanaSwapControls', () => ({
   SolanaSwapCard: 'Card',
 }));
 vi.mock('@/features/solana/ui/SolanaSwapTokenRow', () => ({ SolanaSwapTokenRow: 'Token' }));
-vi.mock('@/features/wallet/data/enableSolanaAccount', () => ({ requireEnabledSolanaAccount: () => ({ address: 'sol-account' }) }));
+vi.mock('@/features/wallet/data/enableSolanaAccount', () => ({ getEnabledSolanaAccount: () => ({ address: 'sol-account' }) }));
 vi.mock('@/helpers/alert', () => ({ WrappedAlert: { alert: vi.fn() } }));
 vi.mock('@/helpers/utilities', () => ({ handleSignificantDecimals: (amount: string) => amount }));
 vi.mock('@/languages', () => ({
