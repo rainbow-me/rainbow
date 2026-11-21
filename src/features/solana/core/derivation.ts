@@ -5,7 +5,6 @@ import { RainbowError } from '@/logger';
 
 import { base58Encode, requireSolanaAddress, type SolanaAddress } from './address';
 
-const HARDENED_OFFSET = 0x80000000;
 const PURPOSE_BIP44 = 44;
 
 /** SLIP-0044's registered coin type for Solana. */
@@ -23,38 +22,19 @@ type Ed25519Node = {
   readonly chainCode: Uint8Array;
 };
 
-/**
- * Every path component this module derives at, and every account index it renders,
- * goes through here, so the two cannot disagree about what a valid index is. The
- * upper bound is where the hardened bit lives: an index at or above it would set
- * that bit itself rather than being hardened by the derivation.
- */
-function assertAccountIndex(index: number): void {
-  if (!Number.isInteger(index) || index < 0 || index >= HARDENED_OFFSET) {
-    throw new RainbowError(`[solana/derivation]: path index must be an integer in [0, 2^31), received ${index}`);
-  }
-}
-
 /** Derive hardened children with the cookbook's HDKey pattern, preserving our numeric-index contract. */
 export function deriveHardenedEd25519Node(seed: Uint8Array, path: readonly number[]): Ed25519Node {
   if (seed.length < SEED_MIN_BYTES || seed.length > SEED_MAX_BYTES) {
     throw new RainbowError(`[solana/derivation]: seed must be ${SEED_MIN_BYTES}-${SEED_MAX_BYTES} bytes, received ${seed.length}`);
   }
 
-  const derivationPath = [
-    'm',
-    ...path.map(index => {
-      assertAccountIndex(index);
-      return `${index}'`;
-    }),
-  ].join('/');
+  const derivationPath = ['m', ...path.map(index => `${index}'`)].join('/');
   const node = HDKey.fromMasterSeed(seed).derive(derivationPath);
   return { privateKey: node.privateKey, chainCode: node.chainCode };
 }
 
 /** The cookbook's Solana account path; every component, including the trailing zero, is hardened. */
 export function solanaDerivationPath(accountIndex: number): string {
-  assertAccountIndex(accountIndex);
   return `m/${PURPOSE_BIP44}'/${SOLANA_COIN_TYPE}'/${accountIndex}'/0'`;
 }
 
