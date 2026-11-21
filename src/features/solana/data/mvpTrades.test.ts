@@ -3,7 +3,7 @@ import { address } from '@solana/addresses';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { BASE_USDC, BONK, MAX_SELL_AMOUNT, SOL, SOL_TO_BASE_AMOUNT, SOLANA_USDC, solanaToken } from '@/features/solana/core/mvpRoutes';
-import { assertSolanaSource, requireEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
+import { assertSolanaSource, getEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
 import { withSolanaSigner } from '@/features/wallet/data/loadSolanaSigner';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getSolanaAccount } from '@/features/wallet/data/stores/accountMetadataStore';
@@ -37,7 +37,7 @@ vi.mock('@solana/rpc', () => ({
 }));
 vi.mock('./mvpSdk', () => ({ configureSolanaMvpSdk: vi.fn(), takeSolanaRouteMessage: () => 'AQID' }));
 vi.mock('@/features/delegation/utils/calls', () => ({ createDelegationPublicClient: vi.fn() }));
-vi.mock('@/features/wallet/data/enableSolanaAccount', () => ({ assertSolanaSource: vi.fn(), requireEnabledSolanaAccount: vi.fn() }));
+vi.mock('@/features/wallet/data/enableSolanaAccount', () => ({ assertSolanaSource: vi.fn(), getEnabledSolanaAccount: vi.fn() }));
 vi.mock('@/features/wallet/data/loadWallet', () => ({ loadWallet: vi.fn() }));
 vi.mock('@/features/wallet/data/loadSolanaSigner', () => ({ withSolanaSigner: vi.fn() }));
 vi.mock('@/features/wallet/data/stores/accountMetadataStore', () => ({ getSolanaAccount: vi.fn() }));
@@ -59,7 +59,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(fetchExternalToken).mockResolvedValue({ price: { value: 2000 } } as Awaited<ReturnType<typeof fetchExternalToken>>);
   useSolanaMvpExecutionStore.setState({ attempt: null });
-  vi.mocked(requireEnabledSolanaAccount).mockReturnValue(account);
+  vi.mocked(getEnabledSolanaAccount).mockReturnValue(account);
   vi.mocked(getSolanaAccount).mockReturnValue(account);
   vi.mocked(loadWallet).mockResolvedValue(wallet);
   vi.mocked(withSolanaSigner).mockImplementation(async (_account, operation) =>
