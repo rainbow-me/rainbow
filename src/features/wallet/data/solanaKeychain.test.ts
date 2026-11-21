@@ -62,11 +62,19 @@ describe('Solana keychain isolation', () => {
     await expect(saveSolanaKey(record)).rejects.toThrow('Unable to unlock');
   });
 
-  it('never overwrites an unreadable existing record or converts cancellation to missing data', async () => {
+  it('writes the derived key even when a record already exists, then verifies it', async () => {
     vi.mocked(kc.has).mockResolvedValue(true);
+    await saveSolanaKey(record);
+    expect(kc.has).not.toHaveBeenCalled();
+    expect(kc.setObject).toHaveBeenCalledTimes(1);
+    expect(kc.getObject).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(kc.setObject).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(kc.getObject).mock.invocationCallOrder[0]);
+  });
+
+  it('propagates authentication cancellation during readback', async () => {
     vi.mocked(kc.getObject).mockResolvedValue({ value: undefined, error: kc.ErrorType.UserCanceled });
     await expect(saveSolanaKey(record)).rejects.toBeInstanceOf(SolanaAuthenticationCancelled);
-    expect(kc.setObject).not.toHaveBeenCalled();
+    expect(kc.setObject).toHaveBeenCalledTimes(1);
     await expect(readSolanaKey(`solana:mainnet:${record.address}`)).rejects.toThrow();
   });
 

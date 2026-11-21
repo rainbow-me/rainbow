@@ -23,15 +23,8 @@ export async function readSolanaKey(address: string): Promise<Uint8Array> {
 }
 
 export async function saveSolanaKey(record: AccountPrivateKeyData): Promise<void> {
-  const bytes = decodeSolanaKey(record, record.address);
-  bytes.fill(0);
   const options = await keychain.getPrivateAccessControlOptions();
   const key = keyForAddress(record.address);
-  if (await keychain.has(key)) {
-    // A valid existing key for this address is already the desired record; never overwrite unreadable data.
-    (await readSolanaKey(record.address)).fill(0);
-    return;
-  }
   // Do not pass a PIN in write options: the legacy wrapper logs those options.
   await keychain.setObject(
     key,
