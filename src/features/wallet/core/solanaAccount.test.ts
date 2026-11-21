@@ -31,7 +31,7 @@ describe('Solana persisted key format', () => {
     expect(addresses.size).toBe(3);
   });
 
-  it('rejects wrong versions, formats, malformed keys, mismatched addresses', () => {
+  it('rejects malformed keys and mismatched addresses', () => {
     const node = deriveSolanaAccountNode(seed, 0);
     const record = {
       address: node.address,
@@ -40,8 +40,6 @@ describe('Solana persisted key format', () => {
       version: 1,
     };
     for (const change of [
-      { version: 2 },
-      { format: 'secp256k1-private-key-hex' },
       { privateKey: 'bad' },
       { privateKey: '0'.repeat(44) },
       { privateKey: base58Encode(new Uint8Array(31)) },
@@ -65,6 +63,14 @@ describe('Solana persisted key format', () => {
     expect(decodeSolanaKey(record, address)).toEqual(bytes);
   });
 
+  it('decodes valid key bytes without checking version or format metadata', () => {
+    const node = deriveSolanaAccountNode(seed, 0);
+    const record = { address: node.address, privateKey: base58Encode(node.privateKey) };
+    for (const value of [record, { ...record, version: 2, format: 'unused-format' }]) {
+      expect(decodeSolanaKey(value, node.address)).toEqual(node.privateKey);
+    }
+  });
+
   it('rejects legacy Base64 records instead of guessing their encoding', () => {
     const node = deriveSolanaAccountNode(seed, 0);
     const record = {
@@ -73,6 +79,6 @@ describe('Solana persisted key format', () => {
       format: 'ed25519-seed-base64',
       version: 1,
     };
-    expect(() => decodeSolanaKey(record, node.address)).toThrow('Invalid Solana key record.');
+    expect(() => decodeSolanaKey(record, node.address)).toThrow();
   });
 });

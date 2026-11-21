@@ -9,10 +9,6 @@ export function decodeSolanaKey(value: unknown, expectedAddress: string): Uint8A
   if (
     !value ||
     typeof value !== 'object' ||
-    !('version' in value) ||
-    value.version !== 1 ||
-    !('format' in value) ||
-    value.format !== 'ed25519-seed-base58' ||
     !('address' in value) ||
     value.address !== expectedAddress ||
     !('privateKey' in value) ||
