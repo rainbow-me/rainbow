@@ -12,9 +12,16 @@ An internal user with an existing mnemonic wallet can enable a Solana address fo
 4. `SolanaMvpMenu.tsx` exposes only Enable Solana behind the existing Solana feature gate; `DevSection.tsx` mounts it. There are no SDK imports or swap actions in this layer.
 5. `package.json`/`yarn.lock` add Noble curves, base encoding and `micro-key-producer` for SLIP-0010 derivation; `AGENTS.md` preserves the agreed incremental-integration constraints.
 
+## Current validation responsibilities
+
+- `getSolanaSource` checks the selected wallet/account at entry. Enablement then verifies the mnemonic derives the captured EVM address.
+- `saveSolanaKey` writes directly, replacing an existing record. It does not decode the input key, check for an existing record, or read back the write. As with EVM, the shared setter does not surface a native `false` write result.
+- `getSolanaAccount` and `publishSolanaAccount` only look up or save metadata by wallet ID/index. They do not validate record contents, current wallet existence, eligibility or ownership. Metadata can remain readable, or be published after an in-flight enablement, when the original wallet has been deleted.
+- `readSolanaKey` still validates the secret record and its address. Later PRs retain signing source checks and enforce wallet eligibility in the balances caller; these protections do not come from the metadata store.
+
 ## Manual checks (not run for this reorganization)
 
-Enable subaccounts 0 and 1 and confirm stable, distinct Solana addresses; cancel authentication and confirm no mapping is published; switch wallets during authentication and verify enablement completes for the original account without changing the new selection; delete the original wallet during persistence and verify the captured mapping is saved but the deleted wallet cannot be used as a Solana source; verify private-key, hardware, watched and damaged wallets are rejected; verify flag-off EVM behavior.
+Enable subaccounts 0 and 1 and confirm stable, distinct Solana addresses; cancel recovery-phrase authentication and confirm no mapping is published; switch wallets during authentication and verify enablement completes for the original account without changing the new selection; delete the original wallet during persistence and verify the captured mapping is saved but the deleted wallet cannot be used as a Solana source; verify private-key, hardware, watched and damaged wallets are rejected; verify flag-off EVM behavior.
 
 The broader WalletDescriptor/source-material proposals remain on the original branches. No secret record format or derivation path is migrated here.
 
@@ -38,8 +45,8 @@ The broader WalletDescriptor/source-material proposals remain on the original br
 - `src/features/wallet/types.ts`
 - `yarn.lock`
 
-Validation: 80 focused tests passed; TypeScript and dependency checks passed. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
+Validation: 81 focused PR1 tests passed after the metadata simplification; the complete stack passes 357 tests. TypeScript passed on the updated stack. Dependency checks passed before these simplifications and were not rerun. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
 
-Solana eligibility uses the existing `useIsSolanaEnabled` gate, with no store-install restriction. Store builds use remote `solana_enabled`; internal builds also honor the existing local experimental override. Wallet eligibility, authentication and account validation are unchanged.
+Solana eligibility uses the existing `useIsSolanaEnabled` gate, with no store-install restriction. Store builds use remote `solana_enabled`; internal builds also honor the existing local experimental override. The source-entry check in `getSolanaSource` enforces wallet readiness, mnemonic type, visibility and damaged status. The metadata store itself performs no eligibility checks.
 
 Enablement captures its source account once. Selection changes during authentication, derivation or key persistence do not cancel it; mnemonic ownership is verified against the captured EVM address. Metadata access does not revalidate wallet existence or eligibility; records may remain after wallet deletion. Source eligibility is checked by `getSolanaSource`. `assertSolanaSource` remains for signing and transaction operations.
