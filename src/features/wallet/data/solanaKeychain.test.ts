@@ -33,7 +33,7 @@ describe('Solana keychain isolation', () => {
     const bytes = await readSolanaKey(record.address);
     expect(bytes).toHaveLength(32);
     bytes.fill(0);
-    expect(kc.getObject).toHaveBeenCalledTimes(2);
+    expect(kc.getObject).toHaveBeenCalledTimes(1);
   });
 
   it('reads through the shared keychain without requesting write access-control options', async () => {
@@ -47,34 +47,34 @@ describe('Solana keychain isolation', () => {
     });
   });
 
-  it('writes a protected, network-independent record outside the legacy backup suffix and verifies it', async () => {
+  it('writes a protected, network-independent record outside the legacy backup suffix without reading it back', async () => {
     await saveSolanaKey(record);
     expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
       ...options,
       authenticationPrompt: { title: 'Authenticate to use Solana' },
     });
-    expect(kc.getObject).toHaveBeenCalledTimes(1);
+    expect(kc.getObject).not.toHaveBeenCalled();
     expect(vi.mocked(kc.setObject).mock.calls[0][2]).not.toHaveProperty('androidEncryptionPin');
   });
 
-  it('treats failed readback as failed enablement', async () => {
-    vi.mocked(kc.getObject).mockResolvedValue({ value: undefined, error: kc.ErrorType.Unavailable });
-    await expect(saveSolanaKey(record)).rejects.toThrow('Unable to unlock');
+  it('propagates write failures', async () => {
+    vi.mocked(kc.setObject).mockRejectedValue(new Error('Write failed'));
+    await expect(saveSolanaKey(record)).rejects.toThrow('Write failed');
+    expect(kc.getObject).not.toHaveBeenCalled();
   });
 
-  it('writes the derived key even when a record already exists, then verifies it', async () => {
+  it('writes the derived key even when a record already exists', async () => {
     vi.mocked(kc.has).mockResolvedValue(true);
     await saveSolanaKey(record);
     expect(kc.has).not.toHaveBeenCalled();
     expect(kc.setObject).toHaveBeenCalledTimes(1);
-    expect(kc.getObject).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(kc.setObject).mock.invocationCallOrder[0]).toBeLessThan(vi.mocked(kc.getObject).mock.invocationCallOrder[0]);
+    expect(kc.getObject).not.toHaveBeenCalled();
   });
 
-  it('propagates authentication cancellation during readback', async () => {
+  it('propagates authentication cancellation when reading', async () => {
     vi.mocked(kc.getObject).mockResolvedValue({ value: undefined, error: kc.ErrorType.UserCanceled });
-    await expect(saveSolanaKey(record)).rejects.toBeInstanceOf(SolanaAuthenticationCancelled);
-    expect(kc.setObject).toHaveBeenCalledTimes(1);
+    await expect(readSolanaKey(record.address)).rejects.toBeInstanceOf(SolanaAuthenticationCancelled);
+    expect(kc.setObject).not.toHaveBeenCalled();
     await expect(readSolanaKey(`solana:mainnet:${record.address}`)).rejects.toThrow();
   });
 

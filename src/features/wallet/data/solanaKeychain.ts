@@ -36,6 +36,4 @@ export async function saveSolanaKey(record: AccountPrivateKeyData): Promise<void
     },
     { ...options, authenticationPrompt }
   );
-  // The legacy setter returns void even when native persistence returns false.
-  (await readSolanaKey(record.address)).fill(0);
 }
