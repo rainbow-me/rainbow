@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
@@ -11,6 +11,7 @@ import { useBackendNetworksStore } from '../stores/backendNetworksStore';
 import { type ChainId } from '../types/backendNetworks';
 
 type ChainImageProps = {
+  badgeSource?: ImageSourcePropType;
   badgeXPosition?: number;
   badgeYPosition?: number;
   chainId: ChainId | null | undefined;
@@ -21,6 +22,7 @@ type ChainImageProps = {
 };
 
 export const ChainImage = memo(function ChainImage({
+  badgeSource,
   badgeXPosition = 0,
   badgeYPosition = 0,
   chainId,
@@ -35,21 +37,25 @@ export const ChainImage = memo(function ChainImage({
     [badgeXPosition, badgeYPosition, isDarkMode, position, size]
   );
 
-  if (!chainId || !showBadge) return null;
+  if ((!chainId && !badgeSource) || !showBadge) return null;
 
-  const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
-  if (!badgeUrl) return null;
+  const badgeUrl = (chainId ? useBackendNetworksStore.getState().getChainsBadge()[chainId] : undefined) ?? '';
+  if (!badgeUrl && !badgeSource) return null;
 
   return (
     <View style={[style, containerStyle]}>
-      <FasterImageView
-        source={{
-          ...DEFAULT_FASTER_IMAGE_CONFIG,
-          base64Placeholder: TRANSPARENT_PIXEL_BASE64,
-          url: badgeUrl,
-        }}
-        style={iconStyle}
-      />
+      {badgeSource ? (
+        <Image source={badgeSource} style={iconStyle} />
+      ) : (
+        <FasterImageView
+          source={{
+            ...DEFAULT_FASTER_IMAGE_CONFIG,
+            base64Placeholder: TRANSPARENT_PIXEL_BASE64,
+            url: badgeUrl,
+          }}
+          style={iconStyle}
+        />
+      )}
     </View>
   );
 });
