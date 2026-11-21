@@ -112,12 +112,13 @@ describe('additive Solana wallet lifecycle', () => {
     expect(state.selected?.id).toBe('other');
   });
 
-  it('does not publish if the captured wallet is deleted during persistence', async () => {
+  it('publishes captured-account metadata without rechecking wallet existence', async () => {
     vi.mocked(saveSolanaKey).mockImplementationOnce(async () => {
       state.wallets = {};
     });
-    await expect(enableSolanaAccount()).rejects.toThrow('The source account changed');
-    expect(useAccountMetadataStore.getState().accounts).toEqual({});
+    expect(await enableSolanaAccount()).toEqual(record);
+    expect(getSolanaAccount('test', 2)).toEqual(record);
+    expect(getSolanaSource).toThrow();
   });
 
   it('rejects unsupported, disabled, damaged and deleted sources', () => {
@@ -131,9 +132,11 @@ describe('additive Solana wallet lifecycle', () => {
     vi.mocked(useIsSolanaEnabled.getState).mockReturnValue(true);
     publishSolanaAccount(record);
     state.wallets.test.damaged = true;
-    expect(getSolanaAccount('test', 2)).toBeUndefined();
+    expect(getSolanaSource).toThrow();
+    expect(getSolanaAccount('test', 2)).toEqual(record);
     state.wallets = {};
-    expect(getSolanaAccount('test', 2)).toBeUndefined();
+    expect(getSolanaSource).toThrow();
+    expect(getSolanaAccount('test', 2)).toEqual(record);
   });
 
   it('does not persist a signer derived from a mnemonic that does not own the source EVM address', async () => {

@@ -1,8 +1,6 @@
 import { createBaseStore } from '@storesjs/stores';
 
-import { isSolanaAddress } from '@/features/solana/core/address';
 import { type AccountMetadataRecord, type MultiAddressAccount } from '@/features/wallet/types';
-import { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export type EnabledSolanaAccount = AccountMetadataRecord & {
@@ -17,39 +15,11 @@ export const useAccountMetadataStore = createBaseStore<{ accounts: Record<string
   version: 1,
 });
 
-export function matchesSource(record: EnabledSolanaAccount): boolean {
-  if (
-    !record ||
-    typeof record.walletId !== 'string' ||
-    !Number.isSafeInteger(record.index) ||
-    record.index < 0 ||
-    typeof record.address !== 'string' ||
-    typeof record.sourceEvmAddress !== 'string'
-  )
-    return false;
-  const state = useWalletsStore.getState();
-  const wallet = state.wallets[record.walletId];
-  return Boolean(
-    state.walletReady &&
-    wallet?.type === EthereumWalletType.mnemonic &&
-    !wallet.damaged &&
-    record.version === 1 &&
-    record.namespace === 'solana' &&
-    isSolanaAddress(record.address) &&
-    wallet.addresses.some(
-      account =>
-        account.index === record.index && account.visible && account.address.toLowerCase() === record.sourceEvmAddress.toLowerCase()
-    )
-  );
-}
-
 export function getSolanaAccount(walletId: string, index: number): EnabledSolanaAccount | undefined {
-  const record = useAccountMetadataStore.getState().accounts[solanaAccountId(walletId, index)];
-  return record && matchesSource(record) ? record : undefined;
+  return useAccountMetadataStore.getState().accounts[solanaAccountId(walletId, index)];
 }
 
 export function publishSolanaAccount(record: EnabledSolanaAccount): void {
-  if (!matchesSource(record)) throw new Error('The source account changed. Select it and enable Solana again.');
   useAccountMetadataStore.setState(state => ({
     accounts: { ...state.accounts, [solanaAccountId(record.walletId, record.index)]: record },
   }));
