@@ -6,7 +6,7 @@ An internal user with an existing mnemonic wallet can enable a Solana address fo
 
 ## Reading order (20–30 minutes)
 
-1. `types.ts` adds only records consumed by this implementation; `core/address.ts` validates raw addresses; `core/derivation.ts` uses `HDKey.fromMasterSeed(seed).derive(path)` for the same hardened path. The cookbook’s `micro-ed25519-hdkey` is deprecated; its maintained successor is `micro-key-producer/slip10.js`. Verify address and SLIP-0010 tests beside them.
+1. `types.ts` defines additive wallet/account records; combined-profile types currently have no production consumer; `core/address.ts` validates raw addresses; `core/derivation.ts` uses `HDKey.fromMasterSeed(seed).derive(path)` for the same hardened path. The cookbook’s `micro-ed25519-hdkey` is deprecated; its maintained successor is `micro-key-producer/slip10.js`. Verify address and SLIP-0010 tests beside them.
 2. `core/solanaAccount.ts` encodes/validates the separate key format; `data/solanaKeychain.ts` shares existing authentication policy and writes the mnemonic-derived key directly (replacing any existing record). Read their tests together.
 3. `data/enableSolanaAccount.ts` verifies selected-account ownership; `data/stores/accountMetadataStore.ts` stores and retrieves public metadata by wallet ID and account index. `solanaWallet.test.ts` covers enablement failure, ownership and profile preservation. SDK signer coverage joins the execution PR.
 4. `SolanaMvpMenu.tsx` exposes only Enable Solana behind the existing Solana feature gate; `DevSection.tsx` mounts it. There are no SDK imports or swap actions in this layer.
@@ -14,7 +14,7 @@ An internal user with an existing mnemonic wallet can enable a Solana address fo
 
 ## Current validation responsibilities
 
-- `getSolanaSource` checks the selected wallet/account at entry. Enablement then verifies the mnemonic derives the captured EVM address.
+- `getSolanaSource` checks the selected wallet/account at entry. `getEnabledSolanaAccount` returns that account’s enabled Solana metadata or throws when unavailable. Enablement then verifies the mnemonic derives the captured EVM address.
 - `saveSolanaKey` writes directly, replacing an existing record. It does not decode the input key, check for an existing record, or read back the write. As with EVM, the shared setter does not surface a native `false` write result.
 - `getSolanaAccount` and `publishSolanaAccount` only look up or save metadata by wallet ID/index. They do not validate record contents, current wallet existence, eligibility or ownership. Metadata can remain readable, or be published after an in-flight enablement, when the original wallet has been deleted.
 - `readSolanaKey` still validates the secret record and its address. Later PRs retain signing source checks and enforce wallet eligibility in the balances caller; these protections do not come from the metadata store.
