@@ -21,6 +21,29 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 
 ### Testing
 
+## [2.0.50](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.50)
+
+### Added
+
+- Add matchup title and hide the empty scoreboard in game sheets in Sports (https://github.com/rainbow-me/rainbow/pull/7944)
+- Show the Polymarket value and wallet switcher in the Sports header (https://github.com/rainbow-me/rainbow/pull/7948)
+- Label perp markets and show platform and deployer in About in Perps (https://github.com/rainbow-me/rainbow/pull/7953)
+
+### Changed
+
+- Drop spreads from game cards and show the payout multiple in Sports (https://github.com/rainbow-me/rainbow/pull/7945)
+- Require review for token identity changes and auto-approve version bumps in Cubic (https://github.com/rainbow-me/rainbow/pull/7943)
+- Bump iOS and Android to v2.0.50 (https://github.com/rainbow-me/rainbow/pull/7942)
+
+### Fixed
+
+- Read the RNBW staking exit fee in its own store (https://github.com/rainbow-me/rainbow/pull/7941)
+- Show the matchup title for games outside the sports catalog (https://github.com/rainbow-me/rainbow/pull/7949)
+- Remove the grey band inside light game cards on Android (https://github.com/rainbow-me/rainbow/pull/7950)
+- Open the Predictions sheet directly on the requested tab (https://github.com/rainbow-me/rainbow/pull/7952)
+- Skip swap gas simulation on chains where the backend can't simulate (https://github.com/rainbow-me/rainbow/pull/7954)
+- Show Simulation Unavailable when the backend simulation fails (https://github.com/rainbow-me/rainbow/pull/7955)
+
 ## [2.0.49](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.49)
 
 ### Added
