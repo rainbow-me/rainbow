@@ -1,16 +1,9 @@
 import { ed25519 } from '@noble/curves/ed25519';
-import { hmac } from '@noble/hashes/hmac';
-import { sha512 } from '@noble/hashes/sha2';
+import { HDKey } from 'micro-key-producer/slip10.js';
 
 import { RainbowError } from '@/logger';
 
 import { base58Encode, requireSolanaAddress, type SolanaAddress } from './address';
-
-/**
- * SLIP-0010 names the HMAC key for this curve, and the string is part of the
- * specification rather than a choice: change it and every derived address changes.
- */
-const ED25519_SEED_KEY = new Uint8Array([0x65, 0x64, 0x32, 0x35, 0x35, 0x31, 0x39, 0x20, 0x73, 0x65, 0x65, 0x64]); // "ed25519 seed"
 
 const HARDENED_OFFSET = 0x80000000;
 const PURPOSE_BIP44 = 44;
@@ -20,7 +13,6 @@ export const SOLANA_COIN_TYPE = 501;
 
 const SEED_MIN_BYTES = 16;
 const SEED_MAX_BYTES = 64;
-const PRIVATE_KEY_BYTES = 32;
 
 /**
  * A private key and chain code at some point in a SLIP-0010 derivation. The
@@ -43,70 +35,24 @@ function assertAccountIndex(index: number): void {
   }
 }
 
-/**
- * Derives a node by applying one hardened step per index, per SLIP-0010's
- * `CKDpriv` for ed25519.
- *
- * Every step is hardened, and that is structural rather than a default: SLIP-0010
- * states that non-hardened derivation "always fails for ed25519 and curve25519",
- * because on this curve the hash of the private key is the multiplier rather than
- * the private key itself, so the point arithmetic the non-hardened case needs does
- * not exist. Indices arrive un-offset and this function adds the hardened bit, so
- * a caller cannot express a derivation this curve cannot perform.
- *
- * The consequence for callers is a cost, not a correctness matter. The EVM pattern
- * of deriving one root and walking cheap non-hardened children by index has no
- * analogue here: each index is a separate walk from the seed, so each one needs the
- * seed again.
- *
- * Exported because SLIP-0010's own test vectors exercise paths that are not Solana
- * paths, and checking against them is the only authoritative correctness evidence
- * available for this machinery.
- */
+/** Derive hardened children with the cookbook's HDKey pattern, preserving our numeric-index contract. */
 export function deriveHardenedEd25519Node(seed: Uint8Array, path: readonly number[]): Ed25519Node {
   if (seed.length < SEED_MIN_BYTES || seed.length > SEED_MAX_BYTES) {
     throw new RainbowError(`[solana/derivation]: seed must be ${SEED_MIN_BYTES}-${SEED_MAX_BYTES} bytes, received ${seed.length}`);
   }
 
-  const master = hmac(sha512, ED25519_SEED_KEY, seed);
-  let node: Ed25519Node = { privateKey: master.slice(0, 32), chainCode: master.slice(32) };
-
-  for (const index of path) {
-    assertAccountIndex(index);
-
-    // 0x00 pads the 32-byte private key to the 33 bytes the specification hashes.
-    const data = new Uint8Array(1 + PRIVATE_KEY_BYTES + 4);
-    data.set(node.privateKey, 1);
-    const hardenedIndex = index + HARDENED_OFFSET;
-    data[33] = (hardenedIndex >>> 24) & 0xff;
-    data[34] = (hardenedIndex >>> 16) & 0xff;
-    data[35] = (hardenedIndex >>> 8) & 0xff;
-    data[36] = hardenedIndex & 0xff;
-
-    const derived = hmac(sha512, node.chainCode, data);
-    node = { privateKey: derived.slice(0, 32), chainCode: derived.slice(32) };
-  }
-
-  return node;
+  const derivationPath = [
+    'm',
+    ...path.map(index => {
+      assertAccountIndex(index);
+      return `${index}'`;
+    }),
+  ].join('/');
+  const node = HDKey.fromMasterSeed(seed).derive(derivationPath);
+  return { privateKey: node.privateKey, chainCode: node.chainCode };
 }
 
-/**
- * The path a Rainbow Solana account derives at, `m/44'/501'/<account index>'/0'`.
- *
- * Rendered for records and debug output; nothing parses it back. Every component is
- * hardened, and the trailing one is worth naming because BIP-44 would normally
- * leave the change level non-hardened, as Rainbow's own EVM path `m/44'/60'/0'/0`
- * does.
- *
- * The two spellings are not interchangeable, which matters when comparing this
- * path against another wallet's documentation. A non-hardened component is not
- * derivable on ed25519 at all, so `m/44'/501'/0'/0` does not denote a key that some
- * other implementation reaches by a different route: `ed25519-hd-key`, the
- * SLIP-0010 library the Solana ecosystem generally uses, matches paths against
- * `^m(\/[0-9]+')+$` and throws `Invalid derivation path` for that string rather
- * than hardening it. Treat a path written without the trailing apostrophe as a
- * documentation shorthand for this one, never as a second candidate to try.
- */
+/** The cookbook's Solana account path; every component, including the trailing zero, is hardened. */
 export function solanaDerivationPath(accountIndex: number): string {
   assertAccountIndex(accountIndex);
   return `m/${PURPOSE_BIP44}'/${SOLANA_COIN_TYPE}'/${accountIndex}'/0'`;

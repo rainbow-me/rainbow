@@ -6,11 +6,11 @@ An internal user with an existing mnemonic wallet can enable a Solana address fo
 
 ## Reading order (20–30 minutes)
 
-1. `types.ts` adds only records consumed by this implementation; `core/address.ts` validates raw addresses; `core/derivation.ts` derives the same hardened path. Verify address and SLIP-0010 tests beside them.
+1. `types.ts` adds only records consumed by this implementation; `core/address.ts` validates raw addresses; `core/derivation.ts` uses `HDKey.fromMasterSeed(seed).derive(path)` for the same hardened path. The cookbook’s `micro-ed25519-hdkey` is deprecated; its maintained successor is `micro-key-producer/slip10.js`. Verify address and SLIP-0010 tests beside them.
 2. `core/solanaAccount.ts` encodes/validates the separate key format; `data/solanaKeychain.ts` shares existing authentication policy and writes the mnemonic-derived key directly (replacing any existing record). Read their tests together.
 3. `data/enableSolanaAccount.ts` verifies selected-account ownership; `data/stores/accountMetadataStore.ts` stores and retrieves public metadata by wallet ID and account index. `solanaWallet.test.ts` covers enablement failure, ownership and profile preservation. SDK signer coverage joins the execution PR.
 4. `SolanaMvpMenu.tsx` exposes only Enable Solana behind the existing Solana feature gate; `DevSection.tsx` mounts it. There are no SDK imports or swap actions in this layer.
-5. `package.json`/`yarn.lock` add Noble curves/hashes and base encoding; `AGENTS.md` preserves the agreed incremental-integration constraints.
+5. `package.json`/`yarn.lock` add Noble curves, base encoding and `micro-key-producer` for SLIP-0010 derivation; `AGENTS.md` preserves the agreed incremental-integration constraints.
 
 ## Manual checks (not run for this reorganization)
 
