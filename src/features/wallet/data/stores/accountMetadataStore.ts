@@ -1,7 +1,6 @@
 import { createBaseStore } from '@storesjs/stores';
 
-import { type AccountMetadataRecord, type MultiAddressAccount } from '@/features/wallet/types';
-import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { type AccountMetadataRecord } from '@/features/wallet/types';
 
 export type EnabledSolanaAccount = AccountMetadataRecord & {
   namespace: 'solana';
@@ -23,14 +22,4 @@ export function publishSolanaAccount(record: EnabledSolanaAccount): void {
   useAccountMetadataStore.setState(state => ({
     accounts: { ...state.accounts, [solanaAccountId(record.walletId, record.index)]: record },
   }));
-}
-
-/** Profiles and selection remain owned by walletsStore; only the extra address is persisted here. */
-export function getCombinedAccount(walletId: string, index: number): MultiAddressAccount | undefined {
-  const wallet = useWalletsStore.getState().wallets[walletId];
-  const account = wallet?.addresses.find(item => item.index === index && item.visible);
-  const solana = getSolanaAccount(walletId, index);
-  if (!account || !solana) return undefined;
-  const { address, ens, ...profile } = account;
-  return { ...profile, walletId, addresses: { eip155: { address, ens }, solana: { address: solana.address } } };
 }

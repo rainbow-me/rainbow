@@ -10,7 +10,7 @@ import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { enableSolanaAccount, getSolanaSource } from './enableSolanaAccount';
 import { readSolanaKey, saveSolanaKey } from './solanaKeychain';
-import { getCombinedAccount, getSolanaAccount, publishSolanaAccount, useAccountMetadataStore } from './stores/accountMetadataStore';
+import { getSolanaAccount, publishSolanaAccount, useAccountMetadataStore } from './stores/accountMetadataStore';
 import { getSeedPhrase } from './walletKeychain';
 
 vi.mock('@/env', () => ({ IS_DEV: false, IS_TEST: true, IS_PROD: false, IS_STORE_INSTALL: true }));
@@ -65,14 +65,10 @@ describe('additive Solana wallet lifecycle', () => {
     expect(getSolanaSource).toThrow();
   });
 
-  it('derives the selected index, verifies persistence before publication and joins existing profile fields', async () => {
+  it('derives the selected index, saves the key and preserves the existing wallet profile', async () => {
     expect(await enableSolanaAccount()).toEqual(record);
     expect(saveSolanaKey).toHaveBeenCalledWith(key);
-    expect(getCombinedAccount('test', 2)).toMatchObject({
-      label: 'Third',
-      color: 1,
-      addresses: { eip155: { address: evm }, solana: { address: key.address } },
-    });
+    expect(getSolanaAccount('test', 2)).toEqual(record);
     expect(state.wallets.test).toEqual(wallet);
   });
 

@@ -35,7 +35,7 @@ export function assertSolanaSource(source: SolanaSource): void {
   }
 }
 
-export function requireEnabledSolanaAccount(): EnabledSolanaAccount {
+export function getEnabledSolanaAccount(): EnabledSolanaAccount {
   const source = getSolanaSource();
   const record = getSolanaAccount(source.walletId, source.index);
   if (!record) throw new Error('Enable Solana for this account first.');
