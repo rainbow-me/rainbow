@@ -4,7 +4,7 @@ import { HDKey } from 'micro-key-producer/slip10.js';
 import { describe, expect, it } from 'vitest';
 
 import { base58Decode, SOLANA_ADDRESS_BYTE_LENGTH } from './address';
-import { deriveSolanaAccountNode, deriveSolanaSigner } from './derivation';
+import { deriveSolanaAccountNode } from './derivation';
 
 const toHex = (bytes: Uint8Array) => Buffer.from(bytes).toString('hex');
 const fromHex = (value: string) => new Uint8Array(Buffer.from(value, 'hex'));
@@ -130,8 +130,6 @@ const EXPECTED_ADDRESSES = [
 
 const testSeed = () => new Uint8Array(mnemonicToSeedSync(TEST_MNEMONIC));
 
-const ed25519Verify = (signature: Uint8Array, message: Uint8Array, publicKey: Uint8Array) => ed25519.verify(signature, message, publicKey);
-
 describe('HDKey SLIP-0010 conformance', () => {
   for (const vector of SLIP_0010_ED25519_VECTORS) {
     describe(`SLIP-0010 ${vector.name} for ed25519`, () => {
@@ -214,58 +212,5 @@ describe('derived Solana account addresses', () => {
   it('gives a different address for a different seed', () => {
     const other = new Uint8Array(mnemonicToSeedSync('legal winner thank year wave sausage worth useful legal winner thank yellow'));
     expect(deriveSolanaAccountNode(other, 0).address).not.toBe(deriveSolanaAccountNode(testSeed(), 0).address);
-  });
-});
-
-describe('deriveSolanaSigner', () => {
-  it('carries the derived account address', () => {
-    const seed = testSeed();
-    expect(deriveSolanaSigner(seed, 0).address).toBe(deriveSolanaAccountNode(seed, 0).address);
-    expect(deriveSolanaSigner(seed, 2).address).toBe(deriveSolanaAccountNode(seed, 2).address);
-  });
-
-  it('produces a 64-byte signature that verifies against the derived address', () => {
-    const signer = deriveSolanaSigner(testSeed(), 0);
-    const message = new TextEncoder().encode('a serialized Solana transaction message would go here');
-    const signature = signer.sign(message);
-
-    expect(signature).toHaveLength(64);
-
-    // Verifying against the address rather than a retained public key is the check
-    // that matters: it proves the signature is attributable to the account the app
-    // would show the user.
-    const publicKey = base58Decode(signer.address);
-    expect(publicKey).not.toBeNull();
-    expect(ed25519Verify(signature, message, publicKey as Uint8Array)).toBe(true);
-  });
-
-  it('produces a signature that fails verification for a different message', () => {
-    const signer = deriveSolanaSigner(testSeed(), 0);
-    const message = new TextEncoder().encode('the message that was signed');
-    const signature = signer.sign(message);
-    const tampered = new TextEncoder().encode('the message that was not signed');
-
-    expect(ed25519Verify(signature, tampered, base58Decode(signer.address) as Uint8Array)).toBe(false);
-  });
-
-  it('does not verify one account signature against another account address', () => {
-    const seed = testSeed();
-    const message = new TextEncoder().encode('signed by account 0');
-    const signature = deriveSolanaSigner(seed, 0).sign(message);
-    const otherAddress = deriveSolanaSigner(seed, 1).address;
-
-    expect(ed25519Verify(signature, message, base58Decode(otherAddress) as Uint8Array)).toBe(false);
-  });
-
-  it('does not expose the private key on the signer', () => {
-    const signer = deriveSolanaSigner(testSeed(), 0);
-    expect(Object.keys(signer).sort()).toEqual(['address', 'sign']);
-  });
-
-  it('signs deterministically, as ed25519 requires', () => {
-    const message = new TextEncoder().encode('ed25519 signatures are deterministic');
-    const first = deriveSolanaSigner(testSeed(), 0).sign(message);
-    const second = deriveSolanaSigner(testSeed(), 0).sign(message);
-    expect(toHex(first)).toBe(toHex(second));
   });
 });

@@ -1,4 +1,3 @@
-import { ed25519 } from '@noble/curves/ed25519';
 import { HDKey } from 'micro-key-producer/slip10.js';
 
 import { RainbowError } from '@/logger';
@@ -37,28 +36,5 @@ export function deriveSolanaAccountNode(seed: Uint8Array, accountIndex: number):
     ),
     privateKey: node.privateKey,
     chainCode: node.chainCode,
-  };
-}
-
-/**
- * Signs with a derived Solana account key without handing that key out.
- *
- * The private key stays captured in the returned closure. JavaScript offers no way
- * to guarantee it is scrubbed afterwards, so the containment this provides is
- * against accidental copying, logging and persistence, and nothing stronger:
- * discard the signer when the operation that needed it is finished, and never put
- * one anywhere that outlives that operation.
- */
-export type SolanaSigner = {
-  readonly address: SolanaAddress;
-  readonly sign: (message: Uint8Array) => Uint8Array;
-};
-
-export function deriveSolanaSigner(seed: Uint8Array, accountIndex: number): SolanaSigner {
-  const { address, privateKey } = deriveSolanaAccountNode(seed, accountIndex);
-
-  return {
-    address,
-    sign: (message: Uint8Array) => ed25519.sign(message, privateKey),
   };
 }
