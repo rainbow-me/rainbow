@@ -19,7 +19,7 @@ The derivation dependency follows the cookbook’s BIP44 `HDKey.fromMasterSeed(s
 - `getSolanaSource` checks the selected wallet/account at entry. `getEnabledSolanaAccount` returns that account’s enabled Solana metadata or throws when unavailable. Enablement then verifies the mnemonic derives the captured EVM address.
 - `saveSolanaKey` Base58-encodes the private-key bytes, adds `format: 'ed25519-seed-base58'` and `version: 1`, and writes directly, replacing an existing record. It does not decode the input key, check for an existing record, or read back the write. As with EVM, the shared setter does not surface a native `false` write result.
 - `getSolanaAccount` and `publishSolanaAccount` only look up or save metadata by wallet ID/index. They do not validate record contents, current wallet existence, eligibility or ownership. Metadata can remain readable, or be published after an in-flight enablement, when the original wallet has been deleted.
-- `readSolanaKey` validates the record shape, Base58 key bytes and expected address. The decoder ignores `version` and `format`; these fields are still written as metadata and do not control decoding. Later PRs retain signing source checks and enforce wallet eligibility in the balances caller; these protections do not come from the metadata store.
+- `readSolanaKey` decodes Base58 and validates 32-byte key length, canonical encoding and the derived address against the caller’s expected address. Record access and decoding happen inside the try/catch; there is no separate record-shape, stored-address or encoded-length precheck. Stored `address`, `version` and `format` are metadata and do not control decoding. Later PRs retain signing source checks and enforce wallet eligibility in the balances caller; these protections do not come from the metadata store.
 
 ## Manual checks (not run for this reorganization)
 
@@ -47,7 +47,7 @@ The broader WalletDescriptor/source-material proposals remain on the original br
 - `src/features/wallet/types.ts`
 - `yarn.lock`
 
-Validation: 79 focused PR1 tests passed after the Base58 change; the complete stack passes 355 tests. TypeScript passed on the updated stack. Dependency checks passed on PR1 and the updated full stack. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
+Validation: 80 focused PR1 tests passed after the Base58 change; the complete stack passes 356 tests. TypeScript passed on the updated stack. Dependency checks passed on PR1 and the updated full stack. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
 
 Solana eligibility uses the existing `useIsSolanaEnabled` gate, with no store-install restriction. Store builds use remote `solana_enabled`; internal builds also honor the existing local experimental override. The source-entry check in `getSolanaSource` enforces wallet readiness, mnemonic type, visibility and damaged status. The metadata store itself performs no eligibility checks.
 
