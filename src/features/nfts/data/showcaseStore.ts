@@ -2,7 +2,7 @@ import { createQueryStore, createStoreActions, type FetchOptions } from '@stores
 
 import { time } from '@/framework/core/utils/time';
 import { getPreference, PreferenceActionType, setPreference } from '@/model/preferences';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { useNftsStore } from '@/state/nfts/nfts';
 import { getShowcaseTokenIds } from '@/state/nfts/tokenPreferences';
 import { getAccountAddress, getIsReadOnlyWallet, useWalletsStore } from '@/state/wallets/walletsStore';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
@@ -20,11 +20,9 @@ const EMPTY_DATA: string[] = [];
 
 export const useShowcaseStore = createQueryStore<string[], ShowcaseParams, ShowcaseActions>(
   {
-    fetcher: async ({ address }) => {
-      return await getShowcaseTokenIds(address);
-    },
+    fetcher: ({ address }) => getShowcaseTokenIds(address),
     params: {
-      address: $ => $(useWalletsStore).accountAddress,
+      address: $ => $(useWalletsStore, s => s.accountAddress),
     },
     staleTime: time.minutes(10),
   },
@@ -55,7 +53,7 @@ export const useShowcaseStore = createQueryStore<string[], ShowcaseParams, Showc
       });
 
       const address = getAccountAddress();
-      useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', true);
+      useNftsStore.getState(address).openCollection('showcase');
       const showcaseTokens = get().getData() || EMPTY_DATA;
 
       const response = await getPreference('showcase', address);

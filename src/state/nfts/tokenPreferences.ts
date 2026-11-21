@@ -1,11 +1,11 @@
-import { isDataComplete } from '@/features/nfts/core/uniqueId';
+import { areTokenIdsNetworkQualified } from '@/features/nfts/core/uniqueId';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { updateWebHidden, updateWebShowcase } from '@/helpers/webData';
 import { logger, RainbowError } from '@/logger';
 import { getPreference } from '@/model/preferences';
 import { getWalletWithAccount } from '@/state/wallets/walletsStore';
 
-import { useOpenCollectionsStore } from './openCollectionsStore';
+import { useNftsStore } from './nfts';
 import { migrateTokens } from './utils';
 
 const EMPTY_TOKEN_IDS: string[] = [];
@@ -22,7 +22,7 @@ async function migratePreferenceTokenIds(address: string, category: 'hidden' | '
       await updateWebHidden(address, migratedTokenIds);
     } else {
       await updateWebShowcase(address, migratedTokenIds);
-      useOpenCollectionsStore.getState(address).setCollectionOpen('showcase', true);
+      useNftsStore.getState(address).openCollection('showcase');
     }
 
     return migratedTokenIds;
@@ -32,22 +32,28 @@ async function migratePreferenceTokenIds(address: string, category: 'hidden' | '
   }
 }
 
+/**
+ * Loads saved Hidden IDs and migrates legacy entries when possible.
+ */
 export async function getHiddenTokenIds(address: string): Promise<string[]> {
   if (!address) return EMPTY_TOKEN_IDS;
 
   const preference = await getPreference('hidden', address);
   const tokenIds = preference?.hidden?.ids;
   if (!tokenIds?.length) return EMPTY_TOKEN_IDS;
-  if (!isDataComplete(tokenIds)) return migratePreferenceTokenIds(address, 'hidden', tokenIds);
+  if (!areTokenIdsNetworkQualified(tokenIds)) return migratePreferenceTokenIds(address, 'hidden', tokenIds);
   return tokenIds.map(tokenId => tokenId.toLowerCase());
 }
 
+/**
+ * Loads saved Showcase IDs. A successful migration opens Showcase for that account.
+ */
 export async function getShowcaseTokenIds(address: string): Promise<string[]> {
   if (!address) return EMPTY_TOKEN_IDS;
 
   const preference = await getPreference('showcase', address);
   const tokenIds = preference?.showcase?.ids;
   if (!tokenIds?.length) return EMPTY_TOKEN_IDS;
-  if (!isDataComplete(tokenIds)) return migratePreferenceTokenIds(address, 'showcase', tokenIds);
+  if (!areTokenIdsNetworkQualified(tokenIds)) return migratePreferenceTokenIds(address, 'showcase', tokenIds);
   return tokenIds.map(tokenId => tokenId.toLowerCase());
 }

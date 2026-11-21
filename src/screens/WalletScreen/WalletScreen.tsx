@@ -22,7 +22,7 @@ import useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import { addressCopiedToastAtom } from '@/recoil/addressCopiedToastAtom';
 import { useLiveTokenListSubscription } from '@/state/liveTokens/useLiveTokenListSubscription';
 import { useNavigationStore } from '@/state/navigation/navigationStore';
-import { useNftsStore } from '@/state/nfts/nfts';
+import { nftsActions } from '@/state/nfts/nfts';
 import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
 
 import RecyclerAssetList2 from '../../components/asset-list/RecyclerAssetList2';
@@ -85,7 +85,7 @@ function WalletScreen() {
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
         <RecyclerAssetList2
           accentColor={highContrastAccentColor}
-          onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
+          onEndReached={nftsActions.fetchNextPage}
           walletBriefSectionsData={walletBriefSectionsData}
           onViewableItemsChanged={onViewableItemsChanged}
         />

@@ -2,34 +2,43 @@ import React from 'react';
 
 import { CellType, type NftCell } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { WrappedNFT } from '@/components/asset-list/RecyclerAssetList2/WrappedNFT';
-import { WrappedTokenFamilyHeader } from '@/components/asset-list/RecyclerAssetList2/WrappedTokenFamilyHeader';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 
+import { NftCollectionHeader } from './NftCollectionHeader';
+
+/** A list can override wallet taps or present an NFT from an external profile. */
+export type NftRowInteractions = {
+  external: boolean;
+  onPressNft?: (asset: UniqueAsset) => void;
+  onToggleCollection?: (id: string) => void;
+};
+
 /**
- * Renders a prepared NFT row; picker actions and external addresses belong to its list.
+ * Renders a prepared NFT row with the actions of the list displaying it.
  */
-export function renderNftRow(
-  data: NftCell,
-  theme: ThemeContextProps,
-  onPress?: (asset: UniqueAsset) => void,
-  externalAddress?: string
-): React.ReactElement | null {
+export function renderNftRow(data: NftCell, theme: ThemeContextProps, interactions?: NftRowInteractions): React.ReactElement | null {
   switch (data.type) {
     case CellType.FAMILY_HEADER:
       return (
-        <WrappedTokenFamilyHeader
-          collectionKey={data.collectionKey}
+        <NftCollectionHeader
+          collectionId={data.uid}
           image={data.image}
           isOpen={data.isOpen}
           name={data.name}
+          onToggleCollection={interactions?.onToggleCollection}
           theme={theme}
           total={data.total}
         />
       );
     case CellType.NFT:
       return (
-        <WrappedNFT asset={data.asset} external={!!externalAddress} onPress={onPress} placement={data.index % 2 === 0 ? 'left' : 'right'} />
+        <WrappedNFT
+          asset={data.asset}
+          external={interactions?.external ?? false}
+          onPress={interactions?.onPressNft}
+          placement={data.index % 2 === 0 ? 'left' : 'right'}
+        />
       );
     case CellType.NFT_SPACE_AFTER:
       return null;

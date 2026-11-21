@@ -1,18 +1,31 @@
-import { createStoreActions, createVirtualStore } from '@storesjs/stores';
-import { type Address } from 'viem';
+import { createStoreActions, createVirtualStore, type SetStateArgs } from '@storesjs/stores';
 
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { createNftsStore } from './createNftsStore';
+import { type NftsQueryState, type NftsStoreType } from './types';
 
+/** Follows the selected wallet; addressed access edits that account's own snapshot. */
 export const useNftsStore = createVirtualStore(
-  $ => createNftsStore($(useWalletsStore, state => state.accountAddress)),
+  $ => {
+    const store = createNftsStore($(useWalletsStore, s => s.accountAddress));
+    void store.getState().fetchOpenCollections();
+    return store;
+  },
   getStore => ({
-    getState: (address?: Address | string) => {
-      const store = getStore();
-      return address && address !== useWalletsStore.getState().accountAddress ? createNftsStore(address).getState() : store.getState();
+    getState: (address?: string) => getStoreForAddress(getStore, address).getState(),
+    setState: (...args: SetStateArgs<NftsQueryState, [address?: string]>) => {
+      const [update, replace, address] = args;
+      const store = getStoreForAddress(getStore, address);
+      return replace ? store.setState(update, replace) : store.setState(update);
     },
   })
 );
 
-export const nftsStoreActions = createStoreActions(useNftsStore);
+export const nftsActions = createStoreActions(useNftsStore);
+
+function getStoreForAddress(getStore: () => NftsStoreType, address?: string): NftsStoreType {
+  const store = getStore();
+  if (!address || store.getState().address === address) return store;
+  return createNftsStore(address, false);
+}

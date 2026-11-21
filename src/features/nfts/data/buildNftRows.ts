@@ -1,14 +1,13 @@
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
-import { isDataComplete, parseUniqueId } from '@/features/nfts/core/uniqueId';
+import { areTokenIdsNetworkQualified, collectionIdFromUniqueId } from '@/features/nfts/core/uniqueId';
 import { appendNftCollectionRows } from '@/features/nfts/data/appendNftCollectionRows';
-import { type CollectionNfts } from '@/features/nfts/data/collectionNftsStore';
 import * as i18n from '@/languages';
-import { type NftsState, type OpenCollectionsState } from '@/state/nfts/types';
+import { type CollectionNfts, type NftsState } from '@/state/nfts/types';
 
 // ============ Types ========================================================== //
 
-/** Migrated preferences and the owned NFTs excluded from ordinary collections. */
+/** Network-qualified saved token IDs and their collection exclusions. */
 export type NftPreferences = {
   showcase: string[];
   hidden: string[];
@@ -28,18 +27,17 @@ const HIDDEN_SPACE_AFTER: CellTypes = { type: CellType.NFT_SPACE_AFTER, uid: 'hi
 // ============ Preference Data ================================================ //
 
 /**
- * Keeps each migrated preference list; collection exclusions require both lists to be migrated.
+ * Keeps qualified saved IDs for their own sections. Exclusions apply once both lists are qualified.
  */
 export function buildNftPreferences(showcase: string[], hidden: string[]): NftPreferences {
-  const showcaseReady = isDataComplete(showcase);
-  const hiddenReady = isDataComplete(hidden);
+  const showcaseQualified = areTokenIdsNetworkQualified(showcase);
+  const hiddenQualified = areTokenIdsNetworkQualified(hidden);
   const exclusions = new Map<string, Set<string>>();
 
-  if (showcaseReady && hiddenReady) {
+  if (showcaseQualified && hiddenQualified) {
     for (const tokens of [showcase, hidden]) {
       for (const uniqueId of tokens) {
-        const { network, contractAddress } = parseUniqueId(uniqueId);
-        const collectionId = `${network}_${contractAddress}`.toLowerCase();
+        const collectionId = collectionIdFromUniqueId(uniqueId);
         let excluded = exclusions.get(collectionId);
         if (!excluded) {
           excluded = new Set();
@@ -51,8 +49,8 @@ export function buildNftPreferences(showcase: string[], hidden: string[]): NftPr
   }
 
   return {
-    showcase: showcaseReady ? showcase : EMPTY_TOKENS,
-    hidden: hiddenReady ? hidden : EMPTY_TOKENS,
+    showcase: showcaseQualified ? showcase : EMPTY_TOKENS,
+    hidden: hiddenQualified ? hidden : EMPTY_TOKENS,
     exclusions,
   };
 }
@@ -76,7 +74,7 @@ export function buildNftRows({
   collectionNfts: ReadonlyMap<string, CollectionNfts>;
   metadata: ReadonlyMap<string, UniqueAsset>;
   preferences: NftPreferences;
-  openCollections: OpenCollectionsState['openCollections'];
+  openCollections: NftsState['openCollections'];
   loading: boolean;
   hasMore: boolean;
   readOnly: boolean;
@@ -87,10 +85,10 @@ export function buildNftRows({
     return rows;
   }
 
-  appendPreferenceRows(rows, 'showcase', preferences.showcase, openCollections.showcase, metadata, collectionNfts);
+  appendPreferenceRows(rows, 'showcase', preferences.showcase, openCollections.has('showcase'), metadata, collectionNfts);
   appendNftCollectionRows(rows, collections, openCollections, collectionNfts, preferences.exclusions);
   if (!readOnly && !hasMore) {
-    appendPreferenceRows(rows, 'hidden', preferences.hidden, openCollections.hidden, metadata, collectionNfts);
+    appendPreferenceRows(rows, 'hidden', preferences.hidden, openCollections.has('hidden'), metadata, collectionNfts);
   }
   return rows;
 }
@@ -106,13 +104,12 @@ function appendPreferenceRows(
   if (!tokens.length) return;
 
   const name = id === 'showcase' ? i18n.t(i18n.l.account.tab_showcase) : i18n.t(i18n.l.button.hidden);
-  rows.push({ type: CellType.FAMILY_HEADER, uid: id, collectionKey: id, isOpen: open ?? false, name, total: tokens.length });
+  rows.push({ type: CellType.FAMILY_HEADER, uid: id, isOpen: open, name, total: tokens.length });
 
   if (open) {
     for (let index = 0; index < tokens.length; index++) {
       const uniqueId = tokens[index];
-      const { network, contractAddress } = parseUniqueId(uniqueId);
-      const asset = collectionNfts.get(`${network}_${contractAddress}`)?.get(uniqueId) ?? metadata.get(uniqueId) ?? null;
+      const asset = collectionNfts.get(collectionIdFromUniqueId(uniqueId))?.get(uniqueId) ?? metadata.get(uniqueId) ?? null;
       rows.push({ type: CellType.NFT, uid: `${id}-${uniqueId}`, asset, index });
     }
   }

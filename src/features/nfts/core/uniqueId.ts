@@ -2,6 +2,16 @@ import { isAddress, type Address } from 'viem';
 
 import { type Network } from '@/features/network/types/backendNetworks';
 
+/**
+ * Returns the Arc collection prefix of a network-qualified NFT ID.
+ */
+export function collectionIdFromUniqueId(uniqueId: string): string {
+  return uniqueId.slice(0, uniqueId.lastIndexOf('_')).toLowerCase();
+}
+
+/**
+ * Reads a network-qualified NFT ID or a legacy contract and token ID.
+ */
 export function parseUniqueId(uniqueId: string): {
   network?: Network;
   contractAddress: Address;
@@ -23,9 +33,10 @@ export function parseUniqueId(uniqueId: string): {
   };
 }
 
-export function isDataComplete(tokens: string[]) {
-  if (!tokens.length) return true;
-
+/**
+ * Whether every saved ID includes its network, contract and token.
+ */
+export function areTokenIdsNetworkQualified(tokens: readonly string[]): boolean {
   for (const token of tokens) {
     const { network, contractAddress, tokenId } = parseUniqueId(token);
     if (!network || !contractAddress || !tokenId) return false;

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { InteractionManager, Keyboard } from 'react-native';
 
 import { useFocusEffect, useRoute, type RouteProp } from '@react-navigation/native';
-import { isEmpty, noop } from 'lodash';
+import { isEmpty } from 'lodash';
 import * as DeviceInfo from 'react-native-device-info';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
@@ -13,17 +13,14 @@ import { AccentColorProvider, Box, Heading, Inset, Row, Rows, Stack, Text } from
 import { abbreviateName } from '@/features/address/core/formatAddress';
 import { GasSpeedButton } from '@/features/gas/components/GasSpeedButton';
 import { ChainId, Network } from '@/features/network/types/backendNetworks';
-import { useCollectionNftsStore } from '@/features/nfts/data/collectionNftsStore';
-import { time } from '@/framework/core/utils/time';
 import useDimensions from '@/hooks/useDimensions';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
-import { getAccountAddress, useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
 import { colors } from '@/styles';
 import { handleReviewPromptAction } from '@/utils/reviewAlert';
@@ -50,6 +47,7 @@ export const ENSConfirmRegisterSheetHeight = 600;
 export const ENSConfirmRenewSheetHeight = 560;
 export const ENSConfirmUpdateSheetHeight = 290;
 const avatarSize = 60;
+const ENS_COLLECTION_ID = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
 
 function TransactionActionRow({
   action,
@@ -118,7 +116,7 @@ export function ENSConfirmRegisterSheet() {
   const { navigate, goBack } = useNavigation();
 
   const { values } = useENSRegistrationForm();
-  const accountProfile = useAccountProfileInfo();
+  const { accountAddress, accountENS } = useAccountProfileInfo();
 
   const avatarUrl = initialAvatarUrl || values.avatar;
 
@@ -129,7 +127,7 @@ export function ENSConfirmRegisterSheet() {
   });
 
   const [sendReverseRecord, setSendReverseRecord] = useState(
-    accountProfile.accountENS !== ensName && (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
+    accountENS !== ensName && (!isEmpty(changedRecords) || mode === REGISTRATION_MODES.EDIT)
   );
   const { step, secondsSinceCommitConfirmed } = useENSRegistrationStepHandler(false);
   const { action } = useENSRegistrationActionHandler({
@@ -151,13 +149,7 @@ export function ENSConfirmRegisterSheet() {
     navigate(Routes.PROFILE_SCREEN);
 
     InteractionManager.runAfterInteractions(() => {
-      // revalidate nft data for ens collection
-      const ensCollectionId = `${Network.mainnet}_${ENS_NFT_CONTRACT_ADDRESS}`;
-      void useCollectionNftsStore
-        .getState()
-        .load({ walletAddress: getAccountAddress(), collectionId: ensCollectionId }, { force: true })
-        .catch(noop);
-      useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
+      useNftsStore.getState(accountAddress).invalidateCollection(ENS_COLLECTION_ID);
 
       setTimeout(() => {
         InteractionManager.runAfterInteractions(() => {
@@ -165,7 +157,7 @@ export function ENSConfirmRegisterSheet() {
         });
       }, 500);
     });
-  }, [goBack, navigate]);
+  }, [accountAddress, goBack, navigate]);
 
   const stepLabel = useMemo(() => {
     if (mode === REGISTRATION_MODES.EDIT) return i18n.t(i18n.l.profiles.confirm.confirm_updates);
@@ -200,7 +192,7 @@ export function ENSConfirmRegisterSheet() {
           accentColor={accentColor}
           sendReverseRecord={sendReverseRecord}
           setSendReverseRecord={registrationCostsData?.isSufficientGasForStep ? setSendReverseRecord : null}
-          showReverseRecordSwitch={accountProfile.accountENS !== ensName}
+          showReverseRecordSwitch={accountENS !== ensName}
         />
       ),
       [REGISTRATION_STEPS.SET_NAME]: null,
@@ -226,7 +218,7 @@ export function ENSConfirmRegisterSheet() {
       registrationCostsData,
       accentColor,
       sendReverseRecord,
-      accountProfile.accountENS,
+      accountENS,
       ensName,
       name,
       secondsSinceCommitConfirmed,

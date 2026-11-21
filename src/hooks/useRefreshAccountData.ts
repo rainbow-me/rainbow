@@ -4,7 +4,6 @@ import delay from 'delay';
 
 import { analytics } from '@/analytics';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { useCollectionNftsStore } from '@/features/nfts/data/collectionNftsStore';
 import { fetchHiddenTokens } from '@/features/nfts/data/hiddenNftsStore';
 import { fetchShowcaseTokens } from '@/features/nfts/data/showcaseStore';
 import { hyperliquidAccountActions } from '@/features/perps/stores/hyperliquidAccountStore';
@@ -16,9 +15,7 @@ import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
 import { userAssetsActions } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
-import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
-import { useNftsStore } from '@/state/nfts/nfts';
-import { useOpenCollectionsStore } from '@/state/nfts/openCollectionsStore';
+import { nftsActions } from '@/state/nfts/nfts';
 import { refetchWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getAccountAddress, refreshWalletInfo } from '@/state/wallets/walletsStore';
 
@@ -44,17 +41,8 @@ export const refreshAccountData = async () => {
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
     usePositionsStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
     useClaimablesStore.getState().fetch(undefined, { staleTime: time.seconds(5) }),
-    useNftsStore.getState().fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) }),
+    nftsActions.refresh(),
   ];
-
-  const { openCollections } = useOpenCollectionsStore.getState(accountAddress);
-  const { collections } = useNftsStore.getState(accountAddress);
-  const collectionNfts = useCollectionNftsStore.getState();
-  for (const collectionId in openCollections) {
-    if (openCollections[collectionId] && collections.has(collectionId)) {
-      requests.push(collectionNfts.load({ walletAddress: accountAddress, collectionId }, { force: true }));
-    }
-  }
 
   await Promise.allSettled(requests);
   await refreshWalletInfo({ useCachedENS: true });

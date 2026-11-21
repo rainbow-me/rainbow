@@ -9,7 +9,7 @@ import { useSelectableNftRows } from '@/features/nfts/data/selectableNftRowsStor
 import { NftAssetList } from '@/features/nfts/ui/NftAssetList';
 import type Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
-import { useNftsStore } from '@/state/nfts/nfts';
+import { nftsActions } from '@/state/nfts/nfts';
 
 import { SheetHandle } from '../components/sheet';
 
@@ -17,7 +17,8 @@ export function SelectUniqueTokenSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.SELECT_UNIQUE_TOKEN_SHEET>>();
   const { goBack } = useNavigation();
   const rows = useSelectableNftRows();
-  const handlePressUniqueToken = useCallback(
+
+  const handlePressNft = useCallback(
     (asset: UniqueAsset) => {
       params.onSelect?.(asset);
       goBack();
@@ -35,12 +36,7 @@ export function SelectUniqueTokenSheet() {
       <Box alignItems="center" justifyContent="center" paddingVertical="10px">
         <SheetHandle />
       </Box>
-      <NftAssetList
-        rows={rows}
-        onPressUniqueToken={handlePressUniqueToken}
-        type="select-nft"
-        onEndReached={useNftsStore.getState().fetchNextNftCollectionPage}
-      />
+      <NftAssetList rows={rows} onPressNft={handlePressNft} type="select-nft" onEndReached={nftsActions.fetchNextPage} />
     </Box>
   );
 }

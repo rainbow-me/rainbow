@@ -139,12 +139,11 @@ export type TokensHeaderExtraData = {
   type: CellType.TOKENS_HEADER;
 };
 
-export type NFTFamilyExtraData = {
+export type NftCollectionHeaderData = {
   type: CellType.FAMILY_HEADER;
-  collectionKey: string;
   isOpen: boolean;
   name: string;
-  total?: number;
+  total: number;
   image?: string;
 };
 
@@ -164,7 +163,7 @@ export type SpacerExtraData = {
 
 export type CellExtraData =
   | LoadingAssetsSection
-  | NFTFamilyExtraData
+  | NftCollectionHeaderData
   | CoinDividerExtraData
   | CoinExtraData
   | NFTExtraData
@@ -188,4 +187,4 @@ export type CellExtraData =
 export type CellTypes = BaseCellType & (CellExtraData | { type: Exclude<CellType, CellExtraData['type']> });
 
 /** Prepared collection headers, NFT cards and their spacing. */
-export type NftCell = BaseCellType & (NFTFamilyExtraData | NFTExtraData | { type: CellType.NFT_SPACE_AFTER });
+export type NftCell = BaseCellType & (NftCollectionHeaderData | NFTExtraData | { type: CellType.NFT_SPACE_AFTER });

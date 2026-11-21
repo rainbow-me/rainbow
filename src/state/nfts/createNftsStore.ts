@@ -1,88 +1,190 @@
-import { createQueryStore } from '@storesjs/stores';
-import { type Address } from 'viem';
+import { createQueryStore, getQueryKey, type SetDataParams } from '@storesjs/stores';
 
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { time } from '@/framework/core/utils/time';
 import { arcClient } from '@/graphql';
+import { parseUniqueAsset } from '@/resources/nfts/utils';
 
 import { NFTS_PAGE_SIZE, NFTS_PAGINATION_STALE_TIME, NFTS_STALE_TIME } from './constants';
 import {
   type Collection,
-  type FetchedNftCollections,
+  type CollectionNfts,
   type NftParams,
+  type NftRequest,
+  type NftResponse,
   type NftsState,
   type NftsStoreType,
-  type PersistedNftsState,
 } from './types';
 
+// ============ Query Keys and Limits ========================================== //
+
+const MAX_OPEN_COLLECTIONS = 20;
+const FIRST_PAGE = { request: { type: 'page', pageKey: null } } as const;
+const FIRST_PAGE_KEY = getQueryKey(FIRST_PAGE);
+
+// ============ Account NFT Store ============================================== //
+
 /**
- * Queries and persists an account's collection summaries and pagination cursor.
+ * Loads collection summaries and owned NFTs for one wallet. Addressed edits to an
+ * inactive wallet use a disabled instance and do not start a request.
  */
-export function createNftsStore(address: Address | string): NftsStoreType {
-  return createQueryStore<FetchedNftCollections, NftParams, NftsState, FetchedNftCollections, PersistedNftsState>(
+export function createNftsStore(address: string, enabled = !!address): NftsStoreType {
+  const store: NftsStoreType = createQueryStore<NftResponse, NftParams, NftsState>(
     {
-      fetcher: fetchNftCollections,
-      setData: ({ data, params, set }) => {
-        if (data) set(state => setNftCollections(state, data, params.pageKey));
-      },
-      enabled: address.length > 0,
+      enabled,
       keepPreviousData: true,
-      params: { walletAddress: address, limit: NFTS_PAGE_SIZE, pageKey: null },
+      params: FIRST_PAGE,
       staleTime: NFTS_STALE_TIME,
+      fetcher: ({ request }, abortController) => fetchNfts(address, request, abortController),
+      setData: setNftData,
+      onFetched: ({ data }) => {
+        if (data.type === 'page') void store.getState().fetchOpenCollections();
+      },
     },
 
-    (_, get) => ({
-      collections: new Map(),
-      lastPageFetchedAt: 0,
-      nextPageKey: null,
-
-      fetchNextNftCollectionPage: async () => {
+    (set, get) => {
+      function updateExpansion(key: string, action: 'open' | 'toggle'): void {
         const state = get();
-        if (!state.nextPageKey) return;
+        const id = key.toLowerCase();
+        const wasOpen = state.openCollections.has(id);
+        if (wasOpen && action === 'open') return;
 
-        if (Date.now() - state.lastPageFetchedAt > NFTS_PAGINATION_STALE_TIME) {
-          const firstPage = await state.fetch({ pageKey: null }, { force: true });
-          if (!firstPage) return;
+        const openCollections = new Set(state.openCollections);
+        if (wasOpen) {
+          openCollections.delete(id);
+        } else {
+          openCollections.add(id);
+          limitOpenCollections(openCollections);
         }
 
-        const pageKey = get().nextPageKey;
-        if (pageKey) await get().fetch({ pageKey }, { force: true });
-      },
+        set({ openCollections });
+        if (!wasOpen && state.enabled && state.collections.has(id)) void state.fetch(collectionRequest(id));
+      }
 
-      hasNextNftCollectionPage: () => !!get().nextPageKey,
-    }),
+      return {
+        address,
+        collections: new Map(),
+        collectionNfts: new Map(),
+        nextPageKey: null,
+        lastPageFetchedAt: 0,
+        openCollections: new Set(['showcase']),
 
-    address.length
+        fetchNextPage: async () => {
+          const state = get();
+          if (!state.nextPageKey) return;
+          if (!state.getCacheEntry(FIRST_PAGE_KEY)?.lastFetchedAt || Date.now() - state.lastPageFetchedAt > NFTS_PAGINATION_STALE_TIME) {
+            const firstPage = await state.fetch(FIRST_PAGE, { force: true });
+            if (!firstPage) return;
+          }
+
+          const pageKey = get().nextPageKey;
+          if (pageKey) await state.fetch({ request: { type: 'page', pageKey } }, { force: true });
+        },
+
+        fetchOpenCollections: async (force = false) => {
+          const state = get();
+          const requests: Promise<unknown>[] = [];
+          for (const id of state.openCollections) {
+            if (!state.collections.has(id)) continue;
+            requests.push(state.fetch(collectionRequest(id), { force }));
+          }
+          await Promise.all(requests);
+        },
+
+        openCollection: key => updateExpansion(key, 'open'),
+        toggleCollection: key => updateExpansion(key, 'toggle'),
+
+        refresh: async () => {
+          const state = get();
+          await Promise.all([state.fetch(FIRST_PAGE, { staleTime: time.seconds(5) }), state.fetchOpenCollections(true)]);
+        },
+
+        invalidateCollection: collectionId => {
+          const state = get();
+          const id = collectionId.toLowerCase();
+          const params = collectionRequest(id);
+          const queryCache = { ...state.queryCache };
+          delete queryCache[FIRST_PAGE_KEY];
+          delete queryCache[getQueryKey(params)];
+
+          const collectionNfts = new Map(state.collectionNfts);
+          collectionNfts.delete(id);
+          set({ collectionNfts, queryCache });
+
+          if (state.enabled) {
+            void state.fetch(FIRST_PAGE);
+            void state.fetch(params);
+          }
+        },
+      };
+    },
+
+    address
       ? {
-          storageKey: `nfts_${address}`,
-          version: 3,
-          partialize: state => ({
-            collections: state.collections,
-            lastPageFetchedAt: state.lastPageFetchedAt,
-            nextPageKey: state.nextPageKey,
+          storageKey: `accountNfts_${address}`,
+          partialize: ({ collections, collectionNfts, openCollections, nextPageKey, lastPageFetchedAt }) => ({
+            collections,
+            collectionNfts,
+            openCollections,
+            nextPageKey,
+            lastPageFetchedAt,
           }),
         }
       : undefined
   );
+
+  return store;
 }
 
 // ============ Fetching and Publication ======================================== //
 
-async function fetchNftCollections(params: NftParams, abortController: AbortController | null): Promise<FetchedNftCollections> {
-  const data = await arcClient.getNftCollections(params, { abortController });
-  return data.nftCollections;
-}
-
-/**
- * Replaces the first page or appends a continuation, publishing its cursor with the summaries.
- */
-function setNftCollections(
-  state: NftsState,
-  data: NonNullable<FetchedNftCollections>,
-  pageKey: string | null
-): Pick<NftsState, 'collections' | 'nextPageKey' | 'lastPageFetchedAt'> {
-  const collections = pageKey ? new Map(state.collections) : new Map<string, Collection>();
-  for (const collection of data.data) {
-    if (collection) collections.set(collection.id.toLowerCase(), collection);
+async function fetchNfts(walletAddress: string, request: NftRequest, abortController: AbortController | null): Promise<NftResponse> {
+  if (request.type === 'page') {
+    const { nftCollections } = await arcClient.getNftCollections(
+      { walletAddress, limit: NFTS_PAGE_SIZE, pageKey: request.pageKey },
+      { abortController }
+    );
+    return { type: 'page', page: nftCollections, pageKey: request.pageKey };
   }
 
-  return { collections, nextPageKey: data.nextPageKey || null, lastPageFetchedAt: Date.now() };
+  const { nftsByCollection } = await arcClient.getNftsByCollection({ walletAddress, collectionId: request.id }, { abortController });
+  const chainIds = useBackendNetworksStore.getState().getChainsIdByName();
+  const assets: CollectionNfts = new Map();
+  for (const nft of nftsByCollection) {
+    const asset = parseUniqueAsset(nft, chainIds);
+    assets.set(asset.uniqueId, asset);
+  }
+  return { type: 'collection', id: request.id, assets };
+}
+
+function setNftData({ data, set }: SetDataParams<NftResponse, NftParams, NftsState>): void {
+  if (data.type === 'collection') {
+    set(state => ({ collectionNfts: new Map(state.collectionNfts).set(data.id, data.assets) }));
+    return;
+  }
+
+  set(state => {
+    const collections = data.pageKey ? new Map(state.collections) : new Map<string, Collection>();
+    for (const collection of data.page.data) {
+      if (collection) collections.set(collection.id.toLowerCase(), collection);
+    }
+    return { collections, nextPageKey: data.page.nextPageKey || null, lastPageFetchedAt: Date.now() };
+  });
+}
+
+function collectionRequest(id: string): NftParams {
+  return { request: { type: 'collection', id } };
+}
+
+// ============ Collection Preferences ========================================== //
+
+function limitOpenCollections(open: Set<string>): void {
+  const savedGroups = Number(open.has('showcase')) + Number(open.has('hidden'));
+  if (open.size - savedGroups <= MAX_OPEN_COLLECTIONS) return;
+
+  for (const id of open) {
+    if (id === 'showcase' || id === 'hidden') continue;
+    open.delete(id);
+    return;
+  }
 }

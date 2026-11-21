@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
@@ -8,16 +8,19 @@ import { analytics } from '@/analytics';
 import { AccentColorProvider, Box, Column, Columns, Inline, Inset, Stack } from '@/design-system';
 import { ProfileSheetConfigContext } from '@/features/ens/components/profile/ProfileSheetConfigContext';
 import { ProfileSheetHeader } from '@/features/ens/components/profile/ProfileSheetHeader';
+import { buildProfileNftRows } from '@/features/ens/data/buildProfileNftRows';
 import { useEnsProfileImage } from '@/features/ens/data/stores/imageStore';
 import { useEnsAddressStore } from '@/features/ens/data/useEnsAddressStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { NftAssetList } from '@/features/nfts/ui/NftAssetList';
 import useDimensions from '@/hooks/useDimensions';
-import useExternalWalletSectionsData from '@/hooks/useExternalWalletSectionsData';
+import useHiddenTokens from '@/hooks/useHiddenTokens';
 import { usePersistentDominantColorFromImage } from '@/hooks/usePersistentDominantColorFromImage';
+import useShowcaseTokens from '@/hooks/useShowcaseTokens';
 import { sharedCoolModalTopOffset } from '@/navigation/config';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
+import { useLegacyNFTs } from '@/resources/nfts';
 import { useFirstTransactionTimestamp } from '@/resources/transactions/firstTransactionTimestampQuery';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
@@ -36,7 +39,6 @@ export function ProfileSheet() {
   const avatar = useEnsProfileImage(ensName, 'avatar');
   const dominantColor = usePersistentDominantColorFromImage(avatar.url);
   const { isSuccess: hasFirstTxTimestampFetched } = useFirstTransactionTimestamp({ addressOrName: ensName });
-  const { isSuccess: hasListFetched, briefSectionsData } = useExternalWalletSectionsData({ address: profileAddress || undefined });
 
   const colorIndex = useMemo(() => (profileAddress ? addressHashedColorIndex(profileAddress) : 0), [profileAddress]);
   const accentColor =
@@ -64,20 +66,53 @@ export function ProfileSheet() {
         <AccentColorProvider color={accentColor}>
           <Box background="body (Deprecated)" testID="profile-sheet">
             <Box style={wrapperStyle}>
-              {!isPreview && (profileAddress === undefined || !hasListFetched || !hasFirstTxTimestampFetched) ? (
-                <Stack space="19px (Deprecated)">
-                  <ProfileSheetHeader isLoading />
-                  <PlaceholderList />
-                </Stack>
-              ) : (
-                <NftAssetList externalAddress={profileAddress || ''} type="ens-profile" rows={briefSectionsData} />
-              )}
+              <ProfileNftList
+                key={profileAddress}
+                address={profileAddress ?? ''}
+                profileReady={profileAddress !== undefined && hasFirstTxTimestampFetched}
+                isPreview={isPreview}
+              />
             </Box>
           </Box>
         </AccentColorProvider>
       </ProfileSheetConfigContext.Provider>
     </AndroidWrapper>
   );
+}
+
+function ProfileNftList({ address, profileReady, isPreview }: { address: string; profileReady: boolean; isPreview: boolean }) {
+  const {
+    data: { nfts },
+    isInitialLoading,
+  } = useLegacyNFTs({ address });
+  const { hiddenTokens } = useHiddenTokens(address);
+  const { showcaseTokens } = useShowcaseTokens(address);
+  const [openCollections, setOpenCollections] = useState(() => new Set(['showcase']));
+
+  const rows = useMemo(
+    () => buildProfileNftRows(nfts, showcaseTokens, hiddenTokens, openCollections),
+    [nfts, showcaseTokens, hiddenTokens, openCollections]
+  );
+
+  const toggleCollection = useCallback((key: string) => {
+    setOpenCollections(previous => {
+      const next = new Set(previous);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }, []);
+
+  if (!isPreview && (!profileReady || isInitialLoading)) {
+    return (
+      <Stack space="19px (Deprecated)">
+        <ProfileSheetHeader isLoading />
+        <PlaceholderList />
+      </Stack>
+    );
+  }
+
+  return <NftAssetList type="ens-profile" rows={rows} onToggleCollection={toggleCollection} />;
 }
 
 function AndroidWrapper({ children }: { children: React.ReactElement }) {

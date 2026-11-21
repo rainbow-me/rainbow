@@ -4,7 +4,7 @@ import { InteractionManager } from 'react-native';
 import { type StaticJsonRpcProvider } from '@ethersproject/providers';
 import { Wallet } from '@ethersproject/wallet';
 import { useQueryClient } from '@tanstack/react-query';
-import { isEmpty, noop } from 'lodash';
+import { isEmpty } from 'lodash';
 
 import { useRainbowToastEnabled } from '@/components/rainbow-toast/useRainbowToastEnabled';
 import { type ParsedAddressAsset } from '@/entities/tokens';
@@ -19,16 +19,14 @@ import { parseGasParamsForTransaction } from '@/features/gas/utils/parseGas';
 import { setHardwareWalletTxError } from '@/features/hardware-wallet/state/hardwareWalletTxState';
 import { backendNetworksActions, useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { useCollectionNftsStore } from '@/features/nfts/data/collectionNftsStore';
+import { collectionIdFromUniqueId } from '@/features/nfts/core/uniqueId';
 import { trackSentTransaction } from '@/features/transfer/utils/trackSentTransaction';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
-import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import {
   assetIsParsedAddressAsset,
   assetIsUniqueAsset,
   createSignableTransaction,
-  ensureValidHex,
   estimateGasLimit,
   type NewTransactionNonNullable,
 } from '@/handlers/web3';
@@ -40,7 +38,6 @@ import { sendTransaction } from '@/model/wallet';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { interactionsCountQueryKey } from '@/resources/addys/interactions';
-import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
@@ -363,12 +360,7 @@ export function useSendSubmit({
 
       if (submitSuccessful) {
         if (assetIsUniqueAsset(selected)) {
-          const collectionId = `${selected.network}_${selected.contractAddress}`;
-          void useCollectionNftsStore
-            .getState()
-            .load({ walletAddress: ensureValidHex(accountAddress), collectionId }, { force: true })
-            .catch(noop);
-          useNftsStore.getState(accountAddress).fetch({ limit: NFTS_PAGE_SIZE }, { staleTime: time.seconds(5) });
+          useNftsStore.getState(accountAddress).invalidateCollection(collectionIdFromUniqueId(selected.uniqueId));
         }
         executeFn(goBackAndNavigate, {
           screen: isENS ? Screens.SEND_ENS : Screens.SEND,

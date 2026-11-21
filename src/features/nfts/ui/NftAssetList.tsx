@@ -9,34 +9,28 @@ import { RawMemoRecyclerAssetList } from '@/components/asset-list/RecyclerAssetL
 import { StickyHeaderManager } from '@/components/asset-list/RecyclerAssetList2/core/StickyHeaders';
 import { type NftCell } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { navbarHeight } from '@/components/navbar/Navbar';
-import { type UniqueAsset } from '@/entities/uniqueAssets';
 import { useStableValue } from '@/hooks/useStableValue';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { useNftsEnabled } from '../data/nftsEnabledStore';
-import { renderNftRow } from './renderNftRow';
+import { renderNftRow, type NftRowInteractions } from './renderNftRow';
+
+type Props = Pick<NftRowInteractions, 'onPressNft' | 'onToggleCollection'> & {
+  rows: NftCell[];
+  type: 'ens-profile' | 'select-nft';
+  onEndReached?: () => void;
+};
 
 /**
  * Displays prepared NFT rows in an ENS profile or avatar picker.
  */
-export function NftAssetList({
-  rows,
-  type,
-  externalAddress,
-  onPressUniqueToken,
-  onEndReached,
-}: {
-  rows: NftCell[];
-  type: 'ens-profile' | 'select-nft';
-  externalAddress?: string;
-  onPressUniqueToken?: (asset: UniqueAsset) => void;
-  onEndReached?: () => void;
-}) {
+export function NftAssetList({ rows, type, onEndReached, onPressNft, onToggleCollection }: Props) {
   const theme = useTheme();
   const nftsEnabled = useNftsEnabled();
   const insets = useSafeAreaInsets();
   const position = useStableValue(() => new Animated.Value(0));
   const listData = createListData(rows, false, nftsEnabled);
+  const interactions: NftRowInteractions = { external: type === 'ens-profile', onPressNft, onToggleCollection };
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
@@ -44,7 +38,7 @@ export function NftAssetList({
         <RawMemoRecyclerAssetList
           listData={listData}
           extendedState={theme}
-          rowRenderer={(_type, data: NftCell) => (nftsEnabled ? renderNftRow(data, theme, onPressUniqueToken, externalAddress) : null)}
+          rowRenderer={(_type, data: NftCell) => (nftsEnabled ? renderNftRow(data, theme, interactions) : null)}
           disablePullDownToRefresh={type === 'select-nft'}
           onEndReached={onEndReached}
           scrollIndicatorInsets={{ bottom: insets.bottom + 14, top: 132 }}
