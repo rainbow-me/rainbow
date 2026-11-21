@@ -37,7 +37,7 @@ import { type SolanaSwapSelection } from '@/features/solana/data/swapSelection';
 import { type PreparedSwap } from '@/features/solana/data/swapTypes';
 import { appearance, SolanaSwapAmountControls, SolanaSwapCard } from '@/features/solana/ui/SolanaSwapControls';
 import { SolanaSwapTokenRow } from '@/features/solana/ui/SolanaSwapTokenRow';
-import { requireEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
+import { getEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import * as i18n from '@/languages';
@@ -112,7 +112,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
   }, []);
 
   const refreshBalances = useCallback(async () => {
-    const account = requireEnabledSolanaAccount();
+    const account = getEnabledSolanaAccount();
     if (account.address !== selection.address) throw new Error('The selected account changed.');
     const result = await getSwapBalances(account);
     if (mounted.current) setBalances(result);
