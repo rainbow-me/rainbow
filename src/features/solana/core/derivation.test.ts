@@ -1,9 +1,10 @@
 import { ed25519 } from '@noble/curves/ed25519';
 import { mnemonicToSeedSync } from 'bip39';
+import { HDKey } from 'micro-key-producer/slip10.js';
 import { describe, expect, it } from 'vitest';
 
 import { base58Decode, SOLANA_ADDRESS_BYTE_LENGTH } from './address';
-import { deriveHardenedEd25519Node, deriveSolanaAddress, deriveSolanaSigner, SOLANA_COIN_TYPE, solanaDerivationPath } from './derivation';
+import { deriveSolanaAccountNode, deriveSolanaAddress, deriveSolanaSigner } from './derivation';
 
 const toHex = (bytes: Uint8Array) => Buffer.from(bytes).toString('hex');
 const fromHex = (value: string) => new Uint8Array(Buffer.from(value, 'hex'));
@@ -13,10 +14,9 @@ const fromHex = (value: string) => new Uint8Array(Buffer.from(value, 'hex'));
  * `satoshilabs/slips@7f09881` (`slip-0010.md`, "Test vector 1 for ed25519" and
  * "Test vector 2 for ed25519").
  *
- * These are the only authoritative correctness evidence available for this
- * machinery, and they exercise paths that are not Solana paths, which is why
- * `deriveHardenedEd25519Node` is exported. The specification prefixes each public
- * key with a `00` byte; the raw key is the remaining 32.
+ * Exercise the library directly for paths outside our fixed Solana account path.
+ * The specification prefixes each public key with a `00` byte; the raw key is
+ * the remaining 32.
  */
 const SLIP_0010_ED25519_VECTORS = [
   {
@@ -132,13 +132,13 @@ const testSeed = () => new Uint8Array(mnemonicToSeedSync(TEST_MNEMONIC));
 
 const ed25519Verify = (signature: Uint8Array, message: Uint8Array, publicKey: Uint8Array) => ed25519.verify(signature, message, publicKey);
 
-describe('deriveHardenedEd25519Node', () => {
+describe('HDKey SLIP-0010 conformance', () => {
   for (const vector of SLIP_0010_ED25519_VECTORS) {
     describe(`SLIP-0010 ${vector.name} for ed25519`, () => {
       vector.steps.forEach((step, stepIndex) => {
         const label = step.path.length ? `m/${step.path.map(index => `${index}'`).join('/')}` : 'm';
         it(`matches the specification at ${label}`, () => {
-          const node = deriveHardenedEd25519Node(fromHex(vector.seed), step.path);
+          const node = HDKey.fromMasterSeed(fromHex(vector.seed)).derive(label);
           expect(toHex(node.privateKey)).toBe(step.privateKey);
           expect(toHex(node.chainCode)).toBe(step.chainCode);
         });
@@ -147,53 +147,44 @@ describe('deriveHardenedEd25519Node', () => {
           // The specification prefixes ed25519 public keys with a 00 byte. Checking
           // this as well as the private key covers the whole chain from seed to
           // address, rather than stopping where the curve arithmetic begins.
-          const node = deriveHardenedEd25519Node(fromHex(vector.seed), step.path);
+          const node = HDKey.fromMasterSeed(fromHex(vector.seed)).derive(label);
           expect('00' + toHex(ed25519.getPublicKey(node.privateKey))).toBe(vector.publicKeys[stepIndex]);
         });
       });
     });
   }
+});
 
+describe('deriveSolanaAccountNode', () => {
   it('rejects a seed outside the 16-to-64-byte range the specification allows', () => {
-    expect(() => deriveHardenedEd25519Node(new Uint8Array(15), [])).toThrow('seed must be 16-64 bytes');
-    expect(() => deriveHardenedEd25519Node(new Uint8Array(65), [])).toThrow('seed must be 16-64 bytes');
-    expect(() => deriveHardenedEd25519Node(new Uint8Array(16), [])).not.toThrow();
-    expect(() => deriveHardenedEd25519Node(new Uint8Array(64), [])).not.toThrow();
+    expect(() => deriveSolanaAccountNode(new Uint8Array(15), 0)).toThrow('seed must be 16-64 bytes');
+    expect(() => deriveSolanaAccountNode(new Uint8Array(65), 0)).toThrow('seed must be 16-64 bytes');
+    expect(() => deriveSolanaAccountNode(new Uint8Array(16), 0)).not.toThrow();
+    expect(() => deriveSolanaAccountNode(new Uint8Array(64), 0)).not.toThrow();
   });
 
   it('relies on HDKey to reject invalid derivation indexes', () => {
     const seed = testSeed();
-    expect(() => deriveHardenedEd25519Node(seed, [0x80000000])).toThrow();
-    expect(() => deriveHardenedEd25519Node(seed, [-1])).toThrow();
-    expect(() => deriveHardenedEd25519Node(seed, [1.5])).toThrow();
-    expect(() => deriveHardenedEd25519Node(seed, [0x7fffffff])).not.toThrow();
+    expect(() => deriveSolanaAccountNode(seed, 0x80000000)).toThrow();
+    expect(() => deriveSolanaAccountNode(seed, -1)).toThrow();
+    expect(() => deriveSolanaAccountNode(seed, 1.5)).toThrow();
+    expect(() => deriveSolanaAccountNode(seed, 0x7fffffff)).not.toThrow();
   });
 
   it('hardens every step, so index 0 is not the non-hardened child SLIP-0010 forbids', () => {
     // The non-hardened child of a node is what an EVM-shaped implementation would
     // reach for. It is a different key, and it is unreachable through this function.
-    const parent = deriveHardenedEd25519Node(testSeed(), [44, SOLANA_COIN_TYPE, 0]);
-    const hardenedChild = deriveHardenedEd25519Node(testSeed(), [44, SOLANA_COIN_TYPE, 0, 0]);
+    const parent = HDKey.fromMasterSeed(testSeed()).derive("m/44'/501'/0'");
+    const hardenedChild = deriveSolanaAccountNode(testSeed(), 0);
     expect(toHex(hardenedChild.privateKey)).not.toBe(toHex(parent.privateKey));
   });
 
   it('derives each account index from the seed rather than from a shared parent', () => {
     const seed = testSeed();
-    const first = deriveHardenedEd25519Node(seed, [44, SOLANA_COIN_TYPE, 0, 0]);
-    const second = deriveHardenedEd25519Node(seed, [44, SOLANA_COIN_TYPE, 1, 0]);
+    const first = deriveSolanaAccountNode(seed, 0);
+    const second = deriveSolanaAccountNode(seed, 1);
     expect(toHex(first.privateKey)).not.toBe(toHex(second.privateKey));
     expect(toHex(first.chainCode)).not.toBe(toHex(second.chainCode));
-  });
-});
-
-describe('solanaDerivationPath', () => {
-  it('renders the ruled path with both trailing components hardened', () => {
-    expect(solanaDerivationPath(0)).toBe("m/44'/501'/0'/0'");
-    expect(solanaDerivationPath(7)).toBe("m/44'/501'/7'/0'");
-  });
-
-  it('names SLIP-0044 coin type 501', () => {
-    expect(SOLANA_COIN_TYPE).toBe(501);
   });
 });
 

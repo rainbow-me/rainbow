@@ -22,24 +22,14 @@ type Ed25519Node = {
   readonly chainCode: Uint8Array;
 };
 
-/** Derive hardened children with the cookbook's HDKey pattern, preserving our numeric-index contract. */
-export function deriveHardenedEd25519Node(seed: Uint8Array, path: readonly number[]): Ed25519Node {
+/** Derive a Solana account at the cookbook's fully hardened BIP44 path. */
+export function deriveSolanaAccountNode(seed: Uint8Array, accountIndex: number): Ed25519Node {
   if (seed.length < SEED_MIN_BYTES || seed.length > SEED_MAX_BYTES) {
     throw new RainbowError(`[solana/derivation]: seed must be ${SEED_MIN_BYTES}-${SEED_MAX_BYTES} bytes, received ${seed.length}`);
   }
 
-  const derivationPath = ['m', ...path.map(index => `${index}'`)].join('/');
-  const node = HDKey.fromMasterSeed(seed).derive(derivationPath);
+  const node = HDKey.fromMasterSeed(seed).derive(`m/${PURPOSE_BIP44}'/${SOLANA_COIN_TYPE}'/${accountIndex}'/0'`);
   return { privateKey: node.privateKey, chainCode: node.chainCode };
-}
-
-/** The cookbook's Solana account path; every component, including the trailing zero, is hardened. */
-export function solanaDerivationPath(accountIndex: number): string {
-  return `m/${PURPOSE_BIP44}'/${SOLANA_COIN_TYPE}'/${accountIndex}'/0'`;
-}
-
-function deriveAccountNode(seed: Uint8Array, accountIndex: number): Ed25519Node {
-  return deriveHardenedEd25519Node(seed, [PURPOSE_BIP44, SOLANA_COIN_TYPE, accountIndex, 0]);
 }
 
 /**
@@ -49,7 +39,7 @@ function deriveAccountNode(seed: Uint8Array, accountIndex: number): Ed25519Node 
  * so an encoding fault cannot leave this function as a `SolanaAddress`.
  */
 export function deriveSolanaAddress(seed: Uint8Array, accountIndex: number): SolanaAddress {
-  const publicKey = ed25519.getPublicKey(deriveAccountNode(seed, accountIndex).privateKey);
+  const publicKey = ed25519.getPublicKey(deriveSolanaAccountNode(seed, accountIndex).privateKey);
   return requireSolanaAddress(base58Encode(publicKey), '[solana/derivation]: derived public key did not encode to a Solana address');
 }
 
@@ -68,7 +58,7 @@ export type SolanaSigner = {
 };
 
 export function deriveSolanaSigner(seed: Uint8Array, accountIndex: number): SolanaSigner {
-  const { privateKey } = deriveAccountNode(seed, accountIndex);
+  const { privateKey } = deriveSolanaAccountNode(seed, accountIndex);
   const publicKey = ed25519.getPublicKey(privateKey);
 
   return {

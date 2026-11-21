@@ -2,11 +2,11 @@ import { ed25519 } from '@noble/curves/ed25519';
 import { base64 } from '@scure/base';
 
 import { base58Encode, requireSolanaAddress } from '@/features/solana/core/address';
-import { deriveHardenedEd25519Node } from '@/features/solana/core/derivation';
+import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
 import { type AccountPrivateKeyData } from '@/features/wallet/types';
 
 export function solanaKeyFromSeed(seed: Uint8Array, index: number): AccountPrivateKeyData {
-  const node = deriveHardenedEd25519Node(seed, [44, 501, index, 0]);
+  const node = deriveSolanaAccountNode(seed, index);
   try {
     return {
       address: base58Encode(ed25519.getPublicKey(node.privateKey)),
