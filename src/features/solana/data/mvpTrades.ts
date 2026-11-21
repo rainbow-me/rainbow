@@ -30,7 +30,7 @@ import {
 } from '@/features/solana/core/swap';
 import { configureSolanaMvpSdk, takeSolanaRouteMessage } from '@/features/solana/data/mvpSdk';
 import { type PreparedSwap } from '@/features/solana/data/swapTypes';
-import { assertSolanaSource, requireEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
+import { assertSolanaSource, getEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
 import { withSolanaSigner } from '@/features/wallet/data/loadSolanaSigner';
 import { loadWallet } from '@/features/wallet/data/loadWallet';
 import { getSolanaAccount, type EnabledSolanaAccount } from '@/features/wallet/data/stores/accountMetadataStore';
@@ -88,7 +88,7 @@ async function tokenBalance(owner: string, mint: Address): Promise<bigint> {
 }
 
 export async function getMvpBalances() {
-  const account = requireEnabledSolanaAccount();
+  const account = getEnabledSolanaAccount();
   const [bonk, usdc, sol] = await Promise.all([
     tokenBalance(account.address, BONK),
     tokenBalance(account.address, SOLANA_USDC),
@@ -99,7 +99,7 @@ export async function getMvpBalances() {
 }
 
 export async function prepareMvpTrade(route: MvpRoute): Promise<MvpTrade> {
-  const account = requireEnabledSolanaAccount();
+  const account = getEnabledSolanaAccount();
   assertNoPendingAttempt();
   configureSolanaMvpSdk();
   let trade: MvpTrade;
@@ -275,7 +275,7 @@ async function assertSwapFunds(account: EnabledSolanaAccount, asset: SwapAssetId
 }
 
 export async function prepareSwapTrade(inputAsset: SwapAssetId, outputAsset: SolanaSwapAssetId, amount: string): Promise<PreparedSwap> {
-  const account = requireEnabledSolanaAccount();
+  const account = getEnabledSolanaAccount();
   if (inputAsset === outputAsset) throw new Error('Select two different tokens.');
   const input = swapInputAmount(amount, inputAsset);
   assertNoPendingAttempt();
