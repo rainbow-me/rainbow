@@ -46,10 +46,10 @@ describe('Solana persisted key format', () => {
       { privateKey: base58Encode(new Uint8Array(33)) },
       { privateKey: base58Encode(new Uint8Array(64)) },
       { privateKey: base58Encode(new Uint8Array(32)) },
-      { address: deriveSolanaAccountNode(seed, 1).address },
     ]) {
       expect(() => decodeSolanaKey({ ...record, ...change }, record.address)).toThrow();
     }
+    expect(() => decodeSolanaKey(record, deriveSolanaAccountNode(seed, 1).address)).toThrow();
   });
 
   it.each([
@@ -63,11 +63,30 @@ describe('Solana persisted key format', () => {
     expect(decodeSolanaKey(record, address)).toEqual(bytes);
   });
 
-  it('decodes valid key bytes without checking version or format metadata', () => {
+  it('binds the key to the expected address without checking record metadata', () => {
     const node = deriveSolanaAccountNode(seed, 0);
-    const record = { address: node.address, privateKey: base58Encode(node.privateKey) };
-    for (const value of [record, { ...record, version: 2, format: 'unused-format' }]) {
+    const record = { privateKey: base58Encode(node.privateKey) };
+    for (const value of [record, { ...record, address: 'unused-address', version: 2, format: 'unused-format' }]) {
       expect(decodeSolanaKey(value, node.address)).toEqual(node.privateKey);
+    }
+  });
+
+  it('catches malformed records without exposing their contents', () => {
+    const address = deriveSolanaAccountNode(seed, 0).address;
+    for (const value of [
+      undefined,
+      null,
+      false,
+      42,
+      'not-a-record',
+      {},
+      { privateKey: undefined },
+      { privateKey: null },
+      { privateKey: 42 },
+      { privateKey: new Uint8Array(32) },
+      { privateKey: 'invalid-secret-data' },
+    ]) {
+      expect(() => decodeSolanaKey(value, address)).toThrow('Solana key does not match its address.');
     }
   });
 
