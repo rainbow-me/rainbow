@@ -21,6 +21,7 @@ import * as i18n from '@/languages';
 import { useIsSponsoredSwap } from '@/state/swaps/sponsoredSwapStore';
 import { swapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
+import { type ResponseByTheme } from '@/theme/types';
 
 import { useSwapContext } from '../providers/swap-provider';
 import { EstimatedSwapGasFee, EstimatedSwapGasFeeSlot } from './EstimatedSwapGasFee';
@@ -45,19 +46,36 @@ function UnmountWhenGasButtonIsNotInScreen({ placeholder, children }: PropsWithC
   );
 }
 
-function EstimatedGasFee({ sponsored }: { sponsored: boolean }) {
+export function GasFeeRow({ sponsored = false, children }: PropsWithChildren<{ sponsored?: boolean }>) {
   return (
     <Inline alignVertical="center" space="4px">
       <TextIcon color={sponsored ? 'labelQuinary' : 'labelQuaternary'} height={10} size="icon 11px" weight="heavy" width={18}>
         􀵟
       </TextIcon>
+      {children}
+    </Inline>
+  );
+}
+
+export function GasButtonView({ selectedGas, estimatedFee }: { selectedGas: ReactNode; estimatedFee: ReactNode }) {
+  return (
+    <Box gap={12}>
+      {selectedGas}
+      {estimatedFee}
+    </Box>
+  );
+}
+
+function EstimatedGasFee({ sponsored }: { sponsored: boolean }) {
+  return (
+    <GasFeeRow sponsored={sponsored}>
       <UnmountWhenGasButtonIsNotInScreen placeholder={<EstimatedSwapGasFeeSlot text="--" />}>
         <EstimatedSwapGasFee
           color={sponsored ? 'labelQuinary' : 'labelTertiary'}
           style={sponsored ? styles.sponsoredGasFeeText : undefined}
         />
       </UnmountWhenGasButtonIsNotInScreen>
-    </Inline>
+    </GasFeeRow>
   );
 }
 
@@ -68,6 +86,20 @@ function SelectedGas({ isPill, sponsored }: { isPill?: boolean; sponsored?: bool
 
   const buyTokenColor = swapsStore(s => s.outputAsset?.highContrastColor);
 
+  return <SelectedGasView isPill={isPill} sponsored={sponsored} selectedGasSpeed={selectedGasSpeed} buyTokenColor={buyTokenColor} />;
+}
+
+export function SelectedGasView({
+  isPill,
+  sponsored,
+  selectedGasSpeed = GasSpeed.NORMAL,
+  buyTokenColor,
+}: {
+  isPill?: boolean;
+  sponsored?: boolean;
+  selectedGasSpeed?: GasSpeed;
+  buyTokenColor?: ResponseByTheme<string>;
+}) {
   return (
     <Inline alignVertical="center" space={{ custom: 5 }}>
       <Inline alignVertical="center" space="4px">
@@ -241,10 +273,10 @@ export const GasButton = () => {
   const isSponsoredSwap = useIsSponsoredSwap();
   return (
     <GasMenu disabled={isSponsoredSwap}>
-      <Box gap={12}>
-        <SelectedGas sponsored={isSponsoredSwap} />
-        <EstimatedGasFee sponsored={isSponsoredSwap} />
-      </Box>
+      <GasButtonView
+        selectedGas={<SelectedGas sponsored={isSponsoredSwap} />}
+        estimatedFee={<EstimatedGasFee sponsored={isSponsoredSwap} />}
+      />
     </GasMenu>
   );
 };

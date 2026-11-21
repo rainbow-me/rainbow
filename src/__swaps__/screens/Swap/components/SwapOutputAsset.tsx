@@ -18,7 +18,7 @@ import { BASE_INPUT_WIDTH, INPUT_INNER_WIDTH } from '@/__swaps__/screens/Swap/co
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { TOKEN_SEARCH_INPUT_HORIZONTAL_PADDING } from '@/components/token-search/constants';
-import { AnimatedText, Box, Column, Columns, Stack, useColorMode } from '@/design-system';
+import { AnimatedText, Box, useColorMode } from '@/design-system';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
@@ -27,6 +27,7 @@ import { useSwapsStore } from '@/state/swaps/swapsStore';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 
 import { CopyPasteMenu } from './CopyPasteMenu';
+import { SwapAssetFields } from './SwapAssetFields';
 
 const SELECT_LABEL = i18n.t(i18n.l.swap.select);
 const NO_BALANCE_LABEL = i18n.t(i18n.l.swap.no_balance);
@@ -154,23 +155,13 @@ export function SwapOutputAsset() {
   return (
     <SwapInput asset={internalSelectedOutputAsset} bottomInput otherInputProgress={inputProgress} progress={outputProgress}>
       <Box as={Animated.View} style={AnimatedSwapStyles.outputStyle}>
-        <Stack space="16px">
-          <Columns alignHorizontal="justify" alignVertical="center">
-            <Column width="content">
-              <SwapOutputIcon />
-            </Column>
-            <SwapOutputAmount handleTapWhileDisabled={handleTapWhileDisabled} />
-            <Column width="content">
-              <SwapOutputActionButton />
-            </Column>
-          </Columns>
-          <Columns alignHorizontal="justify" alignVertical="center" space="10px">
-            <SwapNativeInput nativeInputType="outputNativeValue" handleTapWhileDisabled={handleTapWhileDisabled} />
-            <Column width="content">
-              <OutputAssetBalanceBadge />
-            </Column>
-          </Columns>
-        </Stack>
+        <SwapAssetFields
+          icon={<SwapOutputIcon />}
+          amount={<SwapOutputAmount handleTapWhileDisabled={handleTapWhileDisabled} />}
+          action={<SwapOutputActionButton />}
+          nativeValue={<SwapNativeInput nativeInputType="outputNativeValue" handleTapWhileDisabled={handleTapWhileDisabled} />}
+          balance={<OutputAssetBalanceBadge />}
+        />
       </Box>
       <Box
         as={Animated.View}
