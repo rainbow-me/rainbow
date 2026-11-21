@@ -12,7 +12,7 @@ An internal user with an existing mnemonic wallet can enable a Solana address fo
 4. `SolanaMvpMenu.tsx` exposes only Enable Solana behind the existing Solana feature gate; `DevSection.tsx` mounts it. There are no SDK imports or swap actions in this layer.
 5. `package.json`/`yarn.lock` add Noble curves, base encoding and `micro-key-producer` for SLIP-0010 derivation; `AGENTS.md` preserves the agreed incremental-integration constraints.
 
-The derivation dependency follows the cookbook’s BIP44 `HDKey.fromMasterSeed(seed).derive(path)` pattern using `micro-key-producer/slip10.js` (0.10.2). The cookbook still names `micro-ed25519-hdkey`, whose npm deprecation notice directs users to `micro-key-producer` for security updates. The successor adds transitive packages; the app imports only its SLIP-0010 entry point. Existing key/address vectors are unchanged, and the storage format is unchanged. Custom account-index assertions are removed: HDKey validates indexes during derivation, while `solanaDerivationPath` only formats the path. The direct `@noble/hashes` dependency is removed; Noble remains used transitively and for our existing signing code.
+The derivation dependency follows the cookbook’s BIP44 `HDKey.fromMasterSeed(seed).derive(path)` pattern using `micro-key-producer/slip10.js` (0.10.2). The cookbook still names `micro-ed25519-hdkey`, whose npm deprecation notice directs users to `micro-key-producer` for security updates. The successor adds transitive packages; the app imports only its SLIP-0010 entry point. Existing key/address vectors are unchanged, and the storage format is unchanged. The single entry point is `deriveSolanaAccountNode(seed, accountIndex)`, with the fully hardened Solana path inlined. The generic path-array function, intermediate wrapper and path-formatting helper are removed. HDKey validates indexes during derivation. Standard SLIP-0010 vectors exercise HDKey directly; application tests pin Solana addresses and signing behavior. The direct `@noble/hashes` dependency is removed; Noble remains used transitively and for our existing signing code.
 
 ## Current validation responsibilities
 
@@ -47,7 +47,7 @@ The broader WalletDescriptor/source-material proposals remain on the original br
 - `src/features/wallet/types.ts`
 - `yarn.lock`
 
-Validation: 80 focused PR1 tests passed after the HDKey replacement; the complete stack passes 356 tests. TypeScript passed on the updated stack. Dependency checks passed on PR1 and the updated full stack. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
+Validation: 78 focused PR1 tests passed after the HDKey replacement; the complete stack passes 354 tests. TypeScript passed on the updated stack. Dependency checks passed on PR1 and the updated full stack. ESLint has no errors (existing non-null assertion warnings remain in the copied tests). Native visual/authentication checks remain pending.
 
 Solana eligibility uses the existing `useIsSolanaEnabled` gate, with no store-install restriction. Store builds use remote `solana_enabled`; internal builds also honor the existing local experimental override. The source-entry check in `getSolanaSource` enforces wallet readiness, mnemonic type, visibility and damaged status. The metadata store itself performs no eligibility checks.
 
