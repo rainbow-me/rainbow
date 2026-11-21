@@ -1,8 +1,8 @@
 import { HDNode, isValidMnemonic } from '@ethersproject/hdnode';
 import { mnemonicToSeed } from 'bip39';
 
+import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
-import { solanaKeyFromSeed } from '@/features/wallet/core/solanaAccount';
 import { getHdPath, WalletLibraryType } from '@/features/wallet/core/walletLibrary';
 import { saveSolanaKey } from '@/features/wallet/data/solanaKeychain';
 import { getSolanaAccount, publishSolanaAccount, type EnabledSolanaAccount } from '@/features/wallet/data/stores/accountMetadataStore';
@@ -56,11 +56,16 @@ export async function enableSolanaAccount(): Promise<EnabledSolanaAccount> {
     const evmAddress = HDNode.fromSeed(seed).derivePath(getHdPath({ type: WalletLibraryType.bip39, index: source.index })).address;
     if (evmAddress.toLowerCase() !== source.sourceEvmAddress.toLowerCase())
       throw new Error('The recovery phrase does not match this EVM account.');
-    const key = solanaKeyFromSeed(seed, source.index);
-    await saveSolanaKey(key);
-    const record: EnabledSolanaAccount = { ...source, namespace: 'solana', address: key.address, version: 1 };
-    publishSolanaAccount(record);
-    return record;
+    const node = deriveSolanaAccountNode(seed, source.index);
+    try {
+      await saveSolanaKey(node.address, node.privateKey);
+      const record: EnabledSolanaAccount = { ...source, namespace: 'solana', address: node.address, version: 1 };
+      publishSolanaAccount(record);
+      return record;
+    } finally {
+      node.privateKey.fill(0);
+      node.chainCode.fill(0);
+    }
   } finally {
     seed?.fill(0);
     // eslint-disable-next-line require-atomic-updates -- only the operation holding this lock reaches finally

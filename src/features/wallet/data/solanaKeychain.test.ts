@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import * as kc from '@/features/local-auth/keychain';
-import { solanaKeyFromSeed } from '@/features/wallet/core/solanaAccount';
+import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
 
 import { readSolanaKey, saveSolanaKey, SolanaAuthenticationCancelled } from './solanaKeychain';
 
@@ -13,7 +13,13 @@ vi.mock('@/features/local-auth/keychain', () => ({
   has: vi.fn(),
 }));
 
-const record = solanaKeyFromSeed(new Uint8Array(64).fill(1), 0);
+const node = deriveSolanaAccountNode(new Uint8Array(64).fill(1), 0);
+const record = {
+  address: node.address,
+  privateKey: Buffer.from(node.privateKey).toString('base64'),
+  format: 'ed25519-seed-base64',
+  version: 1,
+};
 const options = { accessControl: 'UserPresence', accessible: 'WhenUnlockedThisDeviceOnly' };
 
 beforeEach(() => {
@@ -26,12 +32,12 @@ beforeEach(() => {
 describe('Solana keychain isolation', () => {
   it('uses the shared policy unchanged when it returns simulator options', async () => {
     vi.mocked(kc.getPrivateAccessControlOptions).mockResolvedValue({});
-    await saveSolanaKey(record);
+    await saveSolanaKey(node.address, node.privateKey);
     expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
       authenticationPrompt: { title: 'Authenticate to use Solana' },
     });
     const bytes = await readSolanaKey(record.address);
-    expect(bytes).toHaveLength(32);
+    expect(bytes).toEqual(node.privateKey);
     bytes.fill(0);
     expect(kc.getObject).toHaveBeenCalledTimes(1);
   });
@@ -39,7 +45,7 @@ describe('Solana keychain isolation', () => {
   it('reads through the shared keychain without requesting write access-control options', async () => {
     vi.mocked(kc.getPrivateAccessControlOptions).mockRejectedValue(new Error('Write options must not be needed for reads'));
     const bytes = await readSolanaKey(record.address);
-    expect(bytes).toHaveLength(32);
+    expect(bytes).toEqual(node.privateKey);
     bytes.fill(0);
     expect(kc.getPrivateAccessControlOptions).not.toHaveBeenCalled();
     expect(kc.getObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, {
@@ -48,7 +54,7 @@ describe('Solana keychain isolation', () => {
   });
 
   it('writes a protected, network-independent record outside the legacy backup suffix without reading it back', async () => {
-    await saveSolanaKey(record);
+    await saveSolanaKey(node.address, node.privateKey);
     expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
       ...options,
       authenticationPrompt: { title: 'Authenticate to use Solana' },
@@ -59,13 +65,13 @@ describe('Solana keychain isolation', () => {
 
   it('propagates write failures', async () => {
     vi.mocked(kc.setObject).mockRejectedValue(new Error('Write failed'));
-    await expect(saveSolanaKey(record)).rejects.toThrow('Write failed');
+    await expect(saveSolanaKey(node.address, node.privateKey)).rejects.toThrow('Write failed');
     expect(kc.getObject).not.toHaveBeenCalled();
   });
 
   it('writes the derived key even when a record already exists', async () => {
     vi.mocked(kc.has).mockResolvedValue(true);
-    await saveSolanaKey(record);
+    await saveSolanaKey(node.address, node.privateKey);
     expect(kc.has).not.toHaveBeenCalled();
     expect(kc.setObject).toHaveBeenCalledTimes(1);
     expect(kc.getObject).not.toHaveBeenCalled();

@@ -1,5 +1,7 @@
+import { base64 } from '@scure/base';
+
 import * as keychain from '@/features/local-auth/keychain';
-import { requireSolanaAddress } from '@/features/solana/core/address';
+import { requireSolanaAddress, type SolanaAddress } from '@/features/solana/core/address';
 import { decodeSolanaKey } from '@/features/wallet/core/solanaAccount';
 import { type AccountPrivateKeyData } from '@/features/wallet/types';
 
@@ -22,18 +24,18 @@ export async function readSolanaKey(address: string): Promise<Uint8Array> {
   return decodeSolanaKey(result.value, address);
 }
 
-export async function saveSolanaKey(record: AccountPrivateKeyData): Promise<void> {
+export async function saveSolanaKey(address: SolanaAddress, privateKey: Uint8Array): Promise<void> {
   const options = await keychain.getPrivateAccessControlOptions();
-  const key = keyForAddress(record.address);
+  const key = keyForAddress(address);
   // Do not pass a PIN in write options: the legacy wrapper logs those options.
   await keychain.setObject(
     key,
     {
-      address: record.address,
-      privateKey: record.privateKey,
-      format: record.format,
-      version: record.version,
-    },
+      address,
+      privateKey: base64.encode(privateKey),
+      format: 'ed25519-seed-base64',
+      version: 1,
+    } satisfies AccountPrivateKeyData,
     { ...options, authenticationPrompt }
   );
 }

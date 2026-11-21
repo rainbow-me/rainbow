@@ -2,8 +2,9 @@ import { Wallet } from '@ethersproject/wallet';
 import { mnemonicToSeedSync } from 'bip39';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import * as derivation from '@/features/solana/core/derivation';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
-import { decodeSolanaKey, solanaKeyFromSeed } from '@/features/wallet/core/solanaAccount';
+import { decodeSolanaKey } from '@/features/wallet/core/solanaAccount';
 import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -33,7 +34,13 @@ const wallet: RainbowWallet = {
   addresses: [{ address: evm, index: 2, label: 'Third', avatar: null, color: 1, visible: true }],
 };
 let state: ReturnType<typeof useWalletsStore.getState>;
-const key = solanaKeyFromSeed(mnemonicToSeedSync(phrase), 2);
+const node = derivation.deriveSolanaAccountNode(mnemonicToSeedSync(phrase), 2);
+const key = {
+  address: node.address,
+  privateKey: Buffer.from(node.privateKey).toString('base64'),
+  format: 'ed25519-seed-base64',
+  version: 1,
+};
 const record = {
   walletId: 'test',
   index: 2,
@@ -44,6 +51,7 @@ const record = {
 };
 
 beforeEach(() => {
+  vi.restoreAllMocks();
   vi.resetAllMocks();
   state = {
     wallets: { test: structuredClone(wallet) },
@@ -67,9 +75,23 @@ describe('additive Solana wallet lifecycle', () => {
 
   it('derives the selected index, saves the key and preserves the existing wallet profile', async () => {
     expect(await enableSolanaAccount()).toEqual(record);
-    expect(saveSolanaKey).toHaveBeenCalledWith(key);
+    expect(saveSolanaKey).toHaveBeenCalledWith(key.address, expect.any(Uint8Array));
     expect(getSolanaAccount('test', 2)).toEqual(record);
     expect(state.wallets.test).toEqual(wallet);
+  });
+
+  it.each([false, true])('clears derived key bytes after persistence (failure: %s)', async fails => {
+    const derived = derivation.deriveSolanaAccountNode(mnemonicToSeedSync(phrase), 2);
+    vi.spyOn(derivation, 'deriveSolanaAccountNode').mockReturnValueOnce(derived);
+    vi.mocked(saveSolanaKey).mockImplementationOnce(async (address, privateKey) => {
+      expect(address).toBe(node.address);
+      expect(privateKey).toEqual(node.privateKey);
+      if (fails) throw new Error('save failed');
+    });
+    const result = await enableSolanaAccount().catch(error => error);
+    expect(result).toEqual(fails ? new Error('save failed') : record);
+    expect(derived.privateKey.every(byte => byte === 0)).toBe(true);
+    expect(derived.chainCode.every(byte => byte === 0)).toBe(true);
   });
 
   it('does not publish on persistence failure or authentication cancellation', async () => {
@@ -102,7 +124,7 @@ describe('additive Solana wallet lifecycle', () => {
     }
     expect(await enableSolanaAccount()).toEqual(record);
     expect(getSeedPhrase).toHaveBeenCalledWith('test');
-    expect(saveSolanaKey).toHaveBeenCalledWith(key);
+    expect(saveSolanaKey).toHaveBeenCalledWith(key.address, expect.any(Uint8Array));
     expect(getSolanaAccount('test', 2)).toEqual(record);
     expect(getSolanaAccount('other', 2)).toBeUndefined();
     expect(state.selected?.id).toBe('other');

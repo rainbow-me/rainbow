@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { base58Decode } from '@/features/solana/core/address';
 import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
 
-import { decodeSolanaKey, solanaKeyFromSeed } from './solanaAccount';
+import { decodeSolanaKey } from './solanaAccount';
 
 const seed = mnemonicToSeedSync('abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about');
 
@@ -13,7 +13,13 @@ describe('Solana persisted key format', () => {
   it('round trips indices 0, 1, 2 and produces verifiable signatures', () => {
     const addresses = new Set();
     for (const index of [0, 1, 2]) {
-      const record = solanaKeyFromSeed(seed, index);
+      const node = deriveSolanaAccountNode(seed, index);
+      const record = {
+        address: node.address,
+        privateKey: Buffer.from(node.privateKey).toString('base64'),
+        format: 'ed25519-seed-base64',
+        version: 1,
+      };
       expect(record.address).toBe(deriveSolanaAccountNode(seed, index).address);
       const key = decodeSolanaKey(record, record.address);
       const message = new Uint8Array([1, 2, 3]);
@@ -24,17 +30,22 @@ describe('Solana persisted key format', () => {
     expect(addresses.size).toBe(3);
   });
 
-  it('rejects wrong versions, formats, malformed keys, mismatched addresses and invalid indices', () => {
-    const record = solanaKeyFromSeed(seed, 0);
+  it('rejects wrong versions, formats, malformed keys, mismatched addresses', () => {
+    const node = deriveSolanaAccountNode(seed, 0);
+    const record = {
+      address: node.address,
+      privateKey: Buffer.from(node.privateKey).toString('base64'),
+      format: 'ed25519-seed-base64',
+      version: 1,
+    };
     for (const change of [
       { version: 2 },
       { format: 'secp256k1-private-key-hex' },
       { privateKey: 'bad' },
       { privateKey: Buffer.alloc(32).toString('base64') },
-      { address: solanaKeyFromSeed(seed, 1).address },
+      { address: deriveSolanaAccountNode(seed, 1).address },
     ]) {
       expect(() => decodeSolanaKey({ ...record, ...change }, record.address)).toThrow();
     }
-    for (const index of [-1, 1.1, 2 ** 31]) expect(() => solanaKeyFromSeed(seed, index)).toThrow();
   });
 });
