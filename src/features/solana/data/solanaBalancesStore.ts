@@ -5,6 +5,7 @@ import { type SolanaBalances } from '@/features/solana/core/balances';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { getSolanaAccount, useAccountMetadataStore } from '@/features/wallet/data/stores/accountMetadataStore';
 import { time } from '@/framework/core/utils/time';
+import { EthereumWalletType } from '@/helpers/walletTypes';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
@@ -18,8 +19,9 @@ export const useSolanaBalancesAddress = createDerivedStore($ => {
   $(useAccountMetadataStore, state => state.accounts);
   if (!enabled || anvil || !state.selected) return null;
   const wallet = state.wallets[state.selected.id];
-  const account = wallet?.addresses.find(item => item.address.toLowerCase() === state.accountAddress.toLowerCase());
-  return account ? (getSolanaAccount(wallet.id, account.index)?.address ?? null) : null;
+  if (!state.walletReady || wallet?.type !== EthereumWalletType.mnemonic || wallet.damaged) return null;
+  const account = wallet.addresses.find(item => item.address.toLowerCase() === state.accountAddress.toLowerCase());
+  return account?.visible ? (getSolanaAccount(wallet.id, account.index)?.address ?? null) : null;
 });
 
 type Params = { address: string | null; currency: SupportedCurrencyKey };
