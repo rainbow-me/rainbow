@@ -9,7 +9,7 @@ export function solanaKeyFromSeed(seed: Uint8Array, index: number): AccountPriva
   const node = deriveSolanaAccountNode(seed, index);
   try {
     return {
-      address: base58Encode(ed25519.getPublicKey(node.privateKey)),
+      address: node.address,
       privateKey: base64.encode(node.privateKey),
       format: 'ed25519-seed-base64',
       version: 1,

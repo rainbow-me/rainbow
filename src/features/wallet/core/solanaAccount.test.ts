@@ -3,7 +3,7 @@ import { mnemonicToSeedSync } from 'bip39';
 import { describe, expect, it } from 'vitest';
 
 import { base58Decode } from '@/features/solana/core/address';
-import { deriveSolanaAddress } from '@/features/solana/core/derivation';
+import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
 
 import { decodeSolanaKey, solanaKeyFromSeed } from './solanaAccount';
 
@@ -14,7 +14,7 @@ describe('Solana persisted key format', () => {
     const addresses = new Set();
     for (const index of [0, 1, 2]) {
       const record = solanaKeyFromSeed(seed, index);
-      expect(record.address).toBe(deriveSolanaAddress(seed, index));
+      expect(record.address).toBe(deriveSolanaAccountNode(seed, index).address);
       const key = decodeSolanaKey(record, record.address);
       const message = new Uint8Array([1, 2, 3]);
       expect(ed25519.verify(ed25519.sign(message, key), message, base58Decode(record.address)!)).toBe(true);

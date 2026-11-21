@@ -4,7 +4,7 @@ import { HDKey } from 'micro-key-producer/slip10.js';
 import { describe, expect, it } from 'vitest';
 
 import { base58Decode, SOLANA_ADDRESS_BYTE_LENGTH } from './address';
-import { deriveSolanaAccountNode, deriveSolanaAddress, deriveSolanaSigner } from './derivation';
+import { deriveSolanaAccountNode, deriveSolanaSigner } from './derivation';
 
 const toHex = (bytes: Uint8Array) => Buffer.from(bytes).toString('hex');
 const fromHex = (value: string) => new Uint8Array(Buffer.from(value, 'hex'));
@@ -188,40 +188,40 @@ describe('deriveSolanaAccountNode', () => {
   });
 });
 
-describe('deriveSolanaAddress', () => {
+describe('derived Solana account addresses', () => {
   it('derives the addresses Phantom and Solflare show for the BIP-39 test mnemonic', () => {
     const seed = testSeed();
     EXPECTED_ADDRESSES.forEach((expected, accountIndex) => {
-      expect(deriveSolanaAddress(seed, accountIndex)).toBe(expected);
+      expect(deriveSolanaAccountNode(seed, accountIndex).address).toBe(expected);
     });
   });
 
   it('produces a 32-byte base58 value, which is what makes it an address', () => {
-    const address = deriveSolanaAddress(testSeed(), 0);
+    const address = deriveSolanaAccountNode(testSeed(), 0).address;
     expect(base58Decode(address)).toHaveLength(SOLANA_ADDRESS_BYTE_LENGTH);
   });
 
   it('gives every account index a different address', () => {
     const seed = testSeed();
-    const addresses = [0, 1, 2, 3, 4].map(index => deriveSolanaAddress(seed, index));
+    const addresses = [0, 1, 2, 3, 4].map(index => deriveSolanaAccountNode(seed, index).address);
     expect(new Set(addresses).size).toBe(addresses.length);
   });
 
   it('is deterministic across calls', () => {
-    expect(deriveSolanaAddress(testSeed(), 0)).toBe(deriveSolanaAddress(testSeed(), 0));
+    expect(deriveSolanaAccountNode(testSeed(), 0).address).toBe(deriveSolanaAccountNode(testSeed(), 0).address);
   });
 
   it('gives a different address for a different seed', () => {
     const other = new Uint8Array(mnemonicToSeedSync('legal winner thank year wave sausage worth useful legal winner thank yellow'));
-    expect(deriveSolanaAddress(other, 0)).not.toBe(deriveSolanaAddress(testSeed(), 0));
+    expect(deriveSolanaAccountNode(other, 0).address).not.toBe(deriveSolanaAccountNode(testSeed(), 0).address);
   });
 });
 
 describe('deriveSolanaSigner', () => {
-  it('carries the same address deriveSolanaAddress produces', () => {
+  it('carries the derived account address', () => {
     const seed = testSeed();
-    expect(deriveSolanaSigner(seed, 0).address).toBe(deriveSolanaAddress(seed, 0));
-    expect(deriveSolanaSigner(seed, 2).address).toBe(deriveSolanaAddress(seed, 2));
+    expect(deriveSolanaSigner(seed, 0).address).toBe(deriveSolanaAccountNode(seed, 0).address);
+    expect(deriveSolanaSigner(seed, 2).address).toBe(deriveSolanaAccountNode(seed, 2).address);
   });
 
   it('produces a 64-byte signature that verifies against the derived address', () => {

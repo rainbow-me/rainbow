@@ -14,10 +14,11 @@ const SEED_MIN_BYTES = 16;
 const SEED_MAX_BYTES = 64;
 
 /**
- * A private key and chain code at some point in a SLIP-0010 derivation. The
+ * A derived Solana account with its raw Base58 address, private key and chain code. The
  * private key is a 32-byte ed25519 scalar seed, not a signature-ready expanded key.
  */
 type Ed25519Node = {
+  readonly address: SolanaAddress;
   readonly privateKey: Uint8Array;
   readonly chainCode: Uint8Array;
 };
@@ -29,18 +30,14 @@ export function deriveSolanaAccountNode(seed: Uint8Array, accountIndex: number):
   }
 
   const node = HDKey.fromMasterSeed(seed).derive(`m/${PURPOSE_BIP44}'/${SOLANA_COIN_TYPE}'/${accountIndex}'/0'`);
-  return { privateKey: node.privateKey, chainCode: node.chainCode };
-}
-
-/**
- * Derives the Solana address for one account of a wallet.
- *
- * The address is validated by decoding it back to 32 bytes rather than asserted,
- * so an encoding fault cannot leave this function as a `SolanaAddress`.
- */
-export function deriveSolanaAddress(seed: Uint8Array, accountIndex: number): SolanaAddress {
-  const publicKey = ed25519.getPublicKey(deriveSolanaAccountNode(seed, accountIndex).privateKey);
-  return requireSolanaAddress(base58Encode(publicKey), '[solana/derivation]: derived public key did not encode to a Solana address');
+  return {
+    address: requireSolanaAddress(
+      base58Encode(node.publicKeyRaw),
+      '[solana/derivation]: derived public key did not encode to a Solana address'
+    ),
+    privateKey: node.privateKey,
+    chainCode: node.chainCode,
+  };
 }
 
 /**
@@ -58,11 +55,10 @@ export type SolanaSigner = {
 };
 
 export function deriveSolanaSigner(seed: Uint8Array, accountIndex: number): SolanaSigner {
-  const { privateKey } = deriveSolanaAccountNode(seed, accountIndex);
-  const publicKey = ed25519.getPublicKey(privateKey);
+  const { address, privateKey } = deriveSolanaAccountNode(seed, accountIndex);
 
   return {
-    address: requireSolanaAddress(base58Encode(publicKey), '[solana/derivation]: derived public key did not encode to a Solana address'),
+    address,
     sign: (message: Uint8Array) => ed25519.sign(message, privateKey),
   };
 }
