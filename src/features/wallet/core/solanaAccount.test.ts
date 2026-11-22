@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 
 import { base58Decode, base58Encode } from '@/features/solana/core/address';
 import { deriveSolanaAccountNode } from '@/features/solana/core/derivation';
+import { type AccountPrivateKeyData } from '@/features/wallet/types';
 
 import { decodeSolanaKey } from './solanaAccount';
 
@@ -14,7 +15,7 @@ describe('Solana persisted key format', () => {
     const addresses = new Set();
     for (const index of [0, 1, 2]) {
       const node = deriveSolanaAccountNode(seed, index);
-      const record = {
+      const record: AccountPrivateKeyData = {
         address: node.address,
         privateKey: base58Encode(node.privateKey),
         format: 'ed25519-seed-base58',
@@ -33,7 +34,7 @@ describe('Solana persisted key format', () => {
 
   it('rejects malformed keys and mismatched addresses', () => {
     const node = deriveSolanaAccountNode(seed, 0);
-    const record = {
+    const record: AccountPrivateKeyData = {
       address: node.address,
       privateKey: base58Encode(node.privateKey),
       format: 'ed25519-seed-base58',
@@ -58,7 +59,7 @@ describe('Solana persisted key format', () => {
     { bytes: new Uint8Array(32).fill(255), length: 44 },
   ])('decodes a 32-byte seed encoded in $length Base58 characters', ({ bytes, length }) => {
     const address = base58Encode(ed25519.getPublicKey(bytes));
-    const record = { address, privateKey: base58Encode(bytes), format: 'ed25519-seed-base58', version: 1 };
+    const record: AccountPrivateKeyData = { address, privateKey: base58Encode(bytes), format: 'ed25519-seed-base58', version: 1 };
     expect(record.privateKey).toHaveLength(length);
     expect(decodeSolanaKey(record, address)).toEqual(bytes);
   });
@@ -67,6 +68,7 @@ describe('Solana persisted key format', () => {
     const node = deriveSolanaAccountNode(seed, 0);
     const record = { privateKey: base58Encode(node.privateKey) };
     for (const value of [record, { ...record, address: 'unused-address', version: 2, format: 'unused-format' }]) {
+      // @ts-expect-error Exercise persisted records with missing or different metadata.
       expect(decodeSolanaKey(value, node.address)).toEqual(node.privateKey);
     }
   });
@@ -86,6 +88,7 @@ describe('Solana persisted key format', () => {
       { privateKey: new Uint8Array(32) },
       { privateKey: 'invalid-secret-data' },
     ]) {
+      // @ts-expect-error Exercise malformed data that can arrive from JSON parsing.
       expect(() => decodeSolanaKey(value, address)).toThrow('Solana key does not match its address.');
     }
   });
@@ -98,6 +101,7 @@ describe('Solana persisted key format', () => {
       format: 'ed25519-seed-base64',
       version: 1,
     };
+    // @ts-expect-error Exercise the previously persisted Base64 format.
     expect(() => decodeSolanaKey(record, node.address)).toThrow();
   });
 });

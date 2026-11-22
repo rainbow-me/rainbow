@@ -15,7 +15,7 @@ export class SolanaAuthenticationCancelled extends Error {
 }
 
 export async function readSolanaKey(address: string): Promise<Uint8Array> {
-  const result = await keychain.getObject(keyForAddress(address), { authenticationPrompt }).catch(() => {
+  const result = await keychain.getObject<AccountPrivateKeyData>(keyForAddress(address), { authenticationPrompt }).catch(() => {
     // JSON parser errors can include pieces of the stored secret.
     throw new Error('Unable to read the Solana key record.');
   });

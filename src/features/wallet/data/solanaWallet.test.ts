@@ -6,7 +6,7 @@ import { base58Encode } from '@/features/solana/core/address';
 import * as derivation from '@/features/solana/core/derivation';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { decodeSolanaKey } from '@/features/wallet/core/solanaAccount';
-import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
+import { EncryptionType, type AccountPrivateKeyData, type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
@@ -36,7 +36,7 @@ const wallet: RainbowWallet = {
 };
 let state: ReturnType<typeof useWalletsStore.getState>;
 const node = derivation.deriveSolanaAccountNode(mnemonicToSeedSync(phrase), 2);
-const key = {
+const key: AccountPrivateKeyData = {
   address: node.address,
   privateKey: base58Encode(node.privateKey),
   format: 'ed25519-seed-base58',
