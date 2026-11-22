@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useMemo, type ComponentProps } from 'react';
 import { StyleSheet } from 'react-native';
 
 import { globalColors } from '@/design-system/color/palettes';
@@ -16,11 +16,13 @@ const EMPTY_CATEGORIES: readonly FloatingTab[] = [];
  * Category tabs for Sports browsing.
  */
 export const SportsCategoryBar = memo(function SportsCategoryBar({
+  blocksHandlers,
   host,
   bottom,
   width,
   isDarkMode,
 }: {
+  blocksHandlers?: ComponentProps<typeof FloatingTabBar>['blocksHandlers'];
   host: SportsHost;
   bottom: number;
   width: number;
@@ -36,6 +38,7 @@ export const SportsCategoryBar = memo(function SportsCategoryBar({
 
   return (
     <FloatingTabBar
+      blocksHandlers={blocksHandlers}
       style={[styles.bar, { bottom }]}
       tabs={tabs}
       selectedKey={selectedCategory}
