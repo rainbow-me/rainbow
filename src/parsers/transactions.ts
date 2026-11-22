@@ -141,7 +141,16 @@ export const parseTransaction = (transaction: Transaction, nativeCurrency: Nativ
 };
 
 export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): RainbowTransaction => {
-  const asset = tx?.changes?.[0]?.asset || tx.asset;
+  // Confirmed displays expect transaction amounts here, not the copied wallet balances.
+  const changes = tx.changes?.map(change =>
+    change?.value == null || change.asset.type === 'nft'
+      ? change
+      : {
+          ...change,
+          asset: { ...change.asset, balance: convertRawAmountToBalance(change.value, change.asset) },
+        }
+  );
+  const asset = changes?.[0]?.asset || tx.asset;
   const status = TransactionStatus.pending;
 
   return {
@@ -152,7 +161,7 @@ export const convertNewTransactionToRainbowTransaction = (tx: NewTransaction): R
     title: buildTransactionTitle(tx.type, status),
     description: asset?.name,
     from: tx.from,
-    changes: tx.changes,
+    changes,
     hash: tx.hash,
     nonce: tx.nonce,
     protocol: tx.protocol,
