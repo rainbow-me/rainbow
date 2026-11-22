@@ -62,13 +62,7 @@ function PositionListHeader({ total, ...props }: { total: string }) {
 
   return (
     <>
-      <ButtonPressAnimation
-        key={`positions_${isPositionCardsOpen}`}
-        onPress={toggleOpenPositionCards}
-        scaleTo={1.05}
-        testID={`positions-list-header`}
-        {...props}
-      >
+      <ButtonPressAnimation onPress={toggleOpenPositionCards} scaleTo={1.05} testID={`positions-list-header`} {...props}>
         <Box height={{ custom: TokenFamilyHeaderHeight }} paddingHorizontal={'19px (Deprecated)'} justifyContent="center">
           <Inline alignHorizontal="justify" alignVertical="center">
             <Text size="22pt" color={'label'} weight="heavy">
