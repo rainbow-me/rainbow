@@ -11,12 +11,13 @@ import { type Network } from '@/features/network/types/backendNetworks';
 import { type PerpsWalletListData } from '@/features/perps/types';
 import { type PolymarketWalletListData } from '@/features/polymarket/types';
 import { type RainbowPositions } from '@/features/positions/types';
+import { type SolanaBalance } from '@/features/solana/core/balances';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { type Language } from '@/languages';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
 import { type Collection, type CollectionId } from '@/state/nfts/types';
 
-import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
+import { buildBriefCoinsList, buildBriefUniqueTokenList, type CoinListAsset } from './assets';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -51,10 +52,11 @@ const EMPTY_WALLET_CONTENT_WITH_DISCOVER: CellTypes[] = [
 
 const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
 const EMPTY_ARRAY: CellTypes[] = [];
+const EMPTY_SOLANA_BALANCES: Pick<SolanaBalance, 'assetId' | 'value'>[] = [];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
-  solanaRows?: CellTypes[];
+  solanaBalances?: Pick<SolanaBalance, 'assetId' | 'value'>[];
   accountBalanceDisplay: string | undefined;
   hiddenAssets: Set<UniqueId>;
   isCoinListEdited: boolean;
@@ -86,7 +88,7 @@ export type WalletSectionsState = {
   isDismissedRnbwFeatureCard?: boolean;
 };
 
-const solanaRowsSelector = (state: WalletSectionsState) => state.solanaRows ?? EMPTY_ARRAY;
+const solanaBalancesSelector = (state: WalletSectionsState) => state.solanaBalances ?? EMPTY_SOLANA_BALANCES;
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
 const accountBalanceDisplaySelector = (state: WalletSectionsState) => state.accountBalanceDisplay;
 const hiddenAssetsSelector = (state: WalletSectionsState) => state.hiddenAssets;
@@ -426,11 +428,22 @@ const withBriefBalanceSection = (
   hiddenAssets: Set<UniqueId>,
   collections: Map<CollectionId, Collection> | null,
   discoverEnabled: boolean,
-  solanaRows: CellTypes[]
+  solanaBalances: Pick<SolanaBalance, 'assetId' | 'value'>[]
 ): BalanceSectionResult => {
-  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
+  const assets: CoinListAsset[] =
+    solanaBalances.length && !isCoinListEdited
+      ? [
+          ...sortedAssets,
+          ...solanaBalances.map(balance => ({
+            uniqueId: balance.assetId,
+            native: { balance: { amount: balance.value ?? '0' } },
+            cellType: CellType.SOLANA_COIN as const,
+          })),
+        ].sort((a, b) => (Number(b.native?.balance?.amount) || 0) - (Number(a.native?.balance?.amount) || 0))
+      : sortedAssets;
+  const { briefAssets } = buildBriefCoinsList(assets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
-  const hasTokens = briefAssets?.length || solanaRows.some(row => row.type === CellType.SOLANA_COIN);
+  const hasTokens = briefAssets?.length || solanaBalances.length;
   const hasNFTs = (collections?.size ?? 0) > 0;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
@@ -507,10 +520,7 @@ const withBriefBalanceSection = (
   let content: CellTypes[] = CONTENT_PLACEHOLDER;
 
   if (hasTokens) {
-    // shortcut: Keep Solana above small balances for internal testing; use normal placement before rollout.
-    const divider = briefAssets.findIndex(row => row.type === CellType.COIN_DIVIDER);
-    const insertion = divider < 0 ? briefAssets.length : divider;
-    content = isCoinListEdited ? briefAssets : [...briefAssets.slice(0, insertion), ...solanaRows, ...briefAssets.slice(insertion)];
+    content = briefAssets;
   } else if (isLoadingUserAssets) {
     content = CONTENT_PLACEHOLDER;
   } else if (hasNFTsOnly) {
@@ -557,7 +567,7 @@ const briefBalanceSectionSelector = createSelector(
     hiddenAssetsSelector,
     collectionsSelector,
     discoverEnabledSelector,
-    solanaRowsSelector,
+    solanaBalancesSelector,
   ],
   withBriefBalanceSection
 );

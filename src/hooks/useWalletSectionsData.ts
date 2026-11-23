@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 
 import { analytics } from '@/analytics';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
-import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
+import { type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import { IS_TEST } from '@/env';
 import { CLAIMABLES, DEFI_POSITIONS, RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
@@ -19,7 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
-import { selectSolanaBalanceIds, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
+import { selectSolanaBalanceList, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
@@ -28,7 +28,7 @@ import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
-import { shallowEqual } from '@/worklets/comparisons';
+import { deepEqual, shallowEqual } from '@/worklets/comparisons';
 
 import useAccountSettings from './useAccountSettings';
 import useCoinListEdited from './useCoinListEdited';
@@ -67,13 +67,9 @@ export default function useWalletSectionsData({
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingEvmAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const solanaAssetIds = useSolanaWalletBalances(selectSolanaBalanceIds, shallowEqual);
+  const solanaBalances = useSolanaWalletBalances(selectSolanaBalanceList, deepEqual);
   const isLoadingSolanaAssets = useSolanaWalletBalances(state => state.isLoading);
   const isLoadingUserAssets = isLoadingEvmAssets || (type === 'wallet' && isLoadingSolanaAssets);
-  const solanaRows = useMemo<CellTypes[]>(
-    () => (type === 'wallet' ? solanaAssetIds.map(uniqueId => ({ type: CellType.SOLANA_COIN, uid: uniqueId, uniqueId })) : []),
-    [solanaAssetIds, type]
-  );
 
   const positionsData = usePositionsStore(state => state.getData());
   const positions = useMemo(() => {
@@ -143,7 +139,7 @@ export default function useWalletSectionsData({
       network,
       pinnedCoins,
       sortedAssets,
-      solanaRows,
+      solanaBalances: type === 'wallet' ? solanaBalances : undefined,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       hiddenTokens,
@@ -186,7 +182,7 @@ export default function useWalletSectionsData({
     network,
     pinnedCoins,
     sortedAssets,
-    solanaRows,
+    solanaBalances,
     accountWithBalance?.balancesMinusHiddenBalances,
     hiddenTokens,
     isReadOnlyWallet,

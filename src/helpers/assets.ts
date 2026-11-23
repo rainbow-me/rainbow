@@ -130,8 +130,12 @@ export const buildCoinsList = (
   };
 };
 
+export type CoinListAsset = Pick<ParsedAddressAsset, 'uniqueId' | 'native'> & {
+  cellType?: CellType.COIN | CellType.SOLANA_COIN;
+};
+
 export const buildBriefCoinsList = (
-  sortedAssets: ParsedAddressAsset[],
+  sortedAssets: CoinListAsset[],
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
@@ -157,14 +161,14 @@ export const buildBriefCoinsList = (
       } else if (asset.smallBalancesContainer) {
         for (const smallAsset of asset.assets) {
           briefAssets.push({
-            type: CellType.COIN,
+            type: smallAsset.cellType ?? CellType.COIN,
             uid: 'coin-' + smallAsset.uniqueId,
             uniqueId: smallAsset.uniqueId,
           });
         }
       } else {
         briefAssets.push({
-          type: CellType.COIN,
+          type: asset.cellType ?? CellType.COIN,
           uid: 'coin-' + asset.uniqueId,
           uniqueId: asset.uniqueId,
         });

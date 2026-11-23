@@ -66,11 +66,13 @@ export default function useMemoBriefSectionData({
     const filterTypes = type ? FILTER_TYPES[type as AssetListType] : [];
     const briefSectionsDataFiltered = sectionsDataToUse
       .filter((data, arrIndex, arr) => {
+        const isCoin = data.type === CellType.COIN || data.type === CellType.SOLANA_COIN;
+        const previousType = arr[arrIndex - 1]?.type;
         if (filterTypes && filterTypes.length !== 0 && !filterTypes.includes(data.type)) {
           return false;
         }
 
-        if (arr[arrIndex - 1]?.type === CellType.COIN && data.type !== CellType.COIN_DIVIDER && data.type !== CellType.COIN) {
+        if ((previousType === CellType.COIN || previousType === CellType.SOLANA_COIN) && data.type !== CellType.COIN_DIVIDER && !isCoin) {
           afterCoins = true;
         }
         if (afterCoins && isCoinListEdited) {
@@ -80,7 +82,7 @@ export default function useMemoBriefSectionData({
         if (data.type === CellType.PROFILE_STICKY_HEADER) {
           stickyHeaders.push(index);
         }
-        if (data.type === CellType.COIN && !isSmallBalancesOpen && !isCoinListEdited && afterDivider) {
+        if (isCoin && !isSmallBalancesOpen && !isCoinListEdited && afterDivider) {
           return false;
         }
         if (data.type === CellType.COIN && hiddenAssets.has((data as CoinExtraData).uniqueId) && !isCoinListEdited) {
@@ -91,7 +93,7 @@ export default function useMemoBriefSectionData({
           afterDivider = true;
         }
 
-        if (afterDivider && data.type === CellType.COIN) {
+        if (afterDivider && isCoin) {
           numberOfSmallBalancesAllowed -= 1;
           if (numberOfSmallBalancesAllowed <= 0) {
             return false;

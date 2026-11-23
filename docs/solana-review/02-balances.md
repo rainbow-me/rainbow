@@ -12,7 +12,7 @@ Depends on wallet enablement only. No preview SDK, relay configuration, or swap 
 4. Recycler view types/renderer/dimensions wire the row; `SolanaBalanceRow` uses metadata with failure fallback. `ChainImage` adds an optional bundled badge source with the same EVM layout; read both regression tests.
 5. Check the two original DES-190 PNGs and constants against https://linear.app/rainbow/issue/DES-190/design-assets-for-solana-blockchain-support. Bundling is temporary until the network registry supports Solana.
 
-Manual checks: switch enabled accounts/currencies, pull to refresh, toggle the flag off, compare EVM totals/rows, and inspect light/dark badges. Not run during this reorganization. Keeping Solana rows above Small Balances remains the approved internal-testing exception.
+Manual checks: switch enabled accounts/currencies, pull to refresh, toggle the flag off, compare EVM totals/rows, and inspect light/dark badges. Not run during this reorganization. Solana holdings use the existing combined value ordering, currency threshold, five-row limit, Small Balances total, and expand/collapse behavior. Solana editing remains deferred.
 
 ## Changed-file inventory
 
@@ -21,6 +21,8 @@ Manual checks: switch enabled accounts/currencies, pull to refresh, toggle the f
 - `src/components/asset-list/RecyclerAssetList2/core/RowRenderer.tsx`
 - `src/components/asset-list/RecyclerAssetList2/core/ViewDimensions.tsx`
 - `src/components/asset-list/RecyclerAssetList2/core/ViewTypes.ts`
+- `src/components/asset-list/RecyclerAssetList2/core/useMemoBriefSectionData.ts`
+- `src/components/asset-list/RecyclerAssetList2/core/useMemoBriefSectionData.test.ts`
 - `src/features/network/components/ChainImage.test.tsx`
 - `src/features/network/components/ChainImage.tsx`
 - `src/features/solana/constants/networkAssets.ts`
@@ -32,13 +34,14 @@ Manual checks: switch enabled accounts/currencies, pull to refresh, toggle the f
 - `src/features/solana/data/solanaBalancesStore.ts`
 - `src/features/solana/ui/SolanaBalanceRow.test.tsx`
 - `src/features/solana/ui/SolanaBalanceRow.tsx`
+- `src/helpers/assets.ts`
 - `src/helpers/buildWalletSections.solana.test.ts`
 - `src/helpers/buildWalletSections.tsx`
 - `src/hooks/useLiveWalletBalance.ts`
 - `src/hooks/useRefreshAccountData.ts`
 - `src/hooks/useWalletSectionsData.ts`
 
-This guide and its listed 21 implementation/configuration/test files define this layer.
+This guide and its listed implementation/configuration/test files define this layer.
 
 ## Current-develop compatibility
 
@@ -50,4 +53,4 @@ Balance requests use the shared Solana feature gate regardless of store installa
 
 Solana loading participates in the existing wallet asset-list skeleton behavior. There is no Solana-specific loading/error text row. Failed refreshes retain matching cached balances; request errors and pull-to-refresh retry remain available in the query layer.
 
-Solana recycler items carry asset IDs, matching the EVM row contract. The list subscribes to ordered IDs with shallow equality; memoized rows subscribe to their own flat balance record with shallow equality and to currency separately. Equal values in fresh responses do not invalidate unrelated row subscriptions.
+Solana recycler items carry asset IDs, matching the EVM row contract. The list subscribes only to IDs and values needed for placement with deep equality; memoized rows subscribe to their own flat balance record with shallow equality and to currency separately. Equal values in fresh responses do not invalidate unrelated row subscriptions.

@@ -1,7 +1,7 @@
 import { createDerivedStore, createQueryStore } from '@storesjs/stores';
 
 import { type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
-import { type SolanaBalances } from '@/features/solana/core/balances';
+import { type SolanaBalance, type SolanaBalances } from '@/features/solana/core/balances';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { getSolanaAccount, useAccountMetadataStore } from '@/features/wallet/data/stores/accountMetadataStore';
 import { time } from '@/framework/core/utils/time';
@@ -57,8 +57,10 @@ export const useSolanaWalletBalances = createDerivedStore(
   { lockDependencies: true }
 );
 
-export function selectSolanaBalanceIds(state: ReturnType<typeof useSolanaWalletBalances.getState>): string[] {
-  return state.data?.balances.map(balance => balance.assetId) ?? [];
+export function selectSolanaBalanceList(
+  state: ReturnType<typeof useSolanaWalletBalances.getState>
+): Pick<SolanaBalance, 'assetId' | 'value'>[] {
+  return state.data?.balances.map(({ assetId, value }) => ({ assetId, value })) ?? [];
 }
 
 export function selectSolanaBalance(state: ReturnType<typeof useSolanaWalletBalances.getState>, uniqueId: string) {
