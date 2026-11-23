@@ -19,15 +19,7 @@ vi.mock('./assets', () => ({
 const row: CellTypes = {
   type: CellType.SOLANA_COIN,
   uid: 'sol',
-  currency: 'USD',
-  balance: {
-    assetId: 'sol',
-    name: 'Solana',
-    symbol: 'SOL',
-    amount: '1',
-    value: null,
-    rawUnits: false,
-  },
+  uniqueId: 'sol',
 };
 const state = {
   sortedAssets: [],

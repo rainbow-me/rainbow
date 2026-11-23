@@ -1,20 +1,23 @@
-import React, { useState } from 'react';
+import React, { memo, useState } from 'react';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { Box, Text } from '@/design-system';
-import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { SOLANA_NETWORK_BADGE } from '@/features/solana/constants/networkAssets';
-import { type SolanaBalance } from '@/features/solana/core/balances';
+import { selectSolanaBalance, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { toSignificantDigits } from '@/helpers/utilities';
 import { useTheme } from '@/theme/ThemeContext';
+import { shallowEqual } from '@/worklets/comparisons';
 
-export function SolanaBalanceRow({ balance, currency }: { balance: SolanaBalance; currency: NativeCurrencyKey }) {
+export const SolanaBalanceRow = memo(function SolanaBalanceRow({ uniqueId }: { uniqueId: string }) {
+  const balance = useSolanaWalletBalances(state => selectSolanaBalance(state, uniqueId), shallowEqual);
+  const currency = useSolanaWalletBalances(state => state.currency);
   const theme = useTheme();
   const [failedIconUrl, setFailedIconUrl] = useState<string>();
+  if (!balance) return null;
   const change = balance.relativeChange24h;
   const changeDisplay =
     change === undefined
@@ -77,4 +80,4 @@ export function SolanaBalanceRow({ balance, currency }: { balance: SolanaBalance
       </Box>
     </Box>
   );
-}
+});

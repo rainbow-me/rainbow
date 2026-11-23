@@ -2,11 +2,9 @@ import { type RecyclerListView, type RecyclerListViewProps } from 'recyclerlistv
 import { type RecyclerListViewState } from 'recyclerlistview/dist/reactnative/core/RecyclerListView';
 
 import type { UniqueAsset } from '@/entities/uniqueAssets';
-import { type NativeCurrencyKey } from '@/features/currency/types';
 import { type PerpsPosition } from '@/features/perps/types';
 import { type PolymarketPosition } from '@/features/polymarket/types';
 import { type RainbowPosition } from '@/features/positions/types';
-import { type SolanaBalance } from '@/features/solana/core/balances';
 import { type NftCollectionSortCriterion } from '@/graphql/__generated__/arc';
 import { type Claimable } from '@/resources/addys/claimables/types';
 
@@ -96,7 +94,7 @@ export type AssetsHeaderExtraData = {
   value: string;
   isLoadingBalance: boolean;
 };
-export type SolanaCoinExtraData = { type: CellType.SOLANA_COIN; balance: SolanaBalance; currency: NativeCurrencyKey };
+export type SolanaCoinExtraData = { type: CellType.SOLANA_COIN; uniqueId: string };
 
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {

@@ -49,3 +49,5 @@ Validation: 25 focused tests, TypeScript and dependency checks passed. Native re
 Balance requests use the shared Solana feature gate regardless of store installation. The regression verifies an enabled store build can fetch and that disabling the flag blocks further requests and hides holdings.
 
 Solana loading participates in the existing wallet asset-list skeleton behavior. There is no Solana-specific loading/error text row. Failed refreshes retain matching cached balances; request errors and pull-to-refresh retry remain available in the query layer.
+
+Solana recycler items carry asset IDs, matching the EVM row contract. The list subscribes to ordered IDs with shallow equality; memoized rows subscribe to their own flat balance record with shallow equality and to currency separately. Equal values in fresh responses do not invalidate unrelated row subscriptions.

@@ -49,6 +49,8 @@ Key non-obvious directories:
 
 ## Incremental Solana integration
 
+- Minimize rerenders: keep list subscriptions scoped to membership/order and row subscriptions scoped to the asset they display.
+
 - Reuse existing EVM behavior and presentation wherever possible. Keep changes minimal and as needed; agree explicitly with the user before introducing Solana-specific behavior. The current internal balances test may keep Solana rows above small balances as an explicitly approved testing exception.
 
 - Minimize disruption to existing production paths. Prefer additive modules and entry points; do not require deleting or refactoring existing implementations to enable Solana work.

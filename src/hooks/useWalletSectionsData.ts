@@ -19,7 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
-import { useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
+import { selectSolanaBalanceIds, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
@@ -67,18 +67,13 @@ export default function useWalletSectionsData({
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingEvmAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const solana = useSolanaWalletBalances();
-  const isLoadingUserAssets = isLoadingEvmAssets || (type === 'wallet' && solana.isLoading);
-  const solanaRows = useMemo<CellTypes[]>(() => {
-    if (type !== 'wallet') return [];
-    const rows: CellTypes[] = (solana.data?.balances ?? []).map(balance => ({
-      type: CellType.SOLANA_COIN,
-      uid: balance.assetId,
-      balance,
-      currency: solana.currency,
-    }));
-    return rows;
-  }, [solana, type]);
+  const solanaAssetIds = useSolanaWalletBalances(selectSolanaBalanceIds, shallowEqual);
+  const isLoadingSolanaAssets = useSolanaWalletBalances(state => state.isLoading);
+  const isLoadingUserAssets = isLoadingEvmAssets || (type === 'wallet' && isLoadingSolanaAssets);
+  const solanaRows = useMemo<CellTypes[]>(
+    () => (type === 'wallet' ? solanaAssetIds.map(uniqueId => ({ type: CellType.SOLANA_COIN, uid: uniqueId, uniqueId })) : []),
+    [solanaAssetIds, type]
+  );
 
   const positionsData = usePositionsStore(state => state.getData());
   const positions = useMemo(() => {

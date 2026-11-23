@@ -132,7 +132,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.SOLANA_COIN:
-      return <SolanaBalanceRow balance={(data as SolanaCoinExtraData).balance} currency={(data as SolanaCoinExtraData).currency} />;
+      return <SolanaBalanceRow uniqueId={(data as SolanaCoinExtraData).uniqueId} />;
     case CellType.COIN:
       return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
