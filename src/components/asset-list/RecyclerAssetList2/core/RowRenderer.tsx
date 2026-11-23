@@ -12,7 +12,7 @@ import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
-import { SolanaBalanceRow, SolanaBalancesStatus } from '@/features/solana/ui/SolanaBalanceRow';
+import { SolanaBalanceRow } from '@/features/solana/ui/SolanaBalanceRow';
 import { assertNever } from '@/helpers/assertNever';
 import Routes from '@/navigation/routesNames';
 
@@ -58,7 +58,6 @@ import {
   type PositionExtraData,
   type PositionHeaderExtraData,
   type SolanaCoinExtraData,
-  type SolanaStatusExtraData,
 } from './ViewTypes';
 
 function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, extendedState: ExtendedState) {
@@ -134,8 +133,6 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
       return <ProfileStickyHeader />;
     case CellType.SOLANA_COIN:
       return <SolanaBalanceRow balance={(data as SolanaCoinExtraData).balance} currency={(data as SolanaCoinExtraData).currency} />;
-    case CellType.SOLANA_STATUS:
-      return <SolanaBalancesStatus message={(data as SolanaStatusExtraData).message} />;
     case CellType.COIN:
       return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:

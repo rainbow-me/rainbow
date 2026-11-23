@@ -66,10 +66,9 @@ describe('Solana wallet list composition', () => {
     const result = buildBriefWalletSectionsSelector({ ...state, isCoinListEdited: true, solanaRows: [row] });
     expect(result.briefSectionsData.some(r => r.type === CellType.SOLANA_COIN)).toBe(false);
   });
-  it('keeps a failed initial query visible without inventing holdings', () => {
-    const status: CellTypes = { type: CellType.SOLANA_STATUS, uid: 'status', message: 'Unavailable' };
-    const result = buildBriefWalletSectionsSelector({ ...state, solanaRows: [status] });
-    expect(result.isEmpty).toBe(true);
-    expect(result.briefSectionsData).toContainEqual(status);
+  it('uses the existing asset skeletons when initial balances are loading', () => {
+    const result = buildBriefWalletSectionsSelector({ ...state, isLoadingUserAssets: true, solanaRows: [] });
+    expect(result.briefSectionsData.some(r => r.type === CellType.LOADING_ASSETS)).toBe(true);
+    expect(result.briefSectionsData.some(r => r.type === CellType.RECEIVE_CARD)).toBe(false);
   });
 });

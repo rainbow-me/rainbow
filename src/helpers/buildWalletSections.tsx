@@ -519,8 +519,6 @@ const withBriefBalanceSection = (
     content = discoverEnabled ? EMPTY_WALLET_CONTENT_WITH_DISCOVER : EMPTY_WALLET_CONTENT;
   }
 
-  if (!hasTokens && !isCoinListEdited && solanaRows.length) content = [...solanaRows, ...content];
-
   const result = {
     headerSection: header,
     contentSection: content,

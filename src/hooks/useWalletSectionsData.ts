@@ -65,9 +65,10 @@ export default function useWalletSectionsData({
   const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
+  const isLoadingEvmAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
   const solana = useSolanaWalletBalances();
+  const isLoadingUserAssets = isLoadingEvmAssets || (type === 'wallet' && solana.isLoading);
   const solanaRows = useMemo<CellTypes[]>(() => {
     if (type !== 'wallet') return [];
     const rows: CellTypes[] = (solana.data?.balances ?? []).map(balance => ({
@@ -76,7 +77,6 @@ export default function useWalletSectionsData({
       balance,
       currency: solana.currency,
     }));
-    if (solana.message) rows.push({ type: CellType.SOLANA_STATUS, uid: 'solana-balances-status', message: solana.message });
     return rows;
   }, [solana, type]);
 

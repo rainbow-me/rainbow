@@ -78,13 +78,3 @@ export function SolanaBalanceRow({ balance, currency }: { balance: SolanaBalance
     </Box>
   );
 }
-
-export function SolanaBalancesStatus({ message }: { message: string }) {
-  return (
-    <Box height={{ custom: 44 }} paddingHorizontal="20px" justifyContent="center" testID="solana-balances-status">
-      <Text color="labelTertiary" size="13pt" weight="medium">
-        {message}
-      </Text>
-    </Box>
-  );
-}

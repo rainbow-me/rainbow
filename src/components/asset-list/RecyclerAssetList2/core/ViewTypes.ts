@@ -14,7 +14,6 @@ export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
   SOLANA_COIN = 'SOLANA_COIN',
-  SOLANA_STATUS = 'SOLANA_STATUS',
   COIN_DIVIDER = 'COIN_DIVIDER',
   PROFILE_ACTION_BUTTONS_ROW = 'PROFILE_ACTION_BUTTONS_ROW',
   PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER = 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
@@ -98,7 +97,6 @@ export type AssetsHeaderExtraData = {
   isLoadingBalance: boolean;
 };
 export type SolanaCoinExtraData = { type: CellType.SOLANA_COIN; balance: SolanaBalance; currency: NativeCurrencyKey };
-export type SolanaStatusExtraData = { type: CellType.SOLANA_STATUS; message: string };
 
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {
@@ -200,7 +198,6 @@ export type CellExtraData =
   | CoinDividerExtraData
   | CoinExtraData
   | SolanaCoinExtraData
-  | SolanaStatusExtraData
   | NFTExtraData
   | LegacyNFTExtraData
   | NFTsHeaderExtraData

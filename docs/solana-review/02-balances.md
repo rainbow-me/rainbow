@@ -42,8 +42,10 @@ This guide and its listed 21 implementation/configuration/test files define this
 
 ## Current-develop compatibility
 
-The newer HTTP client forwards cancellation through its own signal; tests now verify cancellation behavior rather than signal identity. Stores 0.13 rebuilds unlocked derived dependencies; the balances view has unconditional dependencies, so it locks them to retain the query subscription and avoid immediate refetch on failed refresh. The regression checks preserved data/error reporting and one new request per forced refresh.
+The newer HTTP client forwards cancellation through its own signal; tests now verify cancellation behavior rather than signal identity. Stores 0.13 rebuilds unlocked derived dependencies; the balances view has unconditional dependencies, so it locks them to retain the query subscription and avoid immediate refetch on failed refresh. The regression checks preserved data/query errors and one new request per forced refresh.
 
 Validation: 25 focused tests, TypeScript and dependency checks passed. Native rendering checks remain pending.
 
 Balance requests use the shared Solana feature gate regardless of store installation. The regression verifies an enabled store build can fetch and that disabling the flag blocks further requests and hides holdings.
+
+Solana loading participates in the existing wallet asset-list skeleton behavior. There is no Solana-specific loading/error text row. Failed refreshes retain matching cached balances; request errors and pull-to-refresh retry remain available in the query layer.

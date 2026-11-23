@@ -49,17 +49,10 @@ export const useSolanaWalletBalances = createDerivedStore(
     const address = $(useSolanaBalancesAddress);
     const currency = $(userAssetsStoreManager).currency;
     const data = $(useSolanaBalancesStore, state => state.getData());
-    const failed = $(useSolanaBalancesStore, state => state.status === 'error');
+    const isInitialLoad = $(useSolanaBalancesStore, state => state.getStatus('isInitialLoad'));
     // keepPreviousData preserves failed refreshes, but must never leak another account/currency.
     const current = address && data?.address === address && data.currency === currency ? data : null;
-    const message = !address
-      ? null
-      : failed
-        ? 'Solana balances unavailable. Pull to refresh.'
-        : !current
-          ? 'Loading Solana balances…'
-          : null;
-    return { data: current, message, currency };
+    return { data: current, isLoading: !!address && isInitialLoad, currency };
   },
   { lockDependencies: true }
 );

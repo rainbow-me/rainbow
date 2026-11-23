@@ -80,8 +80,24 @@ describe('isolated Solana balances lifecycle', () => {
     vi.mocked(fetchSolanaBalances).mockRejectedValue(new Error('upstream failed'));
     await refreshSolanaBalances();
     expect(useSolanaWalletBalances.getState().data?.total).toBe('1.25');
-    expect(useSolanaWalletBalances.getState().message).toContain('unavailable');
+    expect(useSolanaWalletBalances.getState().isLoading).toBe(false);
+    expect(useSolanaBalancesStore.getState().status).toBe('error');
     expect(fetchSolanaBalances).toHaveBeenCalledTimes(callsBeforeFailure + 1);
+  });
+  it('reports initial loading and stops loading after an initial failure', async () => {
+    let rejectRequest: (error: Error) => void = () => undefined;
+    const pending = new Promise<SolanaBalances>((_, reject) => {
+      rejectRequest = reject;
+    });
+    vi.mocked(fetchSolanaBalances).mockReturnValue(pending);
+    useSolanaBalancesStore.setState({ queryCache: {}, lastFetchedAt: null });
+    const request = refreshSolanaBalances();
+    expect(useSolanaWalletBalances.getState().isLoading).toBe(true);
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
+    rejectRequest(new Error('upstream failed'));
+    await request;
+    expect(useSolanaWalletBalances.getState().isLoading).toBe(false);
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
   });
   it('ignores an in-flight response after the selected account changes', async () => {
     let complete: (value: SolanaBalances) => void = () => undefined;
@@ -115,7 +131,7 @@ describe('isolated Solana balances lifecycle', () => {
     await useSolanaBalancesStore.getState().fetch({ address, currency: 'USD' }, { force: true });
     expect(fetchSolanaBalances).not.toHaveBeenCalled();
     expect(useSolanaWalletBalances.getState().data).toBeNull();
-    expect(useSolanaWalletBalances.getState().message).toBeNull();
+    expect(useSolanaWalletBalances.getState().isLoading).toBe(false);
   });
   it('allows store installs only while the Solana flag is enabled', async () => {
     controls.storeInstall = true;
