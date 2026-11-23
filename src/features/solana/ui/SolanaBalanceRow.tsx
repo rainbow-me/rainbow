@@ -2,6 +2,7 @@ import React, { memo, useState } from 'react';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
+import { CoinRowHeight } from '@/components/coin-row/CoinRow';
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { Box, Text } from '@/design-system';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
@@ -25,7 +26,7 @@ export const SolanaBalanceRow = memo(function SolanaBalanceRow({ uniqueId }: { u
       : `${toSignificantDigits({ value: change, minDecimalPlaces: 2, minRepresentable: 0.01 }).replace('-', '- ')}%`;
   return (
     <Box
-      height={{ custom: 70 }}
+      height={{ custom: CoinRowHeight }}
       paddingHorizontal="20px"
       flexDirection="row"
       alignItems="center"

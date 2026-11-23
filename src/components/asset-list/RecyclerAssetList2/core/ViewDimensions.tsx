@@ -39,7 +39,7 @@ export const ViewDimensions: Record<CellType, Dim> = {
   [CellType.PROFILE_STICKY_HEADER]: { height: ProfileStickyHeaderHeight },
   [CellType.ASSETS_HEADER_SPACE_AFTER]: { height: 16 },
   [CellType.COIN]: { height: CoinRowHeight },
-  [CellType.SOLANA_COIN]: { height: 70 },
+  [CellType.SOLANA_COIN]: { height: CoinRowHeight },
   [CellType.COIN_DIVIDER]: { height: CoinDividerContainerHeight },
   [CellType.PROFILE_ACTION_BUTTONS_ROW]: {
     height: ProfileActionButtonsRowHeight - ProfileStickyHeaderHeight,

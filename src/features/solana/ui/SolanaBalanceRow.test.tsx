@@ -20,6 +20,7 @@ vi.mock('@/features/solana/data/solanaBalancesStore', () => ({
   selectSolanaBalance: (value: { data: { balances: SolanaBalance[] } }, uniqueId: string) =>
     value.data.balances.find(balance => balance.assetId === uniqueId),
 }));
+vi.mock('@/components/coin-row/CoinRow', () => ({ CoinRowHeight: 59 }));
 vi.mock('@/features/network/components/ChainImage', () => ({ ChainImage: 'ChainImage' }));
 vi.mock('@/features/solana/constants/networkAssets', () => ({ SOLANA_NETWORK_BADGE: 1 }));
 vi.mock('@candlefinance/faster-image', () => ({ FasterImageView: 'Image' }));
