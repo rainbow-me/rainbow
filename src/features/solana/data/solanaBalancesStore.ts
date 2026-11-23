@@ -29,7 +29,7 @@ type Params = { address: string | null; currency: SupportedCurrencyKey };
 export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Params>({
   params: {
     address: $ => $(useSolanaBalancesAddress),
-    currency: $ => $(userAssetsStoreManager, state => state.currency),
+    currency: $ => $(userAssetsStoreManager).currency,
   },
   enabled: $ => !!$(useSolanaBalancesAddress),
   fetcher: (params, abortController) => {
@@ -47,7 +47,7 @@ export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Pa
 export const useSolanaWalletBalances = createDerivedStore(
   $ => {
     const address = $(useSolanaBalancesAddress);
-    const currency = $(userAssetsStoreManager, state => state.currency);
+    const currency = $(userAssetsStoreManager).currency;
     const data = $(useSolanaBalancesStore, state => state.getData());
     const failed = $(useSolanaBalancesStore, state => state.status === 'error');
     // keepPreviousData preserves failed refreshes, but must never leak another account/currency.
