@@ -44,6 +44,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/)
 - Skip swap gas simulation on chains where the backend can't simulate (https://github.com/rainbow-me/rainbow/pull/7954)
 - Show Simulation Unavailable when the backend simulation fails (https://github.com/rainbow-me/rainbow/pull/7955)
 
+## [2.0.50](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.50)
+
+No changes since last release.
+
 ## [2.0.49](https://github.com/rainbow-me/rainbow/releases/tag/v2.0.49)
 
 ### Added
