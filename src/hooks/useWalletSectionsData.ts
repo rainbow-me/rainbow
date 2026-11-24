@@ -19,7 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
-import { selectSolanaBalanceList, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
+import { useSolanaBalanceList, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
@@ -28,7 +28,7 @@ import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useNftsStore } from '@/state/nfts/nfts';
 import { isDataComplete } from '@/state/nfts/utils';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
-import { deepEqual, shallowEqual } from '@/worklets/comparisons';
+import { shallowEqual } from '@/worklets/comparisons';
 
 import useAccountSettings from './useAccountSettings';
 import useCoinListEdited from './useCoinListEdited';
@@ -67,7 +67,7 @@ export default function useWalletSectionsData({
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
   const isLoadingEvmAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
-  const solanaBalances = useSolanaWalletBalances(selectSolanaBalanceList, deepEqual);
+  const solanaBalances = useSolanaBalanceList();
   const isLoadingSolanaAssets = useSolanaWalletBalances(state => state.isLoading);
   const isLoadingUserAssets = isLoadingEvmAssets || (type === 'wallet' && isLoadingSolanaAssets);
 

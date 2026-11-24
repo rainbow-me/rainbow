@@ -53,4 +53,4 @@ Balance requests use the shared Solana feature gate regardless of store installa
 
 Solana loading participates in the existing wallet asset-list skeleton behavior. There is no Solana-specific loading/error text row. Failed refreshes retain matching cached balances; request errors and pull-to-refresh retry remain available in the query layer.
 
-Solana recycler items carry asset IDs, matching the EVM row contract. The list subscribes only to IDs and values needed for placement with deep equality; memoized rows subscribe to their own flat balance record with shallow equality and to currency separately. Equal values in fresh responses do not invalidate unrelated row subscriptions.
+Solana recycler items carry asset IDs, matching the EVM row contract. A derived store computes and retains the IDs and values needed for placement, preserving the array reference when those fields are equal. The list reads that cached array directly; memoized rows subscribe to their own flat balance record with shallow equality and to currency separately. Equal values in fresh responses do not invalidate unrelated row subscriptions.

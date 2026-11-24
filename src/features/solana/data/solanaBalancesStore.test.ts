@@ -8,13 +8,13 @@ import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
-import { deepEqual, shallowEqual } from '@/worklets/comparisons';
+import { shallowEqual } from '@/worklets/comparisons';
 
 import { fetchSolanaBalances } from './fetchSolanaBalances';
 import {
   refreshSolanaBalances,
   selectSolanaBalance,
-  selectSolanaBalanceList,
+  useSolanaBalanceList,
   useSolanaBalancesAddress,
   useSolanaBalancesStore,
   useSolanaWalletBalances,
@@ -102,10 +102,12 @@ describe('isolated Solana balances lifecycle', () => {
     const request = refreshSolanaBalances();
     expect(useSolanaWalletBalances.getState().isLoading).toBe(true);
     expect(useSolanaWalletBalances.getState().data).toBeNull();
+    expect(useSolanaBalanceList.getState()).toEqual([]);
     rejectRequest(new Error('upstream failed'));
     await request;
     expect(useSolanaWalletBalances.getState().isLoading).toBe(false);
     expect(useSolanaWalletBalances.getState().data).toBeNull();
+    expect(useSolanaBalanceList.getState()).toEqual([]);
   });
   it('ignores an in-flight response after the selected account changes', async () => {
     let complete: (value: SolanaBalances) => void = () => undefined;
@@ -121,15 +123,18 @@ describe('isolated Solana balances lifecycle', () => {
     complete(data);
     await request;
     expect(useSolanaWalletBalances.getState().data).toBeNull();
+    expect(useSolanaBalanceList.getState()).toEqual([]);
   });
   it('hides old results immediately on account or currency changes', async () => {
     await refreshSolanaBalances();
     useWalletsStore.setState({ accountAddress: '0x0000000000000000000000000000000000000002' });
     expect(useSolanaBalancesAddress.getState()).toBeNull();
     expect(useSolanaWalletBalances.getState().data).toBeNull();
+    expect(useSolanaBalanceList.getState()).toEqual([]);
     useWalletsStore.setState({ accountAddress: evm });
     userAssetsStoreManager.setState({ currency: 'EUR' });
     expect(useSolanaWalletBalances.getState().data).toBeNull();
+    expect(useSolanaBalanceList.getState()).toEqual([]);
   });
   it('makes no requests while flag-off, even through manual fetch, and clears visible holdings', async () => {
     await refreshSolanaBalances();
@@ -139,6 +144,7 @@ describe('isolated Solana balances lifecycle', () => {
     await useSolanaBalancesStore.getState().fetch({ address, currency: 'USD' }, { force: true });
     expect(fetchSolanaBalances).not.toHaveBeenCalled();
     expect(useSolanaWalletBalances.getState().data).toBeNull();
+    expect(useSolanaBalanceList.getState()).toEqual([]);
     expect(useSolanaWalletBalances.getState().isLoading).toBe(false);
   });
   it('allows store installs only while the Solana flag is enabled', async () => {
@@ -175,17 +181,21 @@ it('isolates rows and updates list placement only for IDs or values', async () =
   const solChanged = vi.fn();
   const bonkChanged = vi.fn();
   const stops = [
-    useSolanaWalletBalances.subscribe(selectSolanaBalanceList, listChanged, { equalityFn: deepEqual }),
+    useSolanaBalanceList.subscribe(listChanged),
     useSolanaWalletBalances.subscribe(state => selectSolanaBalance(state, 'sol'), solChanged, { equalityFn: shallowEqual }),
     useSolanaWalletBalances.subscribe(state => selectSolanaBalance(state, 'bonk'), bonkChanged, { equalityFn: shallowEqual }),
   ];
   try {
+    const originalList = useSolanaBalanceList.getState();
+    expect(useSolanaBalanceList.getState()).toBe(originalList);
     await publish([{ ...sol }, { ...bonk }]);
+    expect(useSolanaBalanceList.getState()).toBe(originalList);
     expect(listChanged).not.toHaveBeenCalled();
     expect(solChanged).not.toHaveBeenCalled();
     expect(bonkChanged).not.toHaveBeenCalled();
 
     await publish([{ ...sol, iconUrl: 'https://example.com/sol.png' }, { ...bonk }]);
+    expect(useSolanaBalanceList.getState()).toBe(originalList);
     expect(listChanged).not.toHaveBeenCalled();
     expect(solChanged).toHaveBeenCalledTimes(1);
     solChanged.mockClear();
@@ -193,6 +203,7 @@ it('isolates rows and updates list placement only for IDs or values', async () =
 
     const updatedBonk = { ...bonk, amount: '2000', value: '2' };
     await publish([{ ...sol }, updatedBonk]);
+    expect(useSolanaBalanceList.getState()).not.toBe(originalList);
     expect(listChanged).toHaveBeenCalledTimes(1);
     expect(solChanged).not.toHaveBeenCalled();
     expect(bonkChanged).toHaveBeenCalledTimes(1);
@@ -208,7 +219,7 @@ it('isolates rows and updates list placement only for IDs or values', async () =
     expect(bonkChanged).toHaveBeenLastCalledWith(undefined, updatedBonk);
 
     flags.setState(false, true);
-    expect(selectSolanaBalanceList(useSolanaWalletBalances.getState())).toEqual([]);
+    expect(useSolanaBalanceList.getState()).toEqual([]);
     await vi.waitFor(() => expect(solChanged).toHaveBeenLastCalledWith(undefined, sol));
   } finally {
     stops.forEach(stop => stop());

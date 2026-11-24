@@ -9,6 +9,7 @@ import { EthereumWalletType } from '@/helpers/walletTypes';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { deepEqual } from '@/worklets/comparisons';
 
 import { fetchSolanaBalances } from './fetchSolanaBalances';
 
@@ -57,11 +58,13 @@ export const useSolanaWalletBalances = createDerivedStore(
   { lockDependencies: true }
 );
 
-export function selectSolanaBalanceList(
-  state: ReturnType<typeof useSolanaWalletBalances.getState>
-): Pick<SolanaBalance, 'assetId' | 'value'>[] {
-  return state.data?.balances.map(({ assetId, value }) => ({ assetId, value })) ?? [];
-}
+export const useSolanaBalanceList = createDerivedStore<Pick<SolanaBalance, 'assetId' | 'value'>[]>(
+  $ => {
+    const balances = $(useSolanaWalletBalances, state => state.data?.balances);
+    return balances?.map(({ assetId, value }) => ({ assetId, value })) ?? [];
+  },
+  { equalityFn: deepEqual, lockDependencies: true }
+);
 
 export function selectSolanaBalance(state: ReturnType<typeof useSolanaWalletBalances.getState>, uniqueId: string) {
   return state.data?.balances.find(balance => balance.assetId === uniqueId);
