@@ -1,23 +1,18 @@
 import React, { memo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { FasterImageView } from '@candlefinance/faster-image';
-
 import { ImgixImage } from '@/components/images';
-import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { type ThemeContextProps } from '@/theme/ThemeContext';
 
 export const FastFallbackCoinIconImage = memo(function FastFallbackCoinIconImage({
   children,
   disableShadow = true,
-  direct = false,
   icon,
   shadowColor,
   size = 40,
 }: {
   children: () => React.ReactNode;
   disableShadow?: boolean;
-  direct?: boolean;
   icon?: string;
   shadowColor: string;
   size?: number;
@@ -36,13 +31,6 @@ export const FastFallbackCoinIconImage = memo(function FastFallbackCoinIconImage
     >
       {icon === undefined || icon === '' || didErrorForUrl === icon ? (
         <View style={sx.fallbackWrapper}>{children()}</View>
-      ) : direct ? (
-        // Codex icons bypass the image proxy until it accepts their host.
-        <FasterImageView
-          source={{ ...DEFAULT_FASTER_IMAGE_CONFIG, url: icon, borderRadius: size / 2 }}
-          onError={() => setDidErrorForUrl(icon)}
-          style={[sx.coinIconFallback, { height: size, width: size, borderRadius: size / 2 }]}
-        />
       ) : (
         <ImgixImage
           enableFasterImage

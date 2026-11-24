@@ -18,14 +18,11 @@ vi.mock('react', () => ({
   ],
 }));
 vi.mock('react-native', () => ({ View: 'View', StyleSheet: { create: (styles: unknown) => styles } }));
-vi.mock('@candlefinance/faster-image', () => ({ FasterImageView: 'DirectImage' }));
 vi.mock('@/components/images', () => ({ ImgixImage: 'ProxyImage' }));
-vi.mock('@/components/images/ImgixImage', () => ({ DEFAULT_FASTER_IMAGE_CONFIG: { cachePolicy: 'discWithCacheControl' } }));
 const url = 'https://token-media.defined.fi/usdc.png';
-const render = (direct = false, icon = url) =>
+const render = (icon = url) =>
   FastFallbackCoinIconImage({
     icon,
-    direct,
     shadowColor: '',
     symbol: 'USDC',
     theme: {} as ThemeContextProps,
@@ -34,12 +31,12 @@ const render = (direct = false, icon = url) =>
 beforeEach(() => {
   state.failed = undefined;
 });
-it('preserves the default EVM image proxy and uses direct loading only when requested', () => {
+it('uses the existing image proxy for Solana token URLs', () => {
   expect(render().props.children.type).toBe('ProxyImage');
-  expect(render(true).props.children.props.source).toMatchObject({ url, cachePolicy: 'discWithCacheControl' });
+  expect(render().props.children.props.source).toEqual({ uri: url });
 });
-it('falls back after a direct image error and retries a changed URL', () => {
-  render(true).props.children.props.onError();
-  expect(render(true).props.children.type).toBe('View');
-  expect(render(true, url + '?new').props.children.type).toBe('DirectImage');
+it('falls back after a proxy image error and retries a changed URL', () => {
+  render().props.children.props.onError();
+  expect(render().props.children.type).toBe('View');
+  expect(render(url + '?new').props.children.type).toBe('ProxyImage');
 });

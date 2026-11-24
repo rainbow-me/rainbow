@@ -9,7 +9,7 @@ Depends on wallet enablement only. No preview SDK, relay configuration, or swap 
 1. `core/balances.ts` validates the backend response; read its parser tests and `fetchSolanaBalances` request tests.
 2. `solanaBalancesStore.ts` gates requests, maps selection and currency, and suppresses stale account data; read its store tests.
 3. `buildWalletSections.tsx` and the section/balance/refresh hooks append Solana data to existing wallet behavior. `buildWalletSections.solana.test.ts` covers section assembly.
-4. `FastBalanceCoinRow` shares presentation and selection controls between EVM and Solana. Separate per-asset subscriptions feed the shared content; EVM still uses `useAccountAsset`. `RainbowCoinIcon` and `ChainImage` recognize the backend numeric Solana ID and preserve the bundled badge/direct image fallback.
+4. `FastBalanceCoinRow` shares presentation and selection controls between EVM and Solana. Separate per-asset subscriptions feed the shared content; EVM still uses `useAccountAsset`. `RainbowCoinIcon` and `ChainImage` recognize the backend numeric Solana ID and preserve the bundled badge. Solana icons use the same image proxy and error fallback as EVM icons.
 5. Check the two original DES-190 PNGs and constants against https://linear.app/rainbow/issue/DES-190/design-assets-for-solana-blockchain-support. Bundling is temporary until the network registry supports Solana.
 
 Manual checks: switch enabled accounts/currencies, pull to refresh, toggle the flag off, compare EVM totals/rows, and inspect light/dark badges. Not run during this reorganization. Solana holdings use the existing combined value ordering, currency threshold, five-row limit, Small Balances total, and expand/collapse behavior. Enter Edit and select, pin/unpin, and hide/unhide Solana alone and mixed with EVM tokens. Verify preferences survive an account switch and restart, and that hidden tokens reappear in Edit. Solana normal taps remain inactive until expanded-sheet support is added.
@@ -82,3 +82,7 @@ This is an audit of ID creation, balance rows, preferences, and likely future EV
 The identifier regressions cover native/wrapped SOL separation, duplicate row-ID rejection, and unchanged EVM pin normalization. Compatibility-only tests were removed; the existing ID-constructor test now lives in `src/entities/assetId.test.ts`. Native checks remain pending.
 
 After removing unused compatibility conversion: 102 focused tests across 13 files, TypeScript, and dependency checks passed. Native testing was not repeated.
+
+## Image proxy verification
+
+On November 24, 2026, fresh balances returned SOL and BONK icon URLs hosted by `token-media.defined.fi`. Both signed 120px requests returned HTTP 200 (`image/png`) through `img.p.rainbow.me`. The legacy `rainbow.imgix.net` host returned HTTP 410 (`deleted_source`) for both. Icons follow the existing `image_cdn_enabled` remote-config selection; failed requests show the existing fallback, never a direct-origin retry. USDC was not present in the queried balance response.
