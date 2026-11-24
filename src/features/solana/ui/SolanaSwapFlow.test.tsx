@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
 
+import { type SolanaAssetId } from '@/__swaps__/types/assets';
 import { type SolanaBalances } from '@/features/solana/core/balances';
 import { SWAP_ASSETS } from '@/features/solana/core/swap';
 
@@ -310,6 +311,7 @@ it.each(['USD', 'EUR'])('uses SOL pricing only when balances match the selected 
     balances: [
       {
         assetId: 'solana:mainnet/native:So11111111111111111111111111111111111111111',
+        uniqueId: 'So11111111111111111111111111111111111111111_1399811149' as SolanaAssetId,
         symbol: 'SOL',
         name: 'Solana',
         amount: '0.1',
