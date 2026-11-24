@@ -2,7 +2,6 @@ import { type StorageValue } from '@storesjs/stores';
 
 import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { migrateSolanaAssetId } from '@/features/solana/core/assetId';
 import { logger, RainbowError } from '@/logger';
 
 import { type UserAssetsState } from './types';
@@ -77,7 +76,7 @@ export function deserializeUserAssetsState<SerializedState>(serializedState: Ser
   let hiddenAssets = new Set<UniqueId>();
   try {
     if (state.hiddenAssets) {
-      hiddenAssets = new Set(state.hiddenAssets.map(id => migrateSolanaAssetId(id) as UniqueId));
+      hiddenAssets = new Set(state.hiddenAssets);
     }
   } catch (error) {
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert hiddenAssets from user assets storage`), { error });

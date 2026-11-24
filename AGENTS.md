@@ -49,6 +49,8 @@ Key non-obvious directories:
 
 ## Incremental Solana integration
 
+- For new, unshipped Solana features, assume nobody has persisted data from superseded implementations. Do not add backwards-compatibility readers or migrations for those revisions unless explicitly requested. Preserve compatibility for existing production data.
+
 - Minimize rerenders: keep list subscriptions scoped to membership/order and values needed for placement and row subscriptions scoped to the asset they display.
 
 - Reuse existing EVM behavior and presentation wherever possible. Keep changes minimal and as needed; agree explicitly with the user before introducing Solana-specific behavior.

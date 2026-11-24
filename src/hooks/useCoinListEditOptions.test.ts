@@ -72,14 +72,3 @@ it('passes the exact Solana ID through hide and unhide actions', () => {
   actions.setHiddenCoins();
   expect(state.setHidden).toHaveBeenLastCalledWith([id]);
 });
-
-it('retains old CAIP pins and allows unpinning them with the new ID', () => {
-  const oldId = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-  state.storage['pinned-coins-obj-0xAccount'] = { [oldId]: true, '0xabc_1': true };
-  expect(useCoinListEditOptions().pinnedCoinsObj).toEqual({ [id]: true, '0xabc_1': true });
-  state.selected = [id];
-  const actions = useCoinListFinishEditingOptions();
-  expect(actions.currentAction).toBe(EditAction.unpin);
-  actions.setPinnedCoins();
-  expect(state.storage['pinned-coins-obj-0xAccount']).toEqual({ '0xabc_1': true });
-});
