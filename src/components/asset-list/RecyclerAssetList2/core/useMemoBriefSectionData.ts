@@ -85,7 +85,7 @@ export default function useMemoBriefSectionData({
         if (isCoin && !isSmallBalancesOpen && !isCoinListEdited && afterDivider) {
           return false;
         }
-        if (data.type === CellType.COIN && hiddenAssets.has((data as CoinExtraData).uniqueId) && !isCoinListEdited) {
+        if (isCoin && hiddenAssets.has((data as CoinExtraData).uniqueId) && !isCoinListEdited) {
           return false;
         }
 

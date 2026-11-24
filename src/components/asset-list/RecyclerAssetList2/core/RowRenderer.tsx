@@ -12,7 +12,6 @@ import { RotatingLearnCard } from '@/components/cards/RotatingLearnCard';
 import { navigateToPerps } from '@/features/perps/utils/navigateToPerps';
 import { usePolymarketNavigationStore } from '@/features/polymarket/navigation/polymarketNavigation';
 import { navigateToPolymarket } from '@/features/polymarket/utils/navigateToPolymarket';
-import { SolanaBalanceRow } from '@/features/solana/ui/SolanaBalanceRow';
 import { assertNever } from '@/helpers/assertNever';
 import Routes from '@/navigation/routesNames';
 
@@ -132,7 +131,7 @@ function rowRenderer(type: CellType, { uid }: { uid: string }, _: unknown, exten
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
     case CellType.SOLANA_COIN:
-      return <SolanaBalanceRow uniqueId={(data as SolanaCoinExtraData).uniqueId} />;
+      return <FastBalanceCoinRow isSolana extendedState={extendedState} uniqueId={(data as SolanaCoinExtraData).uniqueId} />;
     case CellType.COIN:
       return <FastBalanceCoinRow extendedState={extendedState} uniqueId={(data as CoinExtraData).uniqueId} />;
     case CellType.PROFILE_ACTION_BUTTONS_ROW:

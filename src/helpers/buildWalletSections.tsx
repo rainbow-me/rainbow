@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
 
-import { type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
@@ -58,7 +57,7 @@ export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
   solanaBalances?: Pick<SolanaBalance, 'assetId' | 'value'>[];
   accountBalanceDisplay: string | undefined;
-  hiddenAssets: Set<UniqueId>;
+  hiddenAssets: Set<string>;
   isCoinListEdited: boolean;
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
@@ -425,22 +424,21 @@ const withBriefBalanceSection = (
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
-  hiddenAssets: Set<UniqueId>,
+  hiddenAssets: Set<string>,
   collections: Map<CollectionId, Collection> | null,
   discoverEnabled: boolean,
   solanaBalances: Pick<SolanaBalance, 'assetId' | 'value'>[]
 ): BalanceSectionResult => {
-  const assets: CoinListAsset[] =
-    solanaBalances.length && !isCoinListEdited
-      ? [
-          ...sortedAssets,
-          ...solanaBalances.map(balance => ({
-            uniqueId: balance.assetId,
-            native: { balance: { amount: balance.value ?? '0' } },
-            cellType: CellType.SOLANA_COIN as const,
-          })),
-        ].sort((a, b) => (Number(b.native?.balance?.amount) || 0) - (Number(a.native?.balance?.amount) || 0))
-      : sortedAssets;
+  const assets: CoinListAsset[] = solanaBalances.length
+    ? [
+        ...sortedAssets,
+        ...solanaBalances.map(balance => ({
+          uniqueId: balance.assetId,
+          native: { balance: { amount: balance.value ?? '0' } },
+          cellType: CellType.SOLANA_COIN as const,
+        })),
+      ].sort((a, b) => (Number(b.native?.balance?.amount) || 0) - (Number(a.native?.balance?.amount) || 0))
+    : sortedAssets;
   const { briefAssets } = buildBriefCoinsList(assets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
   const hasTokens = briefAssets?.length || solanaBalances.length;

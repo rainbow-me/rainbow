@@ -2,6 +2,8 @@ import { type ComponentProps, type JSX } from 'react';
 
 import { beforeEach, expect, it, vi } from 'vitest';
 
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
+
 import { ChainImage } from './ChainImage';
 
 const state = vi.hoisted(() => ({ isDarkMode: false }));
@@ -10,6 +12,7 @@ vi.mock('react', () => ({
   memo: (component: unknown) => component,
   useMemo: (factory: () => unknown) => factory(),
 }));
+vi.mock('@/features/solana/constants/networkAssets', () => ({ SOLANA_NETWORK_BADGE: 7 }));
 vi.mock('react-native', () => ({ Image: 'LocalImage', View: 'View' }));
 vi.mock('@candlefinance/faster-image', () => ({ FasterImageView: 'RemoteImage' }));
 vi.mock('@/components/images/ImgixImage', () => ({ DEFAULT_FASTER_IMAGE_CONFIG: {} }));
@@ -48,4 +51,11 @@ it('preserves dark-mode clipping for both image sources', () => {
     const row = render(props);
     expect(row?.props.style[1]).toMatchObject({ borderRadius: 10, overflow: 'hidden' });
   }
+});
+
+it('uses the backend numeric Solana ID for the bundled badge', () => {
+  const row = render({ chainId: SOLANA_CHAIN_ID });
+  expect(row?.props.children.type).toBe('LocalImage');
+  expect(row?.props.children.props.source).toBe(7);
+  expect(render({ chainId: SOLANA_CHAIN_ID, showBadge: false })).toBeNull();
 });

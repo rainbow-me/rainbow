@@ -13,7 +13,7 @@ export type UserAssetsStateToPersist = Pick<
 
 type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legacyUserAssets'> & {
   chainBalances: Array<[ChainId, number]>; // Map
-  hiddenAssets: UniqueId[]; // Set
+  hiddenAssets: string[]; // Set
   idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
   userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
 };
@@ -73,7 +73,7 @@ export function deserializeUserAssetsState<SerializedState>(serializedState: Ser
     logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
   }
 
-  let hiddenAssets = new Set<UniqueId>();
+  let hiddenAssets = new Set<string>();
   try {
     if (state.hiddenAssets) {
       hiddenAssets = new Set(state.hiddenAssets);

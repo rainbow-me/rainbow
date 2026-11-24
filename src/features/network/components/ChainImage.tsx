@@ -5,6 +5,8 @@ import { FasterImageView } from '@candlefinance/faster-image';
 
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
+import { SOLANA_NETWORK_BADGE } from '@/features/solana/constants/networkAssets';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { TRANSPARENT_PIXEL_BASE64 } from '@/framework/ui/utils/transparentPixelBase64';
 
 import { useBackendNetworksStore } from '../stores/backendNetworksStore';
@@ -14,7 +16,7 @@ type ChainImageProps = {
   badgeSource?: ImageSourcePropType;
   badgeXPosition?: number;
   badgeYPosition?: number;
-  chainId: ChainId | null | undefined;
+  chainId: ChainId | typeof SOLANA_CHAIN_ID | null | undefined;
   position?: 'absolute' | 'relative';
   showBadge?: boolean;
   size?: number;
@@ -22,10 +24,10 @@ type ChainImageProps = {
 };
 
 export const ChainImage = memo(function ChainImage({
-  badgeSource,
+  chainId,
+  badgeSource = chainId === SOLANA_CHAIN_ID ? SOLANA_NETWORK_BADGE : undefined,
   badgeXPosition = 0,
   badgeYPosition = 0,
-  chainId,
   position = 'absolute',
   showBadge = true,
   size = 20,
@@ -39,7 +41,8 @@ export const ChainImage = memo(function ChainImage({
 
   if ((!chainId && !badgeSource) || !showBadge) return null;
 
-  const badgeUrl = (chainId ? useBackendNetworksStore.getState().getChainsBadge()[chainId] : undefined) ?? '';
+  const badgeUrl =
+    (chainId && chainId !== SOLANA_CHAIN_ID ? useBackendNetworksStore.getState().getChainsBadge()[chainId] : undefined) ?? '';
   if (!badgeUrl && !badgeSource) return null;
 
   return (

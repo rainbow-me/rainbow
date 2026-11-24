@@ -83,15 +83,24 @@ describe('Solana wallet list composition', () => {
     expect(split(rows).above).toEqual(['pinned', 'sol']);
     expect(coinIds(rows)).not.toContain('hidden');
   });
-  it('preserves the legacy list with no Solana holdings and keeps Solana editing deferred', () => {
+  it('preserves the legacy list with no Solana holdings and includes Solana during editing', () => {
     const input = { ...state, sortedAssets: [evm('eth', '100')] };
     expect(buildBriefWalletSectionsSelector({ ...input, solanaBalances: [] })).toEqual(buildBriefWalletSectionsSelector(input));
     const rows = sections({ ...input, isCoinListEdited: true, solanaBalances: [sol] });
-    expect(rows.some(row => row.type === CellType.SOLANA_COIN)).toBe(false);
+    expect(rows.some(row => row.type === CellType.SOLANA_COIN)).toBe(true);
   });
   it('uses the existing asset skeletons when initial balances are loading', () => {
     const rows = sections({ isLoadingUserAssets: true });
     expect(rows.some(row => row.type === CellType.LOADING_ASSETS)).toBe(true);
     expect(rows.some(row => row.type === CellType.RECEIVE_CARD)).toBe(false);
   });
+});
+
+it('pins and hides Solana IDs with the same list rules, retaining hidden rows in edit mode', () => {
+  const id = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+  const input = { sortedAssets: [evm('eth', '100')], solanaBalances: [{ assetId: id, value: '0.1' }] };
+  expect(split(sections({ ...input, pinnedCoins: { [id]: true } })).above).toEqual([id, 'eth']);
+  const hidden = { ...input, hiddenAssets: new Set([id]) };
+  expect(coinIds(sections(hidden))).toEqual(['eth']);
+  expect(coinIds(sections({ ...hidden, isCoinListEdited: true }))).toEqual(['eth', id]);
 });

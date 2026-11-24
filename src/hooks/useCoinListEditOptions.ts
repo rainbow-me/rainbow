@@ -31,7 +31,7 @@ export default function useCoinListEditOptions() {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
         return {
           ...(prev ?? {}),
-          [uniqueId.toLowerCase()]: true,
+          [uniqueId.startsWith('solana:') ? uniqueId : uniqueId.toLowerCase()]: true,
         };
       });
     },
@@ -42,7 +42,7 @@ export default function useCoinListEditOptions() {
     (uniqueId: string) => {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
         const newPinnedCoins = { ...(prev ?? {}) };
-        delete newPinnedCoins[uniqueId.toLowerCase()];
+        delete newPinnedCoins[uniqueId.startsWith('solana:') ? uniqueId : uniqueId.toLowerCase()];
         return newPinnedCoins;
       });
     },

@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
@@ -35,7 +36,7 @@ export default React.memo(function RainbowCoinIcon({
 }: {
   size?: number;
   icon?: string;
-  chainId: ChainId;
+  chainId: ChainId | typeof SOLANA_CHAIN_ID;
   symbol: string;
   forceDarkMode?: boolean;
   color?: string;
@@ -52,7 +53,14 @@ export default React.memo(function RainbowCoinIcon({
 
   return (
     <View style={[sx.container, { height: size }]}>
-      <FastFallbackCoinIconImage icon={icon} shadowColor={shadowColor} symbol={symbol} theme={theme} size={size}>
+      <FastFallbackCoinIconImage
+        direct={chainId === SOLANA_CHAIN_ID}
+        icon={icon}
+        shadowColor={shadowColor}
+        symbol={symbol}
+        theme={theme}
+        size={size}
+      >
         {() => (
           <FallbackIcon
             color={fallbackIconColor}

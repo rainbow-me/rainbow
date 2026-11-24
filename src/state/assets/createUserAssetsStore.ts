@@ -157,7 +157,7 @@ export const createUserAssetsStore = (address: Address | string) =>
         return total;
       },
 
-      setHiddenAssets: (uniqueIds: UniqueId[]) => {
+      setHiddenAssets: (uniqueIds: string[]) => {
         set(state => {
           const hiddenAssets = new Set(state.hiddenAssets);
           uniqueIds.forEach(uniqueId => {
