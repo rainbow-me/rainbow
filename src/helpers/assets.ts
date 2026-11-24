@@ -1,5 +1,6 @@
 import { chunk, compact, groupBy, isEmpty, slice, sortBy } from 'lodash';
 
+import { type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
@@ -37,7 +38,7 @@ export const buildCoinsList = (
   nativeCurrency: any,
   isCoinListEdited: any,
   pinnedCoins: any,
-  hiddenCoins: Set<string>
+  hiddenCoins: Set<UniqueId>
 ) => {
   if (!sortedAssets.length) {
     return {
@@ -138,7 +139,7 @@ export const buildBriefCoinsList = (
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
-  hiddenAssets: Set<string>
+  hiddenAssets: Set<UniqueId>
 ) => {
   const { assets, smallBalancesValue, totalBalancesValue } = buildCoinsList(
     sortedAssets,

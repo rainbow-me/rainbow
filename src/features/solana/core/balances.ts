@@ -1,9 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { z } from 'zod';
 
-import { isSolanaAddress } from './address';
+import { type SolanaAssetId } from '@/__swaps__/types/assets';
 
-export const SOLANA_MAINNET_CHAIN = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+import { isSolanaAddress } from './address';
+import { SOLANA_CHAIN_ID, SOLANA_MAINNET_CHAIN } from './chainId';
 
 export function solanaBalanceAccountId(address: string): string {
   if (!isSolanaAddress(address)) throw new Error('Invalid Solana balances address.');
@@ -43,6 +44,7 @@ const responseSchema = z.object({
 
 export type SolanaBalance = {
   assetId: string;
+  uniqueId: SolanaAssetId;
   name: string;
   symbol: string;
   iconUrl?: string;
@@ -81,11 +83,12 @@ export function parseSolanaBalances(response: unknown, address: string, currency
       !asset.assetId.startsWith(prefix) ||
       !['native', 'token'].includes(namespace) ||
       extra !== undefined ||
-      !isSolanaAddress(reference) ||
-      ids.has(asset.assetId)
+      !isSolanaAddress(reference)
     )
       throw new Error('Invalid Solana balance identity.');
-    ids.add(asset.assetId);
+    const uniqueId: SolanaAssetId = `${reference}_${SOLANA_CHAIN_ID}`;
+    if (ids.has(uniqueId)) throw new Error('Invalid Solana balance identity.');
+    ids.add(uniqueId);
     const native = namespace === 'native';
     if (native && asset.decimals !== undefined && asset.decimals !== 9) throw new Error('Invalid SOL decimals.');
     const decimals = native ? 9 : asset.decimals;
@@ -98,6 +101,7 @@ export function parseSolanaBalances(response: unknown, address: string, currency
     if (value !== null) total = total.plus(value);
     balances.push({
       assetId: asset.assetId,
+      uniqueId,
       name: asset.name || fallback?.name || shortAddress,
       symbol: asset.symbol || fallback?.symbol || shortAddress,
       iconUrl: asset.iconUrl || undefined,

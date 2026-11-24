@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 
+import { type SolanaAssetId } from '@/__swaps__/types/assets';
 import { type SolanaBalance } from '@/features/solana/core/balances';
 import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 
@@ -28,7 +29,7 @@ vi.mock('@/features/network/types/backendNetworks', () => ({ ChainId: { mainnet:
 vi.mock('@/features/token/ui/utils/formatLiquidityCappedBalance', () => ({ formatLiquidityCappedBalance: vi.fn() }));
 vi.mock('@/features/solana/data/solanaBalancesStore', () => ({
   useSolanaWalletBalances: (selector: (value: unknown) => unknown) => selector({ data: { balances: state.balances } }),
-  selectSolanaBalance: (_: unknown, id: string) => state.balances.find(balance => balance.assetId === id),
+  selectSolanaBalance: (_: unknown, id: string) => state.balances.find(balance => balance.uniqueId === id),
 }));
 vi.mock('@/hooks/useAccountAsset', () => ({ default: state.evmReads }));
 vi.mock('@/hooks/useCoinListEditOptions', () => ({ useCoinListFinishEditingOptions: () => ({ selectedItems: [] }) }));
@@ -54,9 +55,10 @@ function elements(node: unknown): Element[] {
   if (typeof element.type === 'function') return elements(element.type(element.props));
   return [element, ...elements(element.props.children)];
 }
-const id = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp/token:EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const id = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v_1399811149' as SolanaAssetId;
 const balance: SolanaBalance = {
   assetId: id,
+  uniqueId: id,
   name: 'USD Coin',
   symbol: 'USDC',
   amount: '2',
@@ -114,7 +116,7 @@ it('preserves EVM lookup, normal navigation and edit selection', () => {
   expect(state.navigate).not.toHaveBeenCalled();
 });
 it('refreshes the data when the recycler changes the Solana asset ID', () => {
-  state.balances.push({ ...balance, assetId: 'other', name: 'Other', symbol: 'OTHER' });
+  state.balances.push({ ...balance, assetId: 'other', uniqueId: 'other' as SolanaAssetId, name: 'Other', symbol: 'OTHER' });
   const row = elements(FastBalanceCoinRow({ uniqueId: 'other', isSolana: true, extendedState: extendedState() }));
   expect(row.find(item => item.type === 'Icon')?.props.symbol).toBe('OTHER');
 });

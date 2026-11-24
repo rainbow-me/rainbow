@@ -417,7 +417,7 @@ export function calculateHiddenAssetsBalance({
   } = userAssetsStoreManager.getState();
 
   hiddenAssets.forEach(uniqueId => {
-    const asset = (userAssets as ReadonlyMap<string, ParsedSearchAsset>).get(uniqueId);
+    const asset = userAssets.get(uniqueId);
     if (asset) {
       const assetNativeBalance = multiply(asset.price?.value ?? 0, asset.balance?.amount ?? 0);
       balance = add(balance, assetNativeBalance);

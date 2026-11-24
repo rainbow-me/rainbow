@@ -4,6 +4,8 @@ import { difference } from 'lodash';
 import { useMMKVObject } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 
+import { migrateSolanaPinnedAssets } from '@/features/solana/core/assetId';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { EditAction } from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -24,14 +26,15 @@ export default function useCoinListEditOptions() {
 
   const setSelectedItems = useSetRecoilState(selectedItemsAtom);
 
-  const [pinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const [storedPinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const pinnedCoins = useMemo(() => migrateSolanaPinnedAssets(storedPinnedCoins), [storedPinnedCoins]);
 
   const addPinnedCoin = useCallback(
     (uniqueId: string) => {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
         return {
-          ...(prev ?? {}),
-          [uniqueId.startsWith('solana:') ? uniqueId : uniqueId.toLowerCase()]: true,
+          ...migrateSolanaPinnedAssets(prev ?? {}),
+          [uniqueId.endsWith(`_${SOLANA_CHAIN_ID}`) ? uniqueId : uniqueId.toLowerCase()]: true,
         };
       });
     },
@@ -41,8 +44,8 @@ export default function useCoinListEditOptions() {
   const removePinnedCoin = useCallback(
     (uniqueId: string) => {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
-        const newPinnedCoins = { ...(prev ?? {}) };
-        delete newPinnedCoins[uniqueId.startsWith('solana:') ? uniqueId : uniqueId.toLowerCase()];
+        const newPinnedCoins = { ...migrateSolanaPinnedAssets(prev ?? {}) };
+        delete newPinnedCoins[uniqueId.endsWith(`_${SOLANA_CHAIN_ID}`) ? uniqueId : uniqueId.toLowerCase()];
         return newPinnedCoins;
       });
     },
@@ -93,7 +96,8 @@ export function useCoinListFinishEditingOptions() {
   const selectedItemsNonReactive = useRef<string[]>(undefined);
   selectedItemsNonReactive.current = selectedItems;
 
-  const [pinnedCoins = {}, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const [storedPinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const pinnedCoins = useMemo(() => migrateSolanaPinnedAssets(storedPinnedCoins), [storedPinnedCoins]);
 
   const currentAction = useMemo(() => {
     const newSelectedCoinsLength = selectedItems.length;
@@ -120,7 +124,7 @@ export function useCoinListFinishEditingOptions() {
 
   const setPinnedCoins = useCallback(() => {
     setPinnedCoinsObject((pinnedCoins: BooleanMap | undefined) => {
-      const safePinnedCoins = pinnedCoins ?? {};
+      const safePinnedCoins = migrateSolanaPinnedAssets(pinnedCoins ?? {});
       if (currentActionNonReactive.current === EditAction.unpin) {
         return Object.keys(safePinnedCoins).reduce((acc, curr) => {
           if (!selectedItemsNonReactive.current?.includes(curr)) {

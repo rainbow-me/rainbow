@@ -1,6 +1,7 @@
 import { type createBaseStore } from '@storesjs/stores';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { type SolanaAssetId } from '@/__swaps__/types/assets';
 import { type SolanaBalance, type SolanaBalances } from '@/features/solana/core/balances';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { useAccountMetadataStore } from '@/features/wallet/data/stores/accountMetadataStore';
@@ -170,8 +171,24 @@ describe('isolated Solana balances lifecycle', () => {
 
 it('isolates rows and updates list placement only for IDs or values', async () => {
   await refreshSolanaBalances();
-  const sol: SolanaBalance = { assetId: 'sol', name: 'Solana', symbol: 'SOL', amount: '1', rawUnits: false, value: '100' };
-  const bonk: SolanaBalance = { assetId: 'bonk', name: 'Bonk', symbol: 'BONK', amount: '1000', rawUnits: false, value: '1' };
+  const sol: SolanaBalance = {
+    assetId: 'sol',
+    uniqueId: 'So11111111111111111111111111111111111111111_1399811149' as SolanaAssetId,
+    name: 'Solana',
+    symbol: 'SOL',
+    amount: '1',
+    rawUnits: false,
+    value: '100',
+  };
+  const bonk: SolanaBalance = {
+    assetId: 'bonk',
+    uniqueId: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263_1399811149' as SolanaAssetId,
+    name: 'Bonk',
+    symbol: 'BONK',
+    amount: '1000',
+    rawUnits: false,
+    value: '1',
+  };
   async function publish(balances: SolanaBalance[]) {
     vi.mocked(fetchSolanaBalances).mockResolvedValue({ ...data, balances });
     await refreshSolanaBalances();
@@ -182,8 +199,8 @@ it('isolates rows and updates list placement only for IDs or values', async () =
   const bonkChanged = vi.fn();
   const stops = [
     useSolanaBalanceList.subscribe(listChanged),
-    useSolanaWalletBalances.subscribe(state => selectSolanaBalance(state, 'sol'), solChanged, { equalityFn: shallowEqual }),
-    useSolanaWalletBalances.subscribe(state => selectSolanaBalance(state, 'bonk'), bonkChanged, { equalityFn: shallowEqual }),
+    useSolanaWalletBalances.subscribe(state => selectSolanaBalance(state, sol.uniqueId), solChanged, { equalityFn: shallowEqual }),
+    useSolanaWalletBalances.subscribe(state => selectSolanaBalance(state, bonk.uniqueId), bonkChanged, { equalityFn: shallowEqual }),
   ];
   try {
     const originalList = useSolanaBalanceList.getState();

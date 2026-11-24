@@ -6,6 +6,7 @@ import { type SetterOrUpdater } from 'recoil';
 import { DataProvider, RecyclerListView } from 'recyclerlistview';
 import { useMemoOne } from 'use-memo-one';
 
+import { type UniqueId } from '@/__swaps__/types/assets';
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
@@ -48,7 +49,7 @@ export type ExtendedState = {
   nativeCurrencySymbol: string;
   nativeCurrency: NativeCurrencyKey;
   isCoinListEdited: boolean;
-  hiddenAssets: Set<string>;
+  hiddenAssets: Set<UniqueId>;
   pinnedCoins: BooleanMap;
   toggleSelectedCoin: (id: string) => void;
   setIsCoinListEdited: SetterOrUpdater<boolean>;

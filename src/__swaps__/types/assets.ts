@@ -2,6 +2,8 @@ import type { Address } from 'viem';
 
 import { type SearchAsset } from '@/__swaps__/types/search';
 import { type ChainId, type ChainName } from '@/features/network/types/backendNetworks';
+import { type SolanaAddress } from '@/features/solana/core/address';
+import { type SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import type { ETH_ADDRESS } from '@/references/constants';
 import { type ResponseByTheme } from '@/theme/types';
 
@@ -209,4 +211,5 @@ export type AssetMetadata = {
   volume1d: number;
 };
 
-export type UniqueId = `${Address}_${ChainId}`;
+export type SolanaAssetId = `${SolanaAddress}_${typeof SOLANA_CHAIN_ID}`;
+export type UniqueId = `${Address}_${ChainId}` | SolanaAssetId;

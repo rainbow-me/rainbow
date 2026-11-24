@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { SOLANA_MAINNET_CHAIN as chain, parseSolanaBalances, solanaBalanceAccountId } from './balances';
+import { parseSolanaBalances, solanaBalanceAccountId } from './balances';
+import { SOLANA_MAINNET_CHAIN as chain } from './chainId';
 
 const address = 'EXzw16qKGtrWTaTd5gGG29FWSUDrTEDheh5ber156MNS';
 const accountId = solanaBalanceAccountId(address);
@@ -139,4 +140,25 @@ describe('balances v2 boundary', () => {
     );
     expect(data.balances[0]).toMatchObject({ name: 'EXzw…6MNS', amount: '179207', rawUnits: true, value: null });
   });
+});
+
+it('creates case-sensitive address_chainId IDs while retaining native and wrapped SOL as different assets', () => {
+  const wrapped = { ...sol, asset: { ...sol.asset, assetId: `${chain}/token:So11111111111111111111111111111111111111112`, decimals: 9 } };
+  const result = parseSolanaBalances(response([sol, usdc, wrapped]), address, 'USD');
+  const ids = result.balances.map(balance => balance.uniqueId);
+  expect(ids).toContain('So11111111111111111111111111111111111111111_1399811149');
+  expect(ids).toContain('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v_1399811149');
+  expect(ids).toContain('So11111111111111111111111111111111111111112_1399811149');
+  expect(new Set(ids).size).toBe(3);
+  expect(result.balances).toContainEqual(
+    expect.objectContaining({
+      uniqueId: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v_1399811149',
+      assetId: usdc.asset.assetId,
+    })
+  );
+});
+
+it('rejects backend entries that would collide after conversion to row IDs', () => {
+  const alias = { ...sol, asset: { ...sol.asset, assetId: `${chain}/token:So11111111111111111111111111111111111111111` } };
+  expect(() => parseSolanaBalances(response([sol, alias]), address, 'USD')).toThrow('Invalid Solana balance identity.');
 });

@@ -58,16 +58,16 @@ export const useSolanaWalletBalances = createDerivedStore(
   { lockDependencies: true }
 );
 
-export const useSolanaBalanceList = createDerivedStore<Pick<SolanaBalance, 'assetId' | 'value'>[]>(
+export const useSolanaBalanceList = createDerivedStore<Pick<SolanaBalance, 'uniqueId' | 'value'>[]>(
   $ => {
     const balances = $(useSolanaWalletBalances, state => state.data?.balances);
-    return balances?.map(({ assetId, value }) => ({ assetId, value })) ?? [];
+    return balances?.map(({ uniqueId, value }) => ({ uniqueId, value })) ?? [];
   },
   { equalityFn: deepEqual, lockDependencies: true }
 );
 
 export function selectSolanaBalance(state: ReturnType<typeof useSolanaWalletBalances.getState>, uniqueId: string) {
-  return state.data?.balances.find(balance => balance.assetId === uniqueId);
+  return state.data?.balances.find(balance => balance.uniqueId === uniqueId);
 }
 
 export function refreshSolanaBalances() {

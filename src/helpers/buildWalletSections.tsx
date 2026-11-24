@@ -1,5 +1,6 @@
 import { createSelector } from 'reselect';
 
+import { type UniqueId } from '@/__swaps__/types/assets';
 import { type AssetListType } from '@/components/asset-list/RecyclerAssetList2';
 import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetList2/core/ViewTypes';
 import type { ParsedAddressAsset } from '@/entities/tokens';
@@ -51,13 +52,13 @@ const EMPTY_WALLET_CONTENT_WITH_DISCOVER: CellTypes[] = [
 
 const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
 const EMPTY_ARRAY: CellTypes[] = [];
-const EMPTY_SOLANA_BALANCES: Pick<SolanaBalance, 'assetId' | 'value'>[] = [];
+const EMPTY_SOLANA_BALANCES: Pick<SolanaBalance, 'uniqueId' | 'value'>[] = [];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
-  solanaBalances?: Pick<SolanaBalance, 'assetId' | 'value'>[];
+  solanaBalances?: Pick<SolanaBalance, 'uniqueId' | 'value'>[];
   accountBalanceDisplay: string | undefined;
-  hiddenAssets: Set<string>;
+  hiddenAssets: Set<UniqueId>;
   isCoinListEdited: boolean;
   isLoadingUserAssets: boolean;
   isLoadingBalance: boolean;
@@ -424,16 +425,16 @@ const withBriefBalanceSection = (
   nativeCurrency: NativeCurrencyKey,
   isCoinListEdited: boolean,
   pinnedCoins: BooleanMap,
-  hiddenAssets: Set<string>,
+  hiddenAssets: Set<UniqueId>,
   collections: Map<CollectionId, Collection> | null,
   discoverEnabled: boolean,
-  solanaBalances: Pick<SolanaBalance, 'assetId' | 'value'>[]
+  solanaBalances: Pick<SolanaBalance, 'uniqueId' | 'value'>[]
 ): BalanceSectionResult => {
   const assets: CoinListAsset[] = solanaBalances.length
     ? [
         ...sortedAssets,
         ...solanaBalances.map(balance => ({
-          uniqueId: balance.assetId,
+          uniqueId: balance.uniqueId,
           native: { balance: { amount: balance.value ?? '0' } },
           cellType: CellType.SOLANA_COIN as const,
         })),
