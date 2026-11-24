@@ -74,5 +74,3 @@ The new review stack preserves network artwork and the November 20 developer-but
 5. Check icons and values in light/dark mode. EVM row taps must still open their expanded sheet. Solana row taps outside Edit remain inactive; expanded-sheet integration is not part of this change.
 
 Status: Not run in the simulator for the shared-row change. Unit coverage checks selection callbacks, ID casing, persistence, row filtering, icon fallback and EVM navigation.
-
-Identifier compatibility check (unsigned): pin/hide a Solana token on the prior CAIP-key build, then restart on this build. The preference should remain applied under `address_1399811149`, and unpin/unhide must work. Native SOL and wrapped SOL must remain distinct rows. Status: covered by unit tests; native upgrade check not run.
