@@ -64,3 +64,13 @@ Gas RPC estimates cover network fees, not arbitrary account-creation transfers. 
 ## Reorganized stack
 
 The new review stack preserves network artwork and the November 20 developer-button cleanup. Existing simulator sessions were not restarted.
+
+## Shared balance-row editing (unsigned, 2 minutes)
+
+1. With Solana enabled and SOL/USDC/BONK holdings visible, enter the wallet token list's Edit mode. Confirm Solana rows remain visible with the same selection controls as EVM.
+2. Pin a Solana token and an EVM token together; finish editing and verify both move above unpinned tokens. Unpin and verify normal value ordering returns.
+3. Hide a Solana token; verify it disappears outside Edit, reappears inside Edit, and can be unhidden. Repeat with a mixed EVM/Solana selection.
+4. Switch accounts and restart the app; verify preferences remain scoped to the paired EVM account and survive reload. Turn the Solana flag off and confirm EVM editing still works.
+5. Check icons and values in light/dark mode. EVM row taps must still open their expanded sheet. Solana row taps outside Edit remain inactive; expanded-sheet integration is not part of this change.
+
+Status: Not run in the simulator for the shared-row change. Unit coverage checks selection callbacks, ID casing, persistence, row filtering, icon fallback and EVM navigation.
