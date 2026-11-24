@@ -19,12 +19,8 @@ import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton'
 import RainbowCoinIcon from '@/components/coin-icon/RainbowCoinIcon';
 import { Box, Text, useColorMode } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
-import {
-  SOLANA_NETWORK_BADGE,
-  SOLANA_NETWORK_COLOR,
-  SOLANA_NETWORK_ICON,
-  SOLANA_NETWORK_SHADOW_COLOR,
-} from '@/features/solana/constants/networkAssets';
+import { SOLANA_NETWORK_COLOR, SOLANA_NETWORK_ICON, SOLANA_NETWORK_SHADOW_COLOR } from '@/features/solana/constants/networkAssets';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { editSwapAmount, SWAP_ASSETS, swapMaxAmount, swapPercentageAmount, type SwapAssetId } from '@/features/solana/core/swap';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { handleSignificantDecimals } from '@/helpers/utilities';
@@ -60,7 +56,7 @@ export function SolanaSwapIcon({ assetId, size = 36 }: { assetId: SwapAssetId | 
       ) : (
         <SwapCoinIconTextFallback asset={asset} height={size} width={size} style={{ borderRadius: size / 2, overflow: 'hidden' }} />
       )}
-      <ChainImage chainId={null} badgeSource={SOLANA_NETWORK_BADGE} size={16} badgeXPosition={-8} showBadge={!!assetId && size > 16} />
+      <ChainImage chainId={SOLANA_CHAIN_ID} size={16} badgeXPosition={-8} showBadge={!!assetId && size > 16} />
     </Box>
   );
 }
