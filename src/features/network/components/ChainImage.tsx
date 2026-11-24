@@ -10,13 +10,13 @@ import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { TRANSPARENT_PIXEL_BASE64 } from '@/framework/ui/utils/transparentPixelBase64';
 
 import { useBackendNetworksStore } from '../stores/backendNetworksStore';
-import { type ChainId } from '../types/backendNetworks';
+import { type SupportedChainId } from '../types/supportedChainId';
 
 type ChainImageProps = {
   badgeSource?: ImageSourcePropType;
   badgeXPosition?: number;
   badgeYPosition?: number;
-  chainId: ChainId | typeof SOLANA_CHAIN_ID | null | undefined;
+  chainId: SupportedChainId | null | undefined;
   position?: 'absolute' | 'relative';
   showBadge?: boolean;
   size?: number;

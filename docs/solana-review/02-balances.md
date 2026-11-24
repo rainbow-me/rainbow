@@ -55,7 +55,7 @@ Solana recycler items carry asset IDs, matching the EVM row contract. A derived 
 
 ## Shared row and editing
 
-`SOLANA_CHAIN_ID = 1399811149` matches [Rainbow's backend enum](https://github.com/rainbow-me/go-utils-lib/blob/162673da884f9008fbcb7e8f4bffffabb0e0cd16/pkg/enums/chain_id.go#L65-L66) and the [Codex convention](https://github.com/Codex-Data/sdk). It is a display/API compatibility ID, not an EIP-155 ID or Relay's execution chain ID. This PR does not add Solana to the EVM `ChainId` registry. Balance requests retain CAIP IDs. Parsed holdings retain the backend `assetId` and add an `address_1399811149` `uniqueId` for rows and preferences.
+`SOLANA_CHAIN_ID = 1399811149` matches [Rainbow's backend enum](https://github.com/rainbow-me/go-utils-lib/blob/162673da884f9008fbcb7e8f4bffffabb0e0cd16/pkg/enums/chain_id.go#L65-L66) and the [Codex convention](https://github.com/Codex-Data/sdk). It is a display/API compatibility ID, not an EIP-155 ID or Relay's execution chain ID. This PR does not add Solana to the EVM `ChainId` registry. Shared identifier and icon APIs use `SupportedChainId` (`ChainId | typeof SOLANA_CHAIN_ID`), defined once in `src/features/network/types/supportedChainId.ts`; existing EVM-only consumers retain `ChainId`. Balance requests retain CAIP IDs. Parsed holdings retain the backend `assetId` and add an `address_1399811149` `uniqueId` for rows and preferences.
 
 The shared row reads Solana metadata/prices from the balances store and uses the same existing live-text fallbacks as EVM. It does not start a new live-price subscription or send Solana row taps into the EVM expanded sheet. Row subscriptions remain per asset; unrelated Solana balances do not notify equal row selections.
 

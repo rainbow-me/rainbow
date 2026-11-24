@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { ChainId } from '@/features/network/types/backendNetworks';
-import { type SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
+import { type SupportedChainId } from '@/features/network/types/supportedChainId';
 import { borders, fonts } from '@/styles';
 import { useTheme } from '@/theme/ThemeContext';
 import FallbackIcon from '@/utils/CoinIcons/FallbackIcon';
@@ -36,7 +36,7 @@ export default React.memo(function RainbowCoinIcon({
 }: {
   size?: number;
   icon?: string;
-  chainId: ChainId | typeof SOLANA_CHAIN_ID;
+  chainId: SupportedChainId;
   symbol: string;
   forceDarkMode?: boolean;
   color?: string;

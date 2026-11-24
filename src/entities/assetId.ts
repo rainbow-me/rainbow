@@ -1,7 +1,6 @@
-import { type ChainId } from '@/features/network/types/backendNetworks';
-import { type SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
+import { type SupportedChainId } from '@/features/network/types/supportedChainId';
 
-export function getUniqueId(address: string, chainId: ChainId | typeof SOLANA_CHAIN_ID): string {
+export function getUniqueId(address: string, chainId: SupportedChainId): string {
   'worklet';
   return `${address}_${chainId}`;
 }
