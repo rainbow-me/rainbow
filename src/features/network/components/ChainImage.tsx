@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { Image, View, type ImageSourcePropType, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
@@ -13,7 +13,6 @@ import { useBackendNetworksStore } from '../stores/backendNetworksStore';
 import { type SupportedChainId } from '../types/supportedChainId';
 
 type ChainImageProps = {
-  badgeSource?: ImageSourcePropType;
   badgeXPosition?: number;
   badgeYPosition?: number;
   chainId: SupportedChainId | null | undefined;
@@ -25,7 +24,6 @@ type ChainImageProps = {
 
 export const ChainImage = memo(function ChainImage({
   chainId,
-  badgeSource = chainId === SOLANA_CHAIN_ID ? SOLANA_NETWORK_BADGE : undefined,
   badgeXPosition = 0,
   badgeYPosition = 0,
   position = 'absolute',
@@ -39,7 +37,9 @@ export const ChainImage = memo(function ChainImage({
     [badgeXPosition, badgeYPosition, isDarkMode, position, size]
   );
 
-  if ((!chainId && !badgeSource) || !showBadge) return null;
+  if (!chainId || !showBadge) return null;
+
+  const badgeSource = chainId === SOLANA_CHAIN_ID ? SOLANA_NETWORK_BADGE : undefined;
 
   const badgeUrl =
     (chainId && chainId !== SOLANA_CHAIN_ID ? useBackendNetworksStore.getState().getChainsBadge()[chainId] : undefined) ?? '';

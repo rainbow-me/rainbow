@@ -36,18 +36,18 @@ it('preserves the EVM registry image and visibility rules', () => {
   expect(ChainImage({ chainId: null })).toBeNull();
 });
 
-it('uses the same badge layout for bundled icons without an EVM chain ID', () => {
-  const row = render({ chainId: null, badgeSource: 7, size: 20, badgeXPosition: -10 });
+it('uses the same badge layout for the bundled Solana icon', () => {
+  const row = render({ chainId: SOLANA_CHAIN_ID, size: 20, badgeXPosition: -10 });
   expect(row?.props.children.type).toBe('LocalImage');
   expect(row?.props.children.props.source).toBe(7);
   expect(row?.props.children.props.style).toMatchObject({ width: 32, height: 32, left: -6, top: -4 });
   expect(row?.props.style[1]).toMatchObject({ width: 20, height: 20, left: -10 });
-  expect(ChainImage({ chainId: null, badgeSource: 7, showBadge: false })).toBeNull();
+  expect(ChainImage({ chainId: SOLANA_CHAIN_ID, showBadge: false })).toBeNull();
 });
 
 it('preserves dark-mode clipping for both image sources', () => {
   state.isDarkMode = true;
-  for (const props of [{ chainId: 8453 }, { chainId: null, badgeSource: 7 }] as const) {
+  for (const props of [{ chainId: 8453 }, { chainId: SOLANA_CHAIN_ID }] as const) {
     const row = render(props);
     expect(row?.props.style[1]).toMatchObject({ borderRadius: 10, overflow: 'hidden' });
   }
