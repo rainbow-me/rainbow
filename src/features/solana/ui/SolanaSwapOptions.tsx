@@ -3,7 +3,9 @@ import React from 'react';
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useSwapsSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { Box } from '@/design-system';
+import { getUniqueId } from '@/entities/assetId';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { SOLANA_SWAP_OUTPUTS, SWAP_ASSETS } from '@/features/solana/core/swap';
 import { useSolanaBalancesAddress, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { selectSolanaSwap } from '@/features/solana/data/swapSelection';
@@ -17,17 +19,13 @@ export function SolanaSwapOptions({ output }: { output: boolean }) {
   const inputQuery = useUserAssetsStore(state => state.inputSearchQuery);
   const { internalSelectedInputAsset, SwapInputController } = useSwapContext();
   if (!enabledAddress || (output ? outputQuery : inputQuery).trim()) return null;
-  const options = SOLANA_SWAP_OUTPUTS.filter(
-    id =>
-      output ||
-      data?.balances.some(
-        balance =>
-          !balance.rawUnits &&
-          balance.assetId.endsWith(
-            id === 'sol' ? '/native:So11111111111111111111111111111111111111111' : `/token:${SWAP_ASSETS[id].asset.address}`
-          )
-      )
-  );
+  const options = SOLANA_SWAP_OUTPUTS.filter(id => {
+    if (output) return true;
+    const balance = data?.balances.get(
+      getUniqueId(id === 'sol' ? 'So11111111111111111111111111111111111111111' : SWAP_ASSETS[id].asset.address, SOLANA_CHAIN_ID)
+    );
+    return !!balance && !balance.rawUnits;
+  });
   if (!options.length) return null;
   return (
     <Box paddingVertical="10px">

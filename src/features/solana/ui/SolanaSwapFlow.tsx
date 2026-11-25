@@ -16,7 +16,9 @@ import { useHoldToActivate } from '@/components/buttons/useHoldToActivate';
 import { Page } from '@/components/layout';
 import { navbarHeight } from '@/components/navbar/Navbar';
 import { Box, Separator, Text, useColorMode, useForegroundColor } from '@/design-system';
+import { getUniqueId } from '@/entities/assetId';
 import { convertAmountToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import {
   SOLANA_SWAP_OUTPUTS,
   SWAP_ASSETS,
@@ -88,10 +90,8 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
     let price = new BigNumber(0);
     if (id === 'base-eth') price = new BigNumber(baseEth?.native.price?.amount ?? 0);
     else if (id) {
-      const item = solanaBalances?.balances.find(item =>
-        item.assetId.endsWith(
-          id === 'sol' ? '/native:So11111111111111111111111111111111111111111' : `/token:${SWAP_ASSETS[id].asset.address}`
-        )
+      const item = solanaBalances?.balances.get(
+        getUniqueId(id === 'sol' ? 'So11111111111111111111111111111111111111111' : SWAP_ASSETS[id].asset.address, SOLANA_CHAIN_ID)
       );
       if (item?.value && !item.rawUnits && new BigNumber(item.amount).gt(0)) price = new BigNumber(item.value).div(item.amount);
     }
@@ -309,7 +309,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
     executionId ? !terminal : reviewing ? !trade || expired || locked : preparing || locked || !trade || expired || !!error
   );
   const outputAmount = lastOutput;
-  const solBalance = solanaBalances?.balances.find(item => item.assetId.endsWith('/native:So11111111111111111111111111111111111111111'));
+  const solBalance = solanaBalances?.balances.get(getUniqueId('So11111111111111111111111111111111111111111', SOLANA_CHAIN_ID));
   const solPrice =
     solanaBalances?.address === selection.address &&
     solanaBalances.currency.toUpperCase() === currency &&

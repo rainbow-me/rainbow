@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { type SolanaAssetId } from '@/__swaps__/types/assets';
-import { type SolanaBalances } from '@/features/solana/core/balances';
 import { SWAP_ASSETS } from '@/features/solana/core/swap';
+import { type SolanaBalancesData } from '@/features/solana/data/solanaBalancesStore';
 
 import { SolanaSwapFlow } from './SolanaSwapFlow';
 
@@ -28,7 +28,7 @@ const mocks = vi.hoisted(() => ({
   balances: vi.fn(),
   navigate: vi.fn(),
   feeFormat: vi.fn(() => '$0.00'),
-  balancesData: undefined as SolanaBalances | undefined,
+  balancesData: undefined as SolanaBalancesData | undefined,
 }));
 vi.mock('react', () => {
   const slot = () => {
@@ -308,17 +308,21 @@ it.each(['USD', 'EUR'])('uses SOL pricing only when balances match the selected 
     address: selection.address,
     currency: balanceCurrency,
     total: '20',
-    balances: [
-      {
-        assetId: 'solana:mainnet/native:So11111111111111111111111111111111111111111',
-        uniqueId: 'So11111111111111111111111111111111111111111_1399811149' as SolanaAssetId,
-        symbol: 'SOL',
-        name: 'Solana',
-        amount: '0.1',
-        value: '20',
-        rawUnits: false,
-      },
-    ],
+    orderedBalances: [],
+    balances: new Map([
+      [
+        'So11111111111111111111111111111111111111111_1399811149',
+        {
+          assetId: 'solana:mainnet/native:So11111111111111111111111111111111111111111',
+          uniqueId: 'So11111111111111111111111111111111111111111_1399811149' as SolanaAssetId,
+          symbol: 'SOL',
+          name: 'Solana',
+          amount: '0.1',
+          value: '20',
+          rawUnits: false,
+        },
+      ],
+    ]),
   };
   mocks.balances.mockResolvedValue({ sol: 20000000n, bonk: 10000000000n });
   mocks.prepare.mockResolvedValue(quote('bonk'));
