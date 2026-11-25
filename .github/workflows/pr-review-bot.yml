@@ -1,0 +1,110 @@
+# Goes into rainbow-me/rainbow as .github/workflows/pr-review-bot.yml.
+# Phase 0 (dry run): started by hand; the review report goes to the job summary only.
+#
+# The review job runs the PR's code, so it only gets a read-only App token. Anything
+# that writes as the bot happens in the publish job, on a GitHub-hosted runner that
+# never runs PR code.
+name: PR review bot
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: PR number
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-review-bot-${{ inputs.pr }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: [self-hosted, pr-reviewer]
+    outputs:
+      report: ${{ steps.report.outputs.report }}
+    steps:
+      - name: GitHub App token (read-only)
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.PR_REVIEWER_APP_ID }}
+          private-key: ${{ secrets.PR_REVIEWER_APP_KEY }}
+          owner: rainbow-me
+          repositories: rainbow,pr-reviewer
+          permission-contents: read
+          permission-pull-requests: read
+
+      # Same-repository PRs only (pr-reviewer ADR 0002).
+      - name: Resolve PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          PR: ${{ inputs.pr }}
+        run: |
+          gh pr view "$PR" -R "$GITHUB_REPOSITORY" --json headRefOid,isCrossRepository > "$RUNNER_TEMP/pr.json"
+          [ "$(jq -r .isCrossRepository "$RUNNER_TEMP/pr.json")" = false ] || { echo "::error::fork PRs are not reviewed"; exit 1; }
+          echo "head=$(jq -r .headRefOid "$RUNNER_TEMP/pr.json")" >> "$GITHUB_OUTPUT"
+
+      # clean: false keeps node_modules, Pods and builds from the last run on this runner.
+      - name: Checkout PR head
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ steps.pr.outputs.head }}
+          clean: false
+          fetch-depth: 0
+
+      # The setup action below runs with secrets; it must be develop's, not the PR's.
+      - name: Workflows and actions match develop
+        run: |
+          git clean -fdq -e .pr-reviewer
+          git fetch -q origin develop
+          git diff --quiet FETCH_HEAD HEAD -- .github || { echo "::error::this PR changes .github; not reviewed"; exit 1; }
+
+      - name: Setup workspace
+        uses: ./.github/actions/setup
+        with:
+          deploy-pkey-dotenv: ${{ secrets.DEPLOY_PKEY_DOTENV_REPO }}
+          deploy-pkey-scripts: ${{ secrets.DEPLOY_PKEY_SCRIPTS_REPO }}
+          deploy-pkey-sandbox: ${{ secrets.DEPLOY_PKEY_SANDBOX_REPO }}
+          ci-scripts: ${{ secrets.CI_SCRIPTS }}
+
+      - name: Checkout reviewer
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: rainbow-me/pr-reviewer
+          ref: ${{ vars.PR_REVIEWER_REF }}
+          token: ${{ steps.app-token.outputs.token }}
+          path: .pr-reviewer
+
+      - name: Review
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          ANTHROPIC_API_KEY: ${{ secrets.PR_REVIEWER_ANTHROPIC_API_KEY }}
+          LINEAR_API_KEY: ${{ secrets.PR_REVIEWER_LINEAR_API_KEY }}
+          ARGENT_SECRET_TEST_WALLET: ${{ secrets.PR_REVIEWER_TEST_WALLET_SECRET }}
+          RR_MAX_BUDGET_USD: ${{ vars.PR_REVIEWER_MAX_BUDGET_USD || '15' }}
+          PR: ${{ inputs.pr }}
+        run: .pr-reviewer/bin/review-run --pr "$PR" --checkout . --report "$RUNNER_TEMP/report.md"
+
+      # Also when the review failed: an incomplete run still writes a report saying so.
+      - name: Hand the report to the publish job
+        id: report
+        if: ${{ !cancelled() }}
+        run: |
+          [ -s "$RUNNER_TEMP/report.md" ] || exit 0
+          delimiter="EOF_$(openssl rand -hex 16)"
+          { echo "report<<$delimiter"; cat "$RUNNER_TEMP/report.md"; echo "$delimiter"; } >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: review
+    if: ${{ !cancelled() && needs.review.outputs.report != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      # Phase 0: job summary only. Posting to the PR (with a write App token) goes here.
+      - name: Job summary
+        env:
+          REPORT: ${{ needs.review.outputs.report }}
+        run: printf '%s\n' "$REPORT" >> "$GITHUB_STEP_SUMMARY"
