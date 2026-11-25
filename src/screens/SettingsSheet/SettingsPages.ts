@@ -6,7 +6,6 @@ import Routes from '@/navigation/routesNames';
 import { WalletsAndBackup } from './components/Backups/WalletsAndBackup';
 import { CurrencySection } from './components/CurrencySection';
 import { LanguageSection } from './components/LanguageSection';
-import { NetworkSection } from './components/NetworkSection';
 import { NotificationsSection } from './components/NotificationsSection';
 import { PrivacySection } from './components/PrivacySection';
 import { SupportSection } from './components/support/SupportSection';
@@ -41,11 +40,6 @@ export const SettingsPages = {
     component: LanguageSection,
     getTitle: () => i18n.t(i18n.l.settings.language),
     key: Routes.SETTINGS_SECTION_LANGUAGE,
-  },
-  network: {
-    component: NetworkSection,
-    getTitle: () => i18n.t(i18n.l.settings.network),
-    key: Routes.SETTINGS_SECTION_NETWORK,
   },
   notifications: {
     component: NotificationsSection,

@@ -6,6 +6,7 @@ import { useColorMode } from '@/design-system';
 import styled from '@/framework/ui/styled-thing';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
 import { borders } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 import { ShadowStack } from '@/vendor/react-native-shadow-stack';
 
 import { Centered } from '../layout';

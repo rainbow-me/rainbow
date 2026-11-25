@@ -19,6 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
@@ -30,7 +31,6 @@ import { isDataComplete } from '@/state/nfts/utils';
 import { useAccountAddress, useIsReadOnlyWallet, useSelectedWallet } from '@/state/wallets/walletsStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
-import useAccountSettings from './useAccountSettings';
 import useCoinListEdited from './useCoinListEdited';
 import useCoinListEditOptions from './useCoinListEditOptions';
 import useWalletsWithBalancesAndNames from './useWalletsWithBalancesAndNames';
@@ -48,7 +48,9 @@ export default function useWalletSectionsData({
 }: {
   type?: AssetListType;
 } = {}): WalletSectionsResult {
-  const { language, network, nativeCurrency } = useAccountSettings();
+  // Keep callers that render translated text subscribed to language changes.
+  useAppSettingsStore(state => state.language);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const accountAddress = useAccountAddress();
   const isReadOnlyWallet = useIsReadOnlyWallet();
   const selectedWallet = useSelectedWallet();
@@ -128,9 +130,7 @@ export default function useWalletSectionsData({
       hiddenAssets,
       isCoinListEdited,
       isLoadingUserAssets,
-      language,
       nativeCurrency,
-      network,
       pinnedCoins,
       sortedAssets,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
@@ -170,9 +170,7 @@ export default function useWalletSectionsData({
     hiddenAssets,
     isCoinListEdited,
     isLoadingUserAssets,
-    language,
     nativeCurrency,
-    network,
     pinnedCoins,
     sortedAssets,
     accountWithBalance?.balancesMinusHiddenBalances,

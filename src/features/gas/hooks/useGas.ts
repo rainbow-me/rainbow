@@ -7,6 +7,7 @@ import { analytics } from '@/analytics';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { fromWei, greaterThan, greaterThanOrEqualTo } from '@/helpers/utilities';
 import usePrevious from '@/hooks/usePrevious';
 import { useRoute } from '@/navigation/RouteContext';
@@ -18,7 +19,6 @@ import {
   externalTokenQueryKey,
   fetchExternalToken,
 } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import ethereumUtils from '@/utils/ethereumUtils';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
@@ -111,7 +111,7 @@ type GasData = {
 };
 
 export function useFetchNativePrices() {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const nativeAssets = useBackendNetworksStore(state => state.getChainsNativeAsset());
   // keep native assets up to date for gas price calculations

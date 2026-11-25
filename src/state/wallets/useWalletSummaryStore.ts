@@ -2,9 +2,9 @@ import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { getAddysHttpClient } from '@/resources/addys/client';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
 
 export type WalletSummaryArgs = {
@@ -50,7 +50,7 @@ const useWalletSummaryQueryStore = createQueryStore<WalletSummary, WalletSummary
     setData: ({ data, set }) => set({ summary: data }),
     params: {
       addresses: $ => $(useWalletsStore, state => getWalletAddresses(state.wallets)),
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
     },
     cacheTime: time.zero,
     keepPreviousData: true,

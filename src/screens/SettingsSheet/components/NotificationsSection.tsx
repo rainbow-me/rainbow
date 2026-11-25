@@ -9,10 +9,8 @@ import { checkNotifications, RESULTS } from 'react-native-permissions';
 import { Box } from '@/design-system';
 import { abbreviateAddress } from '@/features/address/core/formatAddress';
 import { type RainbowAccount } from '@/features/wallet/types';
-import { isTestnetChain } from '@/handlers/web3';
 import { removeFirstEmojiFromString, returnStringFirstEmoji } from '@/helpers/emojiHandler';
 import WalletTypes from '@/helpers/walletTypes';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -43,7 +41,6 @@ import { MenuItem } from './MenuItem';
 type WalletRowProps = {
   ens: string;
   groupOff: boolean;
-  isTestnet: boolean;
   loading?: boolean;
   notificationSettings: WalletNotificationSettings[];
   wallet: RainbowAccount;
@@ -93,7 +90,7 @@ const WalletRowLabel = ({ notifications, groupOff }: WalletRowLabelProps) => {
   return <MenuItem.Label text={composedLabel} />;
 };
 
-const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wallet }: WalletRowProps) => {
+const WalletRow = ({ ens, groupOff, loading, notificationSettings, wallet }: WalletRowProps) => {
   const { navigate } = useNavigation();
   const notificationSetting = notificationSettings?.find((x: WalletNotificationSettings) => x.address === wallet.address);
   const cleanedUpLabel = useMemo(() => removeFirstEmojiFromString(wallet.label), [wallet.label]);
@@ -129,9 +126,9 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
 
   return (
     <MenuItem
-      disabled={isTestnet || loading}
+      disabled={loading}
       key={wallet.address}
-      hasRightArrow={!isTestnet}
+      hasRightArrow
       labelComponent={<WalletRowLabel notifications={notificationSetting} groupOff={groupOff} />}
       leftComponent={
         <Box
@@ -158,9 +155,6 @@ const WalletRow = ({ ens, groupOff, isTestnet, loading, notificationSettings, wa
 };
 
 export const NotificationsSection = () => {
-  const { navigate } = useNavigation();
-  const { chainId } = useAccountSettings();
-  const isTestnet = isTestnetChain({ chainId });
   const wallets = useWallets();
   const walletNames = useWalletsStore(state => state.walletNames);
   const { isConnected } = useNetInfo();
@@ -278,7 +272,6 @@ export const NotificationsSection = () => {
   );
 
   const openSystemSettings = Linking.openSettings;
-  const openNetworkSettings = useCallback(() => navigate(Routes.NETWORK_SWITCHER), [navigate]);
 
   const requestNotificationPermissions = useCallback(async () => {
     const status = await requestNotificationPermission();
@@ -334,76 +327,60 @@ export const NotificationsSection = () => {
           </Menu>
         )}
 
-        {isTestnet ? (
-          <Menu description={i18n.t(i18n.l.settings.notifications_section.unsupported_network)}>
-            <MenuItem
-              hasSfSymbol
-              size={52}
-              leftComponent={<MenuItem.TextIcon icon="􀇂" isLink />}
-              titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.change_network)} weight="bold" isLink />}
-              onPress={openNetworkSettings}
+        <Menu description={noOwnedWallets ? i18n.t(i18n.l.settings.notifications_section.no_owned_wallets) : ''}>
+          <MenuItem
+            disabled
+            rightComponent={
+              <>
+                {ownedState.loading && <SettingsLoadingIndicator />}
+                <Switch
+                  disabled={noOwnedWallets || ownedState.loading}
+                  onValueChange={toggleAllOwnedNotifications}
+                  value={ownedState.status}
+                />
+              </>
+            }
+            size={52}
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.my_wallets)} weight="bold" />}
+          />
+          {ownedWallets.map(wallet => (
+            <WalletRow
+              ens={walletNames[wallet.address]}
+              groupOff={!storedOwnerEnabled}
+              key={wallet.address}
+              loading={ownedState.loading}
+              notificationSettings={walletNotificationSettings}
+              wallet={wallet}
             />
-          </Menu>
-        ) : (
-          <>
-            <Menu description={noOwnedWallets ? i18n.t(i18n.l.settings.notifications_section.no_owned_wallets) : ''}>
-              <MenuItem
-                disabled
-                rightComponent={
-                  <>
-                    {ownedState.loading && <SettingsLoadingIndicator />}
-                    <Switch
-                      disabled={noOwnedWallets || isTestnet || ownedState.loading}
-                      onValueChange={toggleAllOwnedNotifications}
-                      value={ownedState.status}
-                    />
-                  </>
-                }
-                size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.my_wallets)} weight="bold" />}
-              />
-              {ownedWallets.map(wallet => (
-                <WalletRow
-                  ens={walletNames[wallet.address]}
-                  groupOff={!storedOwnerEnabled}
-                  isTestnet={isTestnet}
-                  key={wallet.address}
-                  loading={ownedState.loading}
-                  notificationSettings={walletNotificationSettings}
-                  wallet={wallet}
+          ))}
+        </Menu>
+        <Menu description={noWatchedWallets ? i18n.t(i18n.l.settings.notifications_section.no_watched_wallets) : ''}>
+          <MenuItem
+            disabled
+            rightComponent={
+              <>
+                {watchedState.loading && <SettingsLoadingIndicator />}
+                <Switch
+                  disabled={noWatchedWallets || watchedState.loading}
+                  onValueChange={toggleAllWatchedNotifications}
+                  value={watchedState.status}
                 />
-              ))}
-            </Menu>
-            <Menu description={noWatchedWallets ? i18n.t(i18n.l.settings.notifications_section.no_watched_wallets) : ''}>
-              <MenuItem
-                disabled
-                rightComponent={
-                  <>
-                    {watchedState.loading && <SettingsLoadingIndicator />}
-                    <Switch
-                      disabled={noWatchedWallets || isTestnet || watchedState.loading}
-                      onValueChange={toggleAllWatchedNotifications}
-                      value={watchedState.status}
-                    />
-                  </>
-                }
-                size={52}
-                titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.watched_wallets)} weight="bold" />}
-              />
-              {watchedWallets.map(wallet => (
-                <WalletRow
-                  ens={walletNames[wallet.address]}
-                  groupOff={!storedWatcherEnabled}
-                  isTestnet={isTestnet}
-                  key={wallet.address}
-                  loading={watchedState.loading}
-                  notificationSettings={walletNotificationSettings}
-                  wallet={wallet}
-                />
-              ))}
-            </Menu>
-          </>
-        )}
+              </>
+            }
+            size={52}
+            titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.notifications_section.watched_wallets)} weight="bold" />}
+          />
+          {watchedWallets.map(wallet => (
+            <WalletRow
+              ens={walletNames[wallet.address]}
+              groupOff={!storedWatcherEnabled}
+              key={wallet.address}
+              loading={watchedState.loading}
+              notificationSettings={walletNotificationSettings}
+              wallet={wallet}
+            />
+          ))}
+        </Menu>
       </MenuContainer>
     </Box>
   );

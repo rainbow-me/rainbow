@@ -14,12 +14,12 @@ import { gasUnits } from '@/features/gas/utils/gasUnits';
 import { isLegacyMeteorologyFeeData } from '@/features/gas/utils/meteorologyClassification';
 import { buildGasParams, gweiToWei, weiToGwei } from '@/features/gas/utils/parseGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { formatNumber, multiply } from '@/helpers/utilities';
 import { logger } from '@/logger';
 import { estimateUnlockAndCrosschainSwap } from '@/raps/actions/crosschainSwap';
 import { estimateUnlockAndSwap } from '@/raps/actions/swap';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { shallowEqual } from '@/worklets/comparisons';
 
@@ -191,7 +191,7 @@ export function createDepositGasStores(
     $ => {
       const gasSettings = $(useGasSettings);
       const gasLimit = $(useGasLimitStore, s => s.getData());
-      const currency = $(userAssetsStoreManager, s => s.currency);
+      const currency = $(useAppSettingsStore, s => s.currency);
       const nativeNetworkAsset = $(useNativeAssetStore, s => s.getData());
 
       if (!gasLimit || !gasSettings) return;

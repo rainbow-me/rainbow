@@ -36,9 +36,9 @@ import { MARKET_DISPLAY_VALUES } from '@/features/placements/surfaces/constants'
 import { useIsDiscoverPlacementPending } from '@/features/placements/surfaces/hooks/useDiscoverSurfacePlacements';
 import { type SurfaceId, type SurfaceLeaf } from '@/features/placements/surfaces/types';
 import { type Placement } from '@/features/placements/types';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 const hasDestination = (surface: SurfaceLeaf) => surface.destination !== null;
 const MARKET_TILE_SHADOW_BLEED = 28;
@@ -188,7 +188,7 @@ function TokenMarketPlacementContent({
   surfaceId: SurfaceId;
 }) {
   const { onTapSearch } = useDiscoverScreenContext();
-  const nativeCurrency = userAssetsStoreManager(s => s.currency);
+  const nativeCurrency = useAppSettingsStore(s => s.currency);
   const items = useTokensPlacementItems(placement.id);
 
   const tokenDescriptor = useMemo<SectionDescriptor<TokenPlacementItem>>(() => {

@@ -3,7 +3,7 @@ import { type SwapAssetType } from '@/__swaps__/types/swap';
 import { type CardType } from '@/components/cards/GenericCard';
 import { type LearnCategory } from '@/components/cards/utils/types';
 import { type FiatProviderName } from '@/entities/f2c';
-import { type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
+import { type AppIconKey, type UnlockableAppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CashSignInTrigger } from '@/features/cash/services/cashSignInService';
 import { type OrderFailureReason, type RampNetwork } from '@/features/cash/services/rampClient';
 import { type CashAuthIntent } from '@/features/cash/stores/cashAuthGateStore';
@@ -53,7 +53,6 @@ export const event = {
   applicationBecameInteractive: 'Application became interactive',
   changedLanguage: 'Changed language',
   changedNativeCurrency: 'Changed native currency',
-  changedNetwork: 'Changed network',
   changedNativeCurrencyInputSend: 'Changed native currency input in Send flow',
   changedTokenInputSend: 'Changed token input in Send flow',
   sentTransaction: 'Sent transaction',
@@ -1054,7 +1053,6 @@ export type EventProperties = {
   [event.applicationBecameInteractive]: undefined;
   [event.changedLanguage]: { language: string };
   [event.changedNativeCurrency]: { currency: string };
-  [event.changedNetwork]: { chainId: number };
   [event.manuallyDisconnectedFromWalletConnectConnection]: { dappName: string; dappUrl: string };
   [event.receivedWcConnection]: { dappName: string; dappUrl: string; waitingTime?: string | number };
   [event.resetAssetSelectionSend]: undefined;
@@ -1146,7 +1144,7 @@ export type EventProperties = {
   [event.tappedEdit]: undefined;
   [event.tappedDeleteWallet]: undefined;
   [event.setAppIcon]: {
-    appIcon: string;
+    appIcon: AppIconKey;
   };
   [event.tappedImportButton]: undefined;
   [event.appStoreReviewPrompted]: {

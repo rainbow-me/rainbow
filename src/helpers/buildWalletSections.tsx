@@ -6,12 +6,10 @@ import { CellType, type CellTypes } from '@/components/asset-list/RecyclerAssetL
 import type { UniqueAsset } from '@/entities/uniqueAssets';
 import { type useExperimentalConfig } from '@/features/config/hooks/experimentalHooks';
 import type { NativeCurrencyKey } from '@/features/currency/types';
-import { type Network } from '@/features/network/types/backendNetworks';
 import { type PerpsWalletListData } from '@/features/perps/types';
 import { type PolymarketWalletListData } from '@/features/polymarket/types';
 import { type RainbowPositions } from '@/features/positions/types';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
-import { type Language } from '@/languages';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
 import { type Collection, type CollectionId } from '@/state/nfts/types';
 
@@ -61,8 +59,6 @@ export type WalletSectionsState = {
   isReadOnlyWallet: boolean;
   hiddenTokens: string[];
   listType?: AssetListType;
-  language: Language;
-  network: Network;
   nativeCurrency: NativeCurrencyKey;
   pinnedCoins: BooleanMap;
   sellingTokens?: UniqueAsset[];

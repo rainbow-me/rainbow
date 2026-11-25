@@ -4,6 +4,7 @@ import type { ParsedAddressAsset } from '@/entities/tokens';
 import { convertAmountAndPriceToNativeDisplay, convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { isNativeAsset } from '@/handlers/assets';
 import { add, convertAmountToBalanceDisplay, convertRawAmountToDecimalFormat, greaterThan } from '@/helpers/utilities';
@@ -11,6 +12,7 @@ import { logger, RainbowError } from '@/logger';
 import { isStaging } from '@/resources/addys/client';
 import { fetchAnvilUserAssets } from '@/resources/assets/anvilAssets';
 import { getPlatformClient } from '@/resources/platform/client';
+import { useHiddenAssetBalancesStore } from '@/state/wallets/hiddenAssetBalancesStore';
 import { toUnixTime } from '@/worklets/dates';
 
 import {
@@ -20,7 +22,6 @@ import {
   type UserAssetsParams,
   type UserAssetsState,
 } from './types';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 // ============ Fetch Utils ==================================================== //
 
@@ -146,7 +147,7 @@ function getChainBalances(userAssets: UserAssetsState['userAssets']): UserAssets
 }
 
 function transformUserAssetToParsedSearchAsset(userAsset: UserAsset): ParsedSearchAsset {
-  const currency = userAssetsStoreManager.getState().currency;
+  const currency = appSettingsActions.getCurrency();
   const asset = userAsset.asset;
   const uniqueId = getUniqueId(asset.address, asset.chainId);
 
@@ -266,7 +267,7 @@ export function updateHiddenAssetsBalance({
     if (asset) balance = add(balance, asset.native.balance.amount);
   }
 
-  const { hiddenAssetBalances, setHiddenAssetBalance } = userAssetsStoreManager.getState();
+  const { hiddenAssetBalances, setHiddenAssetBalance } = useHiddenAssetBalancesStore.getState();
   if (balance === hiddenAssetBalances[address]) return;
 
   setHiddenAssetBalance(address, balance);

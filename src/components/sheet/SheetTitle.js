@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { fonts } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 
 import { Text } from '../text';
 

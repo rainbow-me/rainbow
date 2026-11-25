@@ -3,8 +3,8 @@ import React from 'react';
 import { useSharedValue } from 'react-native-reanimated';
 
 import { FeaturedResultCard } from '@/components/FeaturedResult/FeaturedResultCard';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { type FeaturedResult } from '@/graphql/__generated__/arc';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import { getFeaturedResultsById } from '@/resources/featuredResults/_selectors/getFeaturedResultIds';
 import { useFeaturedResults } from '@/resources/featuredResults/getFeaturedResults';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -18,10 +18,9 @@ export type FeaturedResultStackProps = {
 
 export const FeaturedResultStack = ({ onNavigate, placementId, children }: FeaturedResultStackProps) => {
   const accountAddress = useAccountAddress();
-  const { language } = useAccountSettings();
+  const language = useAppSettingsStore(s => s.language);
   const currentIndex = useSharedValue(0);
 
-  // @ts-expect-error - language is type string instead of typeof keyof Language
   const country = languageLocaleToCountry(language);
   const { data: featuredResultIds } = useFeaturedResults(
     {

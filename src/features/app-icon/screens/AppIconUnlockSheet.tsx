@@ -2,7 +2,6 @@ import React, { useCallback, useEffect } from 'react';
 import { Platform, View } from 'react-native';
 
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { type Source } from 'react-native-fast-image';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 import { analytics } from '@/analytics';
@@ -16,7 +15,6 @@ import { useNavigation } from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RootStackParamList } from '@/navigation/types';
 import { SettingsPages } from '@/screens/SettingsSheet/SettingsPages';
-import { useTheme } from '@/theme/ThemeContext';
 import { delay } from '@/utils/delay';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
@@ -27,7 +25,6 @@ const APP_ICON_SIZE = 64;
 export function AppIconUnlockSheet() {
   const { params } = useRoute<RouteProp<RootStackParamList, typeof Routes.APP_ICON_UNLOCK_SHEET>>();
   const { goBack, navigate, setOptions } = useNavigation<typeof Routes.APP_ICON_UNLOCK_SHEET>();
-  const { colors } = useTheme();
 
   const { appIconKey } = params;
 
@@ -64,7 +61,7 @@ export function AppIconUnlockSheet() {
                 <AccentColorProvider color={accentColor}>
                   <Box
                     as={ImgixImage}
-                    source={image as Source}
+                    source={image}
                     size={APP_ICON_SIZE}
                     background="surfacePrimary"
                     width={{ custom: APP_ICON_SIZE }}

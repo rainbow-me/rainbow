@@ -7,6 +7,7 @@ import { type SupportedCurrencyKey } from '@/features/currency/supportedCurrenci
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
 import { memoizeState } from '@/state/internal/utils/memoizeState';
@@ -16,7 +17,6 @@ import { toUnixTime } from '@/worklets/dates';
 
 import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsStateToPersist } from './persistence';
 import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState, type UserAssetsStoreType } from './types';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
   fetchUserAssets,
   parsedSearchAssetToParsedAddressAsset,
@@ -38,7 +38,7 @@ export function createUserAssetsStore(address: Address): UserAssetsStoreType {
       keepPreviousData: true,
       params: {
         address,
-        currency: $ => $(userAssetsStoreManager).currency,
+        currency: $ => $(useAppSettingsStore, s => s.currency),
         testnetMode: $ => $(useConnectedToAnvilStore).connectedToAnvil,
       },
       staleTime: time.minutes(1),
@@ -112,7 +112,7 @@ export function createUserAssetsStore(address: Address): UserAssetsStoreType {
 
       mutatePrices: tokens =>
         set(state => {
-          mutateAssetPrices(state.userAssets, tokens, userAssetsStoreManager.getState().currency);
+          mutateAssetPrices(state.userAssets, tokens, appSettingsActions.getCurrency());
           return state;
         }),
     }),

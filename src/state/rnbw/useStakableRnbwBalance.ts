@@ -3,6 +3,7 @@ import { createDerivedStore } from '@storesjs/stores';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { MIN_STAKE_AMOUNT, RNBW_DECIMALS, RNBW_TOKEN_UNIQUE_ID } from '@/features/rnbw-staking/constants';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import {
   add,
   convertRawAmountToDecimalFormat,
@@ -11,7 +12,6 @@ import {
   truncateToDecimalsWithThreshold,
 } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { shallowEqual } from '@/worklets/comparisons';
 
 type RnbwBalance = {
@@ -27,7 +27,7 @@ export const useStakableRnbwBalance = createDerivedStore<RnbwBalance>(
   $ => {
     const asset = $(useUserAssetsStore, state => state.getUserAsset(RNBW_TOKEN_UNIQUE_ID));
     const rewardsData = $(useRewardsBalanceStore, state => state.getData());
-    const currency = $(userAssetsStoreManager, state => state.currency);
+    const currency = $(useAppSettingsStore, state => state.currency);
 
     const walletAmount = asset?.balance?.amount ?? '0';
     const walletNativeValue = asset?.native?.balance?.amount ?? '0';

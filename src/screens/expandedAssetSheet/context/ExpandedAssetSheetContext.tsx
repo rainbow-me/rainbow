@@ -12,6 +12,7 @@ import { getUniqueId } from '@/entities/assetId';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { type Token } from '@/graphql/__generated__/metadata';
 import { isNativeAsset } from '@/handlers/assets';
@@ -20,7 +21,6 @@ import useAdditionalAssetData, { type TokenMetadata } from '@/hooks/useAdditiona
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
 
 export enum SectionId {
@@ -117,7 +117,7 @@ export function ExpandedAssetSheetContextProvider({
   children,
   hideClaimSection = false,
 }: ExpandedAssetSheetContextProviderProps) {
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const { isDarkMode } = useColorMode();
   const { colors } = useTheme();
 

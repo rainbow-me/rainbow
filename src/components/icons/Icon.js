@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { useTheme } from '@/theme/ThemeContext';
+
 import { Flex } from '../layout';
 import { Asterisk } from './svg/Asterisk';
 import BackspaceIcon from './svg/BackspaceIcon';

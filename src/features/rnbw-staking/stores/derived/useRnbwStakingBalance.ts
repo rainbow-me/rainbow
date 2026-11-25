@@ -2,8 +2,8 @@ import { createDerivedStore, shallowEqual } from '@storesjs/stores';
 
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { RNBW_DECIMALS } from '@/features/rnbw-staking/constants';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 import { useStakingPositionStore } from '../rnbwStakingPositionStore';
 
@@ -18,7 +18,7 @@ export const useRnbwStakingBalance = createDerivedStore<StakingBalance>(
     const rawStakedRnbw = $(useStakingPositionStore, state => state.getData()?.stakedRnbw ?? '0');
     const stakedValueInCurrency = $(useStakingPositionStore, state => state.getData()?.stakedValueInCurrency ?? '0');
     const decimals = $(useStakingPositionStore, state => state.getData()?.decimals ?? RNBW_DECIMALS);
-    const currency = $(userAssetsStoreManager, state => state.currency);
+    const currency = $(useAppSettingsStore, state => state.currency);
     const isZero = rawStakedRnbw === '0';
 
     const decimalAmount = convertRawAmountToDecimalFormat(rawStakedRnbw, decimals);

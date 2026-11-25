@@ -5,6 +5,7 @@ import { isValidAddressOrDomainFormat } from '@/features/address/core/address';
 import useClipboard from '@/hooks/useClipboard';
 import useInvalidPaste from '@/hooks/useInvalidPaste';
 import * as i18n from '@/languages';
+import { useTheme } from '@/theme/ThemeContext';
 import { deviceUtils } from '@/utils/deviceUtils';
 
 import { ButtonPressAnimation } from '../animations/ButtonPressAnimation';

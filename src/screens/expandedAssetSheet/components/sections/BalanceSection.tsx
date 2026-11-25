@@ -12,10 +12,10 @@ import { useChartType } from '@/features/charts/stores/chartsStore';
 import { useCandlestickPrice } from '@/features/charts/stores/derived/useCandlestickPrice';
 import { ChartType } from '@/features/charts/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { type SpotPnlVariant } from '@/features/spot-pnl/core/spotPnl';
 import { SpotPnlPill } from '@/features/spot-pnl/ui/SpotPnlPill';
 import { greaterThanWorklet, mulWorklet } from '@/framework/core/safeMath';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { useListenerRouteGuard } from '@/state/internal/hooks/useListenerRouteGuard';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
@@ -27,7 +27,7 @@ import { SheetSeparator } from '../shared/Separator';
 
 export function BalanceSection() {
   const { accentColors, accountAsset: asset, basicAsset, isOwnedAsset } = useExpandedAssetSheetContext();
-  const { nativeCurrency } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
   const chartType = useChartType();
 
   const balanceAmount = asset?.balance?.amount ?? '0';

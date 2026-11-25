@@ -11,13 +11,14 @@ import { NAVBAR_ICON_SIZE, NavBarTextIconFrame } from '@/components/navbar/Navba
 import { Box, Cover, Text } from '@/design-system';
 import { type TextSize } from '@/design-system/typography/typeHierarchy';
 import { type UniqueAsset } from '@/entities/uniqueAssets';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useShowSportsTab } from '@/features/sports/ui/useShowSportsTab';
 import { useAccountAccentColor } from '@/hooks/useAccountAccentColor';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import usePendingTransactions from '@/hooks/usePendingTransactions';
 import { useStableValue } from '@/hooks/useStableValue';
 import type useWalletSectionsData from '@/hooks/useWalletSectionsData';
 import * as i18n from '@/languages';
+import { type Language } from '@/languages/types';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useTheme } from '@/theme/ThemeContext';
@@ -114,7 +115,7 @@ const NavbarOverlay = React.memo(function NavbarOverlay({ accentColor, position 
   const showSportsTab = useShowSportsTab();
   const [isHeaderInteractive, setIsHeaderInteractive] = useState(false);
 
-  const { language } = useAccountSettings();
+  const language = useAppSettingsStore(s => s.language);
   const menuItems = buildMenuItems(language);
 
   const yOffset = Platform.OS === 'android' ? navbarHeight : insets.top;
@@ -303,9 +304,9 @@ const ActivityIcon = memo(function ActivityIcon() {
 });
 
 let cachedMenuItems: MenuItem<MenuItemRoute>[] | undefined;
-let lastLanguage: i18n.Language | undefined;
+let lastLanguage: Language | undefined;
 
-function buildMenuItems(language: i18n.Language): MenuItem<MenuItemRoute>[] {
+function buildMenuItems(language: Language): MenuItem<MenuItemRoute>[] {
   if (!cachedMenuItems || language !== lastLanguage) {
     cachedMenuItems = [
       {

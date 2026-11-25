@@ -544,7 +544,6 @@
       "copy_signing_wallet_address": "Salin Alamat Dompet Penandatangan",
       "disconnect_to_anvil": "Putuskan dari Anvil",
       "crash_app_render_error": "Crash Aplikasi (Kesalahan Render)",
-      "enable_testnets": "Aktifkan Testnets",
       "installing_update": "Memasang Pembaruan",
       "navigation_entry_point": "Titik Masuk Navigasi",
       "no_update": "Tidak Ada Pembaruan",
@@ -2276,8 +2275,6 @@
         "no_watched_wallets": "Anda tidak sedang mengawasi dompet apa pun.",
         "no_owned_wallets": "Anda tidak memiliki dompet apa pun di Rainbow. Buat dompet atau impor satu dengan frasa rahasia Anda.",
         "open_system_settings": "Buka Pengaturan",
-        "unsupported_network": "Notifikasi hanya tersedia untuk transaksi Ethereum Mainnet saat ini.",
-        "change_network": "Ubah Jaringan Anda",
         "no_first_time_permissions": "Harap izinkan Rainbow untuk mengirimkan notifikasi kepada Anda.",
         "first_time_allow_notifications": "Izinkan Notifikasi",
         "error_alert_title": "Berlangganan Gagal",
@@ -3270,8 +3267,7 @@
         "disconnect": "Putuskan Sambungan",
         "connect": "Hubungkan",
         "switch_wallet": "Ganti Dompet",
-        "switch_network": "Ganti Jaringan",
-        "available_networks": "Jaringan yang Tersedia"
+        "switch_network": "Ganti Jaringan"
       },
       "errors": {
         "go_back": "Kembali",

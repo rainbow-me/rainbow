@@ -6,13 +6,14 @@ import { getUniqueId } from '@/entities/assetId';
 import { TransactionDirection } from '@/entities/transactions';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { type UserAsset } from '@/state/assets/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { useHiddenAssetBalancesStore } from '@/state/wallets/hiddenAssetBalancesStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { watchAssetUpdates } from './useWatchAssetUpdates';
@@ -43,16 +44,6 @@ vi.mock('@/features/config/stores/experimentalConfigStore', () => ({
 
 vi.mock('@/resources/nfts', () => ({
   invalidateAddressNftsQueries: vi.fn(),
-}));
-
-vi.mock('@/redux/store', () => ({
-  default: {
-    getState: () => ({
-      settings: {
-        nativeCurrency: 'ETH',
-      },
-    }),
-  },
 }));
 
 vi.mock('@/state/wallets/walletsStore', async () => {
@@ -595,10 +586,8 @@ function resetStores() {
   useAssetUpdatesStore.setState({ watchedTransactions: {} });
   staleBalancesStore.setState({ staleBalances: {} });
   useWalletsStore.setState({ accountAddress: TEST_ADDRESS });
-  userAssetsStoreManager.setState({
-    currency: 'ETH',
-    hiddenAssetBalances: {},
-  });
+  appSettingsActions.setCurrency('ETH');
+  useHiddenAssetBalancesStore.setState({ hiddenAssetBalances: {} });
 }
 
 function seedUserAssets(assets: ParsedSearchAsset[]) {

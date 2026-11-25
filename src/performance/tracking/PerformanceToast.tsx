@@ -14,17 +14,17 @@ import { getNumberFormatter } from '@/helpers/intl';
 import { fontWithWidth } from '@/styles';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import font from '@/styles/fonts';
-import { isDarkTheme } from '@/theme/ThemeContext';
+import { useThemeStore } from '@/theme/themeStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 
 let shouldCollectStats = !IS_TEST && getExperimentalFlag(PERFORMANCE_TOAST);
 
-export async function showPerformanceToast(results: Record<string, number>) {
+export function showPerformanceToast(results: Record<string, number>) {
   if (!shouldCollectStats) return;
   const resultsMap = new Map(Object.entries(results).map(([key, duration]) => [key, { duration }]));
   shouldCollectStats = false;
 
-  const isDarkMode = await isDarkTheme();
+  const isDarkMode = useThemeStore.getState().isDarkMode;
 
   const TEXT_LINE_HEIGHT = typeHierarchy.text['17pt'].lineHeight;
   const TEXT_PADDING_VERTICAL = 16;

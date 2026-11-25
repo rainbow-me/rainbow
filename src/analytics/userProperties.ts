@@ -1,8 +1,9 @@
+import { type AppIconKey } from '@/features/app-icon/models/appIcons';
 import { type CandleResolution, type ChartType } from '@/features/charts/types';
 import type { NativeCurrencyKey } from '@/features/currency/types';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import type { TierId } from '@/features/rnbw-membership/types';
-import { type Language } from '@/languages';
+import { type Language } from '@/languages/types';
 
 type InstallSource = 'store' | 'internal' | 'dev';
 
@@ -36,10 +37,9 @@ export interface UserProperties {
   currentAddressHash?: string;
   currency?: NativeCurrencyKey;
   language?: Language;
-  enabledTestnets?: boolean;
   pinnedCoins?: string[];
   hiddenCOins?: string[];
-  appIcon?: string;
+  appIcon?: AppIconKey;
 
   // charts
   chartType?: ChartType;

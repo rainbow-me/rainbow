@@ -4,12 +4,12 @@ import { Animated, LayoutAnimation, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { navbarHeight } from '@/components/navbar/Navbar';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import styled from '@/framework/ui/styled-thing';
 import { EditAction } from '@/helpers/EditAction';
 import useCoinListEditOptions, { useCoinListFinishEditingOptions } from '@/hooks/useCoinListEditOptions';
 import useDimensions from '@/hooks/useDimensions';
 import * as i18n from '@/languages';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useOpenSmallBalances } from '@/state/wallets/smallBalancesStore';
 import { padding } from '@/styles';
 
@@ -94,7 +94,7 @@ const useInterpolationRange = isCoinListEdited => {
 const CoinDivider = memo(function CoinDivider({ balancesSum, defaultToEditButton, extendedState }) {
   const { isCoinListEdited, setIsCoinListEdited } = extendedState;
   const interpolation = useInterpolationRange(isCoinListEdited);
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const { width: deviceWidth } = useDimensions();
 

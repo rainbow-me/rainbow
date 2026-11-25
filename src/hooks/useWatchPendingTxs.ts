@@ -10,11 +10,11 @@ import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrenci
 import { areDestinationTxHashesEqual } from '@/features/delegation/utils/managedExecutionStatus';
 import { backendNetworksActions } from '@/features/network/stores/backendNetworksStore';
 import type { ChainId } from '@/features/network/types/backendNetworks';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { logger, RainbowError } from '@/logger';
 import { queryClient } from '@/react-query';
 import { consolidatedTransactionsQueryKey } from '@/resources/transactions/consolidatedTransactions';
 import { fetchRawTransaction, type PaginatedTransactions } from '@/resources/transactions/transaction';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { pendingTransactionsActions, usePendingTransactionsStore } from '@/state/pendingTransactions';
 import { type RelayOnchainEvidence, type RelayStatusSnapshot } from '@rainbow-me/sdk';
@@ -33,7 +33,7 @@ type TransactionHistoryPages = NonNullable<PaginatedTransactions['pages']>;
  * number of pending transactions.
  */
 export const useWatchPendingTransactions = ({ address }: { address: Address }) => {
-  const currency = userAssetsStoreManager(s => s.currency);
+  const currency = useAppSettingsStore(s => s.currency);
   const nextTransactionIndex = useRef(0);
 
   return useCallback(

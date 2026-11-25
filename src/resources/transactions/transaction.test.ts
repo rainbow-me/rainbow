@@ -30,8 +30,8 @@ vi.mock('@/resources/platform/client', () => ({
   getPlatformClient: vi.fn(),
 }));
 
-vi.mock('@/state/assets/userAssetsStoreManager', () => ({
-  userAssetsStoreManager: vi.fn(),
+vi.mock('@/features/settings/data/appSettingsStore', () => ({
+  useAppSettingsStore: vi.fn(),
 }));
 
 vi.mock('@/state/wallets/walletsStore', () => ({

@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { type Address } from 'viem';
 
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { type AllRainbowWallets } from '@/features/wallet/types';
 import { add } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
 import { getWalletAddresses } from '@/state/wallets/walletsStore';
 
@@ -38,7 +38,7 @@ export const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBala
       return result;
     }
 
-    const nativeCurrency = userAssetsStoreManager.getState().currency;
+    const nativeCurrency = appSettingsActions.getCurrency();
     const allAddresses = getWalletAddresses(wallets);
 
     for (const address of allAddresses) {

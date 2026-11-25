@@ -24,7 +24,7 @@ import { CopyToast, ToastPositionContainer } from '@/components/toasts';
 import { Box, globalColors, Text, useColorMode } from '@/design-system';
 import type { SwappableAsset } from '@/entities/tokens';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
-import useAccountSettings from '@/hooks/useAccountSettings';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import useAndroidScrollViewGestureHandler from '@/hooks/useAndroidScrollViewGestureHandler';
 import usePrevious from '@/hooks/usePrevious';
 import { useNavigation } from '@/navigation/Navigation';
@@ -192,7 +192,8 @@ const ExchangeAssetList: ForwardRefRenderFunction<SectionList, ExchangeAssetList
 
   const theme = useTheme();
   const { favoritesMetadata } = useFavorites();
-  const { nativeCurrency, nativeCurrencySymbol } = useAccountSettings();
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
+  const nativeCurrencySymbol = useAppSettingsStore(state => state.getCurrencySymbol());
   const [localFavorite, setLocalFavorite] = useState<Record<string, boolean | undefined> | undefined>(() =>
     Object.keys(favoritesMetadata).reduce((acc: Record<string, boolean | undefined>, curr: string) => {
       acc[curr] = favoritesMetadata[curr].favorite;

@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 
 import { analytics } from '@/analytics';
-import useAccountSettings from '@/hooks/useAccountSettings';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 
 export const useAppIconIdentify = () => {
-  const { appIcon } = useAccountSettings();
+  const appIcon = useAppSettingsStore(s => s.appIcon);
 
   useEffect(() => {
     analytics.identify({ appIcon });

@@ -1,111 +1,32 @@
-import React, { createContext, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react';
-import { Appearance, LayoutAnimation, Platform, useColorScheme } from 'react-native';
+import React, { createContext, useContext, useEffect, type PropsWithChildren } from 'react';
+import { Platform } from 'react-native';
 
-import { useDarkMode } from 'react-native-dark-mode';
+import { SystemBars } from 'react-native-edge-to-edge';
 import { ThemeProvider } from 'styled-components';
 
 import { DesignSystemProvider } from '@/design-system';
 import { StyleThingThemeProvider } from '@/framework/ui/styled-thing';
-import { getTheme, saveTheme } from '@/handlers/localstorage/theme';
 import { onHandleStatusBar } from '@/navigation/onNavigationStateChange';
 
-import { darkModeThemeColors, lightModeThemeColors, type Colors } from '../styles/colors';
-import { currentColors } from './currentColors';
-import { Themes, type ThemesType } from './themes';
+import { useThemeStore, type ThemeState } from './themeStore';
 
-export interface ThemeContextProps {
-  colors: Colors;
-  darkScheme: Colors;
-  lightScheme: Colors;
-  colorScheme: ThemesType | null;
-  isDarkMode: boolean;
-  setTheme: (scheme: ThemesType) => void;
-}
+export type ThemeContextProps = ThemeState;
 
-export const ThemeContext = createContext<ThemeContextProps>({
-  colors: lightModeThemeColors,
-  colorScheme: Themes.SYSTEM,
-  darkScheme: darkModeThemeColors,
-  isDarkMode: false,
-  lightScheme: lightModeThemeColors,
-  setTheme: () => {},
-});
-
-export const isDarkTheme = async () => {
-  let currentTheme: ThemesType = await getTheme();
-
-  if (currentTheme === Themes.SYSTEM) {
-    const isSystemDarkMode = Appearance.getColorScheme() === Themes.DARK;
-    currentTheme = isSystemDarkMode ? Themes.DARK : Themes.LIGHT;
-  }
-
-  return currentTheme === Themes.DARK;
-};
+export const ThemeContext = createContext<ThemeContextProps>(useThemeStore.getState());
 
 export const MainThemeProvider = (props: PropsWithChildren) => {
-  const [colorScheme, setColorScheme] = useState<ThemesType | null>(null);
-  // looks like one works on Android and another one on iOS. good.
-  const isSystemDarkModeIOS = useDarkMode();
-  const isSystemDarkModeAndroid = useColorScheme() === 'dark';
-  const isSystemDarkMode = Platform.OS === 'ios' ? isSystemDarkModeIOS : isSystemDarkModeAndroid;
-
-  const colorSchemeSystemAdjusted = colorScheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : colorScheme;
+  const theme = useThemeStore();
 
   useEffect(() => {
-    Appearance.setColorScheme(colorSchemeSystemAdjusted);
-  }, [colorSchemeSystemAdjusted]);
-
-  // Override default with user preferences
-  useEffect(() => {
-    const loadUserPref = async () => {
-      const userPref = (await getTheme()) ?? Themes.SYSTEM;
-      const userPrefSystemAdjusted = userPref === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : userPref;
-      currentColors.theme = userPrefSystemAdjusted;
-      currentColors.themedColors = userPrefSystemAdjusted === Themes.DARK ? darkModeThemeColors : lightModeThemeColors;
-      setColorScheme(userPref);
-      onHandleStatusBar();
-    };
-    loadUserPref();
-  }, [isSystemDarkMode]);
-
-  // Listening to changes of device appearance while in run-time
-  useEffect(() => {
-    if (colorScheme) {
-      saveTheme(colorScheme, isSystemDarkMode);
-    }
-  }, [colorScheme]);
-
-  const currentTheme = useMemo(
-    () => ({
-      colors: colorSchemeSystemAdjusted === 'dark' ? darkModeThemeColors : lightModeThemeColors,
-      colorScheme,
-      darkScheme: darkModeThemeColors,
-      isDarkMode: colorSchemeSystemAdjusted === 'dark',
-      lightScheme: lightModeThemeColors,
-      // Overrides the isDarkMode value will cause re-render inside the context.
-      setTheme: (scheme: ThemesType) => {
-        // eslint-disable-next-line no-nested-ternary
-        const schemeSystemAdjusted = scheme === Themes.SYSTEM ? (isSystemDarkMode ? 'dark' : 'light') : scheme;
-        currentColors.theme = schemeSystemAdjusted;
-
-        currentColors.themedColors = schemeSystemAdjusted === Themes.DARK ? darkModeThemeColors : lightModeThemeColors;
-        setColorScheme(scheme);
-        onHandleStatusBar();
-        LayoutAnimation.configureNext(LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity'));
-      },
-    }),
-    [colorScheme, colorSchemeSystemAdjusted, isSystemDarkMode]
-  );
-
-  if (!colorScheme) {
-    return null;
-  }
+    if (Platform.OS === 'android') SystemBars.setStyle(theme.isDarkMode ? 'light' : 'dark');
+    onHandleStatusBar();
+  }, [theme.isDarkMode]);
 
   return (
-    <StyleThingThemeProvider value={currentTheme}>
-      <ThemeProvider theme={currentTheme}>
-        <ThemeContext.Provider value={currentTheme}>
-          <DesignSystemProvider colorMode={currentTheme.isDarkMode ? 'dark' : 'light'}>{props.children}</DesignSystemProvider>
+    <StyleThingThemeProvider value={theme}>
+      <ThemeProvider theme={theme}>
+        <ThemeContext.Provider value={theme}>
+          <DesignSystemProvider colorMode={theme.colorMode}>{props.children}</DesignSystemProvider>
         </ThemeContext.Provider>
       </ThemeProvider>
     </StyleThingThemeProvider>

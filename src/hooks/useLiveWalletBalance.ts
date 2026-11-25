@@ -4,11 +4,11 @@ import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDi
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { add, greaterThan, multiply, subtract } from '@/helpers/utilities';
 import type { UserAssetsState } from '@/state/assets/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
 import type { LiveTokensData } from '@/state/liveTokens/types';
@@ -21,7 +21,7 @@ export const useLiveWalletBalance = createDerivedStore(
     const userAssets = $(useWalletAssetsStore, s => s.assets);
     const isInitialLoad = $(useUserAssetsStore, s => s.isInitialLoad());
     const hiddenAssets = $(useUserAssetsStore, s => s.hiddenAssets);
-    const nativeCurrency = $(userAssetsStoreManager, s => s.currency);
+    const nativeCurrency = $(useAppSettingsStore, s => s.currency);
 
     const perpsBalanceNative = $(useHyperliquidBalance);
     const claimablesBalance = $(useClaimablesStore, s => s.getBalance());

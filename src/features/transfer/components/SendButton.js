@@ -3,6 +3,7 @@ import React from 'react';
 import { HoldToAuthorizeButton } from '@/components/buttons';
 import * as i18n from '@/languages';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
+import { useTheme } from '@/theme/ThemeContext';
 
 export function SendButton({
   backgroundColor,

@@ -3,10 +3,10 @@ import { type Address } from 'viem';
 
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type AirdropBalanceStore = {
@@ -50,14 +50,14 @@ export const useAirdropBalanceStore = createQueryStore<AirdropResponseData, Aird
   {
     fetcher: fetchAirdrop,
     params: {
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
       address: $ => $(useWalletsStore).accountAddress,
     },
   },
   (_, get) => ({
     getFormattedBalance: () => {
       const data = get().getData();
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       const tokenAmount = data?.available.amountInDecimal ?? '0';
       const nativeCurrencyAmount = data?.available.value ?? '0';
       const isZero = tokenAmount === '0';
@@ -70,7 +70,7 @@ export const useAirdropBalanceStore = createQueryStore<AirdropResponseData, Aird
     },
     getFormattedAirdroppedBalance: () => {
       const data = get().getData();
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       const tokenAmount = data?.airdropped.amountInDecimal ?? '0';
       const nativeCurrencyAmount = data?.airdropped.value ?? '0';
       const isZero = tokenAmount === '0';

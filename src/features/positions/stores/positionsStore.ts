@@ -1,9 +1,9 @@
 import { createQueryStore } from '@storesjs/stores';
 
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { time } from '@/framework/core/utils/time';
 import { greaterThan, subtract } from '@/helpers/utilities';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import type { RainbowPositions } from '../types';
@@ -23,7 +23,7 @@ export const usePositionsStore = createQueryStore<ListPositionsResponse | null, 
     transform: (response, params) => (response ? transformPositions(response, params) : null),
     params: {
       address: $ => $(useWalletsStore, s => s.accountAddress),
-      currency: $ => $(userAssetsStoreManager, s => s.currency),
+      currency: $ => $(useAppSettingsStore, s => s.currency),
       chainIds: $ => $(useBackendNetworksStore, s => s.getSupportedPositionsChainIds()),
     },
     cacheTime: time.days(2),

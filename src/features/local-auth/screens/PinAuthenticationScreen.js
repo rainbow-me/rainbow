@@ -18,6 +18,7 @@ import { useShakeAnimation } from '@/hooks/useShakeAnimation';
 import * as i18n from '@/languages';
 import { useNavigation } from '@/navigation/Navigation';
 import { padding } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 
 const Logo = styled(ImgixImage).attrs({
   source: RainbowLogo,

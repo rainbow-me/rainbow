@@ -5,6 +5,8 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import PropTypes from 'prop-types';
 import Tooltips from 'react-native-tooltips';
 
+import { useTheme } from '@/theme/ThemeContext';
+
 const CopyTooltip = ({ children, textToCopy, tooltipText }) => {
   const [visible, setVisible] = useState(false);
   const parent = useRef(undefined);

@@ -4,10 +4,10 @@ import { type Address } from 'viem';
 import { type NativeCurrencyKey } from '@/features/currency/types';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { convertRawAmountToDecimalFormat, truncateToDecimalsWithThreshold } from '@/helpers/utilities';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type PlatformResponse } from '@/resources/platform/types';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type RewardsBalanceStore = {
@@ -34,14 +34,14 @@ export const useRewardsBalanceStore = createQueryStore<RewardsBalanceData, Rewar
   {
     fetcher: fetchRewardsBalance,
     params: {
-      currency: $ => $(userAssetsStoreManager).currency,
+      currency: $ => $(useAppSettingsStore, state => state.currency),
       address: $ => $(useWalletsStore).accountAddress,
     },
   },
   (_, get) => ({
     getFormattedBalance: () => {
       const data = get().getData();
-      const currency = userAssetsStoreManager.getState().currency;
+      const currency = appSettingsActions.getCurrency();
       const rawTokenAmount = data?.claimableRnbw ?? '0';
       const nativeCurrencyAmount = data?.claimableValueInCurrency ?? '0';
       const decimals = data?.decimals ?? 18;

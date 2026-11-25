@@ -9,6 +9,7 @@ import { Text } from '@/components/text';
 import { opacity } from '@/design-system/utils/opacity';
 import styled from '@/framework/ui/styled-thing';
 import { margin, padding } from '@/styles';
+import { useTheme } from '@/theme/ThemeContext';
 import magicMemo from '@/utils/magicMemo';
 
 import GasSpeedEmoji from './GasSpeedEmoji';

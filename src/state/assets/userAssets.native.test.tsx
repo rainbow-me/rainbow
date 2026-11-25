@@ -8,8 +8,10 @@ import { useBackendNetworksStore } from '@/features/network/stores/backendNetwor
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { createMockPool, createMockPositionsData, createMockRainbowPosition } from '@/features/positions/__fixtures__/mocks/positions';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
 import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { type TokenData } from '@/state/liveTokens/types';
+import { useHiddenAssetBalancesStore } from '@/state/wallets/hiddenAssetBalancesStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { createDepositConfig } from '@/systems/funding/config';
 import { resolveInitialDepositAsset } from '@/systems/funding/utils/sourceAsset';
@@ -17,7 +19,6 @@ import { resolveInitialDepositAsset } from '@/systems/funding/utils/sourceAsset'
 import { type UserAsset } from './types';
 import { userAssetsActions, useUserAssetsStore } from './userAssets';
 import { userAssetsSearchActions, useUserAssetSearch, useUserAssetSearchResults } from './userAssetsSearch';
-import { userAssetsStoreManager } from './userAssetsStoreManager';
 
 const getAssets = vi.hoisted(() =>
   vi.fn<(path: string) => Promise<{ data: { result?: Record<string, UserAsset> } }>>(async () => ({ data: { result: {} } }))
@@ -43,7 +44,8 @@ const SMALL_ID = getUniqueId(SMALL, ChainId.mainnet);
 
 beforeEach(() => {
   vi.useFakeTimers();
-  userAssetsStoreManager.setState({ currency: 'USD', hiddenAssetBalances: {} });
+  appSettingsActions.setCurrency('USD');
+  useHiddenAssetBalancesStore.setState({ hiddenAssetBalances: {} });
   userAssetsSearchActions.reset();
   usePositionsStore.setState({ enabled: false, queryCache: {}, queryKey: '' });
   useWalletsStore.setState({ accountAddress: ACCOUNT_A });
@@ -172,15 +174,15 @@ describe('user assets', () => {
     userAssetsActions.updateAssets([asset(LP, '100'), asset(TOKEN, '20', ChainId.optimism)]);
     userAssetsActions.setHiddenAssets([LP_ID]);
     expect(useWalletAssetsStore.getState().balance).toBe(20);
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
 
     setPosition(LP);
     expect(useWalletAssetsStore.getState().balance).toBe(20);
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('100');
 
     getAssets.mockResolvedValueOnce({ data: { result: { lp: asset(LP, '50'), token: asset(TOKEN, '20', ChainId.optimism) } } });
     await userAssetsActions.fetch(undefined, { force: true });
-    expect(userAssetsStoreManager.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('50');
+    expect(useHiddenAssetBalancesStore.getState().hiddenAssetBalances[ACCOUNT_A]).toBe('50');
     expect(useWalletAssetsStore.getState().balance).toBe(20);
   });
 
@@ -253,7 +255,7 @@ function setPosition(poolAddress: Address): void {
   });
   const queryKey = getQueryKey({
     address: useWalletsStore.getState().accountAddress,
-    currency: userAssetsStoreManager.getState().currency,
+    currency: appSettingsActions.getCurrency(),
     chainIds: useBackendNetworksStore.getState().getSupportedPositionsChainIds(),
   });
   usePositionsStore.setState(state => ({

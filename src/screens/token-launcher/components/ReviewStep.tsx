@@ -8,10 +8,10 @@ import { type TextSize } from '@/design-system/components/Text/Text';
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
+import { useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import { isValidWebUrlWorklet } from '@/framework/core/utils/url';
 import { abbreviateNumber, convertAmountToBalanceDisplay } from '@/helpers/utilities';
 import * as i18n from '@/languages';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import formatURLForDisplay from '@/utils/formatURLForDisplay';
 
@@ -154,7 +154,7 @@ function TotalSupplyCard() {
 
 function TotalCostPill() {
   const { accentColors, chainNativeAsset } = useTokenLauncherContext();
-  const nativeCurrency = userAssetsStoreManager(state => state.currency);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
 
   const extraBuyAmount = useTokenLauncherStore(state => state.extraBuyAmount);
   const chainNativeAssetNativePrice = useTokenLauncherStore(state => state.chainNativeAssetNativePrice);

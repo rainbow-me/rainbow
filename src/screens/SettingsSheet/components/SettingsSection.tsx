@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from 'react';
-import { Platform, Share } from 'react-native';
+import { LayoutAnimation, Platform, Share } from 'react-native';
 
 import BackupWarningIcon from '@/assets/BackupWarning.png';
 import CloudBackupWarningIcon from '@/assets/CloudBackupWarning.png';
@@ -24,8 +24,8 @@ import { backupsStore } from '@/features/backup/stores/backupsStore';
 import { LANGUAGE_SETTINGS, NOTIFICATIONS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
+import { appSettingsActions, useAppSettingsStore } from '@/features/settings/data/appSettingsStore';
 import walletBackupTypes from '@/helpers/walletBackupTypes';
-import useAccountSettings from '@/hooks/useAccountSettings';
 import * as i18n from '@/languages';
 import { useIsReadOnlyWallet } from '@/state/wallets/walletsStore';
 import { ReviewPromptAction } from '@/storage/schema';
@@ -47,7 +47,6 @@ interface SettingsSectionProps {
   onPressCurrency: () => void;
   onPressDev: () => void;
   onPressLanguage: () => void;
-  onPressNetwork: () => void;
   onPressPrivacy: () => void;
   onPressNotifications: () => void;
   onPressSupport: () => void;
@@ -66,14 +65,16 @@ export const SettingsSection = ({
 }: SettingsSectionProps) => {
   const { dev_section_enabled } = useRemoteConfig();
   const isReadOnlyWallet = useIsReadOnlyWallet();
-  const { language, nativeCurrency } = useAccountSettings();
+  const language = useAppSettingsStore(state => state.language);
+  const nativeCurrency = useAppSettingsStore(state => state.currency);
+  const colorScheme = useAppSettingsStore(state => state.theme);
   const isLanguageSelectionEnabled = useExperimentalFlag(LANGUAGE_SETTINGS);
   const isNotificationsEnabled = useExperimentalFlag(NOTIFICATIONS);
 
   const backupProvider = backupsStore(state => state.backupProvider);
   const backups = backupsStore(state => state.backups);
 
-  const { isDarkMode, setTheme, colorScheme } = useTheme();
+  const { isDarkMode } = useTheme();
 
   const onPressReview = useCallback(async () => {
     if (Platform.OS === 'ios') {
@@ -126,15 +127,15 @@ export const SettingsSection = ({
           },
           menuState: colorScheme === Themes.DARK ? 'on' : 'off',
         },
-      ] as MenuActionConfig[],
+      ] satisfies MenuActionConfig[],
       menuTitle: '',
     };
   }, [colorScheme, language]);
 
-  const handleSelectTheme = useCallback(
-    ({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: ThemesType } }) => setTheme(actionKey),
-    [setTheme]
-  );
+  const handleSelectTheme = useCallback(({ nativeEvent: { actionKey } }: { nativeEvent: { actionKey: ThemesType } }) => {
+    LayoutAnimation.configureNext(LayoutAnimation.create(1000, 'easeInEaseOut', 'opacity'));
+    appSettingsActions.setTheme(actionKey);
+  }, []);
 
   const getWalletsAndBackupAlertIcon = useCallback(() => {
     if (allBackedUp) {
@@ -196,9 +197,7 @@ export const SettingsSection = ({
           <MenuItem
             hasChevron
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? DarkModeIconDark : DarkModeIcon} />}
-            rightComponent={
-              <MenuItem.Selection>{colorScheme ? i18n.t(i18n.l.settings.theme_section[colorScheme]) : ''}</MenuItem.Selection>
-            }
+            rightComponent={<MenuItem.Selection>{i18n.t(i18n.l.settings.theme_section[colorScheme])}</MenuItem.Selection>}
             size={60}
             titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.theme)} />}
           />
@@ -219,7 +218,9 @@ export const SettingsSection = ({
             hasRightArrow
             leftComponent={<MenuItem.ImageIcon source={isDarkMode ? LanguageIconDark : LanguageIcon} />}
             onPress={onPressLanguage}
-            rightComponent={<MenuItem.Selection>{(i18n.supportedLanguages as any)[language].label || ''}</MenuItem.Selection>}
+            rightComponent={
+              <MenuItem.Selection>{i18n.supportedLanguages.find(item => item.code === language)?.label ?? ''}</MenuItem.Selection>
+            }
             size={60}
             titleComponent={<MenuItem.Title text={i18n.t(i18n.l.settings.language)} />}
           />
