@@ -1,6 +1,5 @@
 import { createDerivedStore } from '@storesjs/stores';
 import mapValues from 'lodash/mapValues';
-import { type Address } from 'viem';
 
 import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { appSettingsActions } from '@/features/settings/data/appSettingsStore';
@@ -11,17 +10,12 @@ import { useWalletSummaryQueryStore } from '@/state/wallets/useWalletSummaryStor
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 type WalletBalance = {
-  assetBalanceAmount: string;
-  assetBalanceDisplay: string;
-  positionsBalanceAmount: string;
-  positionsBalanceDisplay: string;
   totalBalanceAmount: string;
   totalBalanceDisplay: string;
 };
 
 type ExtendedRainbowAccount = RainbowAccount & {
   balances?: WalletBalance;
-  hiddenBalances?: string;
   balancesMinusHiddenBalances?: string;
 };
 
@@ -40,54 +34,41 @@ export const useWalletsWithBalancesAndNames = createDerivedStore<WalletWithBalan
     const summaryData = $(useWalletSummaryQueryStore, state => state.summary?.data);
     const wallets = $(useWalletsStore, state => state.wallets);
 
-    if (!summaryData || !wallets) return EMPTY_WALLETS;
+    if (!summaryData) return EMPTY_WALLETS;
 
-    const balances: Record<Address, WalletBalance> = {};
+    const balances: Partial<Record<string, WalletBalance>> = {};
     const nativeCurrency = appSettingsActions.getCurrency();
     const { hiddenAssetBalances } = useHiddenAssetBalancesStore.getState();
 
-    for (const [address, data] of Object.entries(summaryData.addresses)) {
-      const summary = data.summary;
+    for (const [address, { summary }] of Object.entries(summaryData.addresses)) {
       if (!summary) continue;
 
-      const lowerCaseAddress = address.toLowerCase() as Address;
-      const assetBalance = summary.asset_value?.toString() || '0';
-      const positionsBalance = summary.positions_value?.toString() || '0';
-      const claimablesBalance = summary.claimables_value?.toString() || '0';
+      const totalBalanceAmount = ((summary.asset_value ?? 0) + (summary.positions_value ?? 0) + (summary.claimables_value ?? 0)).toString();
 
-      const totalAccountBalance = (Number(assetBalance) + Number(positionsBalance) + Number(claimablesBalance)).toString();
-
-      balances[lowerCaseAddress] = {
-        assetBalanceAmount: assetBalance,
-        assetBalanceDisplay: convertAmountToNativeDisplay(assetBalance, nativeCurrency),
-        positionsBalanceAmount: positionsBalance,
-        positionsBalanceDisplay: convertAmountToNativeDisplay(positionsBalance, nativeCurrency),
-        totalBalanceAmount: totalAccountBalance,
-        totalBalanceDisplay: convertAmountToNativeDisplay(totalAccountBalance, nativeCurrency),
+      balances[address.toLowerCase()] = {
+        totalBalanceAmount,
+        totalBalanceDisplay: convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency),
       };
     }
 
-    const walletsWithBalancesAndNames = mapValues(wallets, wallet => {
-      const updatedAccounts = (wallet.addresses || []).map(account => {
-        const lowerCaseAddress = account.address.toLowerCase() as Address;
+    return mapValues(wallets, wallet => {
+      const addresses = wallet.addresses.map(account => {
+        const balance = balances[account.address.toLowerCase()];
 
         return {
           ...account,
-          balances: balances[lowerCaseAddress],
-          hiddenBalances: hiddenAssetBalances[account.address],
-          balancesMinusHiddenBalances: balances[lowerCaseAddress]?.totalBalanceDisplay
+          balances: balance,
+          balancesMinusHiddenBalances: balance
             ? convertAmountToNativeDisplay(
-                subtract(balances[lowerCaseAddress].totalBalanceAmount, hiddenAssetBalances[account.address] ?? '0'),
+                subtract(balance.totalBalanceAmount, hiddenAssetBalances[account.address] ?? '0'),
                 nativeCurrency
               )
             : undefined,
         };
       });
 
-      return { ...wallet, addresses: updatedAccounts };
+      return { ...wallet, addresses };
     });
-
-    return walletsWithBalancesAndNames;
   },
   { lockDependencies: true }
 );
