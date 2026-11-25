@@ -13,7 +13,6 @@ import { shallowEqual } from '@/worklets/comparisons';
 
 import { fetchSolanaBalances } from './fetchSolanaBalances';
 import {
-  refreshSolanaBalances,
   selectSolanaBalance,
   useSolanaBalanceList,
   useSolanaBalancesAddress,
@@ -82,12 +81,12 @@ afterEach(() => {
 
 describe('isolated Solana balances lifecycle', () => {
   it('fetches the enabled address, keeps failed refresh data, and does not turn failure into zero', async () => {
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     expect(fetchSolanaBalances).toHaveBeenCalledWith(address, 'USD', expect.any(AbortController));
     expect(useSolanaWalletBalances.getState().data?.total).toBe('1.25');
     const callsBeforeFailure = vi.mocked(fetchSolanaBalances).mock.calls.length;
     vi.mocked(fetchSolanaBalances).mockRejectedValue(new Error('upstream failed'));
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     expect(useSolanaWalletBalances.getState().data?.total).toBe('1.25');
     expect(useSolanaWalletBalances.getState().isLoading).toBe(false);
     expect(useSolanaBalancesStore.getState().status).toBe('error');
@@ -100,7 +99,7 @@ describe('isolated Solana balances lifecycle', () => {
     });
     vi.mocked(fetchSolanaBalances).mockReturnValue(pending);
     useSolanaBalancesStore.setState({ queryCache: {}, lastFetchedAt: null });
-    const request = refreshSolanaBalances();
+    const request = useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     expect(useSolanaWalletBalances.getState().isLoading).toBe(true);
     expect(useSolanaWalletBalances.getState().data).toBeNull();
     expect(useSolanaBalanceList.getState()).toEqual([]);
@@ -118,7 +117,7 @@ describe('isolated Solana balances lifecycle', () => {
           complete = resolve;
         })
     );
-    const request = refreshSolanaBalances();
+    const request = useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     await vi.waitFor(() => expect(fetchSolanaBalances).toHaveBeenCalled());
     useWalletsStore.setState({ accountAddress: '0x0000000000000000000000000000000000000002' });
     complete(data);
@@ -127,7 +126,7 @@ describe('isolated Solana balances lifecycle', () => {
     expect(useSolanaBalanceList.getState()).toEqual([]);
   });
   it('hides old results immediately on account or currency changes', async () => {
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     useWalletsStore.setState({ accountAddress: '0x0000000000000000000000000000000000000002' });
     expect(useSolanaBalancesAddress.getState()).toBeNull();
     expect(useSolanaWalletBalances.getState().data).toBeNull();
@@ -138,10 +137,10 @@ describe('isolated Solana balances lifecycle', () => {
     expect(useSolanaBalanceList.getState()).toEqual([]);
   });
   it('makes no requests while flag-off, even through manual fetch, and clears visible holdings', async () => {
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     flags.setState(false, true);
     vi.mocked(fetchSolanaBalances).mockClear();
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     await useSolanaBalancesStore.getState().fetch({ address, currency: 'USD' }, { force: true });
     expect(fetchSolanaBalances).not.toHaveBeenCalled();
     expect(useSolanaWalletBalances.getState().data).toBeNull();
@@ -152,11 +151,11 @@ describe('isolated Solana balances lifecycle', () => {
     controls.storeInstall = true;
     useWalletsStore.setState({ wallets: { [wallet.id]: { ...wallet } } });
     expect(useSolanaBalancesAddress.getState()).toBe(address);
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     expect(fetchSolanaBalances).toHaveBeenCalledWith(address, 'USD', expect.any(AbortController));
     flags.setState(false, true);
     vi.mocked(fetchSolanaBalances).mockClear();
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     expect(fetchSolanaBalances).not.toHaveBeenCalled();
     expect(useSolanaBalancesAddress.getState()).toBeNull();
   });
@@ -170,7 +169,7 @@ describe('isolated Solana balances lifecycle', () => {
 });
 
 it('isolates rows and updates list placement only for IDs or values', async () => {
-  await refreshSolanaBalances();
+  await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
   const sol: SolanaBalance = {
     assetId: 'sol',
     uniqueId: 'So11111111111111111111111111111111111111111_1399811149' as SolanaAssetId,
@@ -191,7 +190,7 @@ it('isolates rows and updates list placement only for IDs or values', async () =
   };
   async function publish(balances: SolanaBalance[]) {
     vi.mocked(fetchSolanaBalances).mockResolvedValue({ ...data, balances });
-    await refreshSolanaBalances();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
   }
   await publish([sol, bonk]);
   const listChanged = vi.fn();

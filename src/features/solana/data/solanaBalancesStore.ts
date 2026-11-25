@@ -69,8 +69,3 @@ export const useSolanaBalanceList = createDerivedStore<Pick<SolanaBalance, 'uniq
 export function selectSolanaBalance(state: ReturnType<typeof useSolanaWalletBalances.getState>, uniqueId: string) {
   return state.data?.balances.find(balance => balance.uniqueId === uniqueId);
 }
-
-export function refreshSolanaBalances() {
-  if (!useSolanaBalancesAddress.getState()) return Promise.resolve(null);
-  return useSolanaBalancesStore.getState().fetch(undefined, { force: true });
-}
