@@ -27,13 +27,10 @@ export const useCoinEditingStore = createDerivedStore(
 
 function setPinnedCoins(): void {
   const { currentAction, selectedItems } = useCoinEditingStore.getState();
-  const pinnedCoins = { ...useCurrentPinnedCoins.getState() };
-  if (currentAction === EditAction.unpin) {
-    for (const id of selectedItems) delete pinnedCoins[id];
-  } else if (currentAction === EditAction.standard) {
-    for (const id of selectedItems) pinnedCoins[id] = true;
+  if (currentAction === EditAction.unpin || currentAction === EditAction.standard) {
+    pinnedCoinsActions.setPinnedCoins(selectedItems, currentAction === EditAction.standard);
   }
-  pinnedCoinsActions.setPinnedCoins(pinnedCoins);
+
   selectedCoinsActions.clearSelectedCoins();
 }
 

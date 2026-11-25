@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Platform, Share } from 'react-native';
 
 import Clipboard from '@react-native-clipboard/clipboard';
@@ -6,13 +6,10 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { DropdownMenu, type MenuConfig, type MenuItem } from '@/components/DropdownMenu';
 import { Box, TextIcon } from '@/design-system';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
-import { useCoinEditingStore } from '@/features/wallet/data/walletScreen/base/coinEditingStore';
-import { pinnedCoinsActions } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
-import { selectedCoinsActions } from '@/features/wallet/data/walletScreen/base/selectedCoinsStore';
+import { pinnedCoinsActions, useCurrentPinnedCoins } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
 import { buildTokenDeeplink } from '@/handlers/deeplinks';
-import { EditAction } from '@/helpers/EditAction';
 import * as i18n from '@/languages';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions, useUserAssetsStore } from '@/state/assets/userAssets';
 import { THICK_BORDER_WIDTH } from '@/styles/constants';
 import ethereumUtils from '@/utils/ethereumUtils';
 
@@ -38,23 +35,13 @@ type ContextMenuAction = (typeof ContextMenuActions)[keyof typeof ContextMenuAct
 export function AssetContextMenu() {
   const { accentColors, basicAsset: asset, assetMetadata } = useExpandedAssetSheetContext();
 
-  const { clearSelectedCoins, pushSelectedCoin } = selectedCoinsActions;
-  const setHiddenAssets = useUserAssetsStore(state => state.setHiddenAssets);
-
-  const { currentAction } = useCoinEditingStore();
-  const chainLabels = useBackendNetworksStore(state => state.getChainsLabel());
-
-  useEffect(() => {
-    // Ensure this expanded state's asset is always actively inside
-    // the CoinListEditOptions selection queue
-    pushSelectedCoin(asset.uniqueId);
-
-    // Clear CoinListEditOptions selection queue on unmount.
-    return () => clearSelectedCoins();
-  }, [asset, clearSelectedCoins, currentAction, pushSelectedCoin]);
+  const uniqueId = asset.uniqueId;
+  const isHidden = useUserAssetsStore(s => s.hiddenAssets.has(uniqueId));
+  const isPinned = useCurrentPinnedCoins(s => s[uniqueId.toLowerCase()] ?? false);
+  const chainLabels = useBackendNetworksStore(s => s.getChainsLabel());
 
   const menuConfig = useMemo<MenuConfig<ContextMenuAction>>(() => {
-    const menuItems = [] as MenuItem<ContextMenuAction>[];
+    const menuItems: MenuItem<ContextMenuAction>[] = [];
 
     if (asset.address && !asset.isNativeAsset) {
       menuItems.push({
@@ -67,9 +54,7 @@ export function AssetContextMenu() {
           iconValue: 'network',
         },
       });
-    }
 
-    if (asset.address && !asset.isNativeAsset) {
       menuItems.push({
         actionKey: ContextMenuActions.Copy,
         actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.copy_contract_address),
@@ -90,50 +75,22 @@ export function AssetContextMenu() {
       },
     });
 
-    if (currentAction === EditAction.unhide) {
-      menuItems.push({
-        actionKey: ContextMenuActions.Unhide,
-        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.unhide),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'eye.slash',
-        },
-      });
-    } else {
-      menuItems.push({
-        actionKey: ContextMenuActions.Hide,
-        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.hide),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'eye.slash',
-        },
-      });
-    }
+    menuItems.push({
+      actionKey: isHidden ? ContextMenuActions.Unhide : ContextMenuActions.Hide,
+      actionTitle: i18n.t(isHidden ? i18n.l.expanded_state.asset.menu.unhide : i18n.l.expanded_state.asset.menu.hide),
+      icon: { iconType: 'SYSTEM', iconValue: 'eye.slash' },
+    });
 
-    if (currentAction === EditAction.unpin) {
-      menuItems.push({
-        actionKey: ContextMenuActions.Unpin,
-        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.unpin),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'pin',
-        },
-      });
-    } else {
-      menuItems.push({
-        actionKey: ContextMenuActions.Pin,
-        actionTitle: i18n.t(i18n.l.expanded_state.asset.menu.pin),
-        icon: {
-          iconType: 'SYSTEM',
-          iconValue: 'pin',
-        },
-      });
-    }
+    menuItems.push({
+      actionKey: isPinned ? ContextMenuActions.Unpin : ContextMenuActions.Pin,
+      actionTitle: i18n.t(isPinned ? i18n.l.expanded_state.asset.menu.unpin : i18n.l.expanded_state.asset.menu.pin),
+      icon: { iconType: 'SYSTEM', iconValue: 'pin' },
+    });
 
     return {
       menuItems,
     };
-  }, [asset, currentAction]);
+  }, [asset, isHidden, isPinned]);
 
   const handlePressMenuItem = (actionKey: ContextMenuAction) => {
     switch (actionKey) {
@@ -162,16 +119,14 @@ export function AssetContextMenu() {
         ethereumUtils.openTokenEtherscanURL({ address: asset.address, chainId: asset.chainId });
         break;
       case ContextMenuActions.Pin:
-        pinnedCoinsActions.setPinnedCoin(asset.uniqueId, true);
+        pinnedCoinsActions.setPinnedCoins([uniqueId], true);
         break;
       case ContextMenuActions.Unpin:
-        pinnedCoinsActions.setPinnedCoin(asset.uniqueId, false);
+        pinnedCoinsActions.setPinnedCoins([uniqueId], false);
         break;
       case ContextMenuActions.Hide:
-        setHiddenAssets([asset.uniqueId]);
-        break;
       case ContextMenuActions.Unhide:
-        setHiddenAssets([asset.uniqueId]);
+        userAssetsActions.setHiddenAssets([uniqueId]);
         break;
     }
   };

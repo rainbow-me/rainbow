@@ -71,7 +71,7 @@ export function TokenLauncherContextProvider({ children }: { children: React.Rea
     // As soon as token is created, pin it
     if (launchedTokenAddress) {
       const launchedTokenUniqueId = getUniqueId(launchedTokenAddress, chainId);
-      pinnedCoinsActions.setPinnedCoin(launchedTokenUniqueId, true);
+      pinnedCoinsActions.setPinnedCoins([launchedTokenUniqueId], true);
     }
   }, [launchedTokenAddress, chainId]);
 

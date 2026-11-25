@@ -7,8 +7,7 @@ export type BooleanMap = Record<string, boolean>;
 type PinnedCoinsState = {
   pinnedCoins: { [address: string]: BooleanMap };
   isPinned: (uniqueId: string) => boolean;
-  setPinnedCoin: (uniqueId: string, pinned: boolean) => void;
-  setPinnedCoins: (pinnedCoins: BooleanMap) => void;
+  setPinnedCoins: (uniqueIds: readonly string[], pinned: boolean) => void;
 };
 
 export const usePinnedCoinsStore = createBaseStore<PinnedCoinsState>(
@@ -20,38 +19,18 @@ export const usePinnedCoinsStore = createBaseStore<PinnedCoinsState>(
       return get().pinnedCoins[accountAddress]?.[uniqueId.toLowerCase()] ?? false;
     },
 
-    setPinnedCoin: (uniqueId, pinned) => {
-      const accountAddress = useWalletsStore.getState().accountAddress;
-      set(state => {
-        const newPinnedCoins = { ...state.pinnedCoins };
-        if (pinned) {
-          newPinnedCoins[accountAddress] = {
-            ...newPinnedCoins[accountAddress],
-            [uniqueId.toLowerCase()]: true,
-          };
-        } else {
-          const currentAccountPins = { ...newPinnedCoins[accountAddress] };
-          delete currentAccountPins[uniqueId.toLowerCase()];
-          newPinnedCoins[accountAddress] = currentAccountPins;
-        }
-
-        return { pinnedCoins: newPinnedCoins };
-      });
-    },
-
-    setPinnedCoins: pinnedCoins => {
+    setPinnedCoins: (uniqueIds, pinned) => {
       const address = useWalletsStore.getState().accountAddress;
+
       set(state => {
-        const newPinnedCoins = { ...state.pinnedCoins };
-        // Normalize all keys to lowercase for consistency with setPinnedCoin and isPinned
-        const normalizedPinnedCoins: BooleanMap = {};
-        for (const uniqueId in pinnedCoins) {
-          if (pinnedCoins[uniqueId]) {
-            normalizedPinnedCoins[uniqueId.toLowerCase()] = true;
-          }
+        const pins = { ...state.pinnedCoins[address] };
+        for (const uniqueId of uniqueIds) {
+          const id = uniqueId.toLowerCase();
+          if (pinned) pins[id] = true;
+          else delete pins[id];
         }
-        newPinnedCoins[address] = normalizedPinnedCoins;
-        return { pinnedCoins: newPinnedCoins };
+
+        return { pinnedCoins: { ...state.pinnedCoins, [address]: pins } };
       });
     },
   }),
