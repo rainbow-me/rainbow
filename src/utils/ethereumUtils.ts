@@ -30,7 +30,7 @@ import {
   useExternalToken,
   type FormattedExternalAsset,
 } from '@/resources/assets/externalAssetsQuery';
-import { userAssetsActions } from '@/state/assets/userAssets';
+import { userAssetsActions, useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { getAccountAddress } from '@/state/wallets/walletsStore';
 import { openInBrowser } from '@/utils/openInBrowser';
@@ -187,7 +187,7 @@ const getAssetFromAllAssets = (uniqueId: EthereumAddress | undefined) => {
 const getAccountAsset = (uniqueId: EthereumAddress, address?: EthereumAddress): ParsedAddressAsset | undefined => {
   if (address !== undefined && !isAddress(address, { strict: false })) return undefined;
   const loweredUniqueId = uniqueId.toLowerCase();
-  return userAssetsActions.getLegacyUserAsset(loweredUniqueId) ?? undefined;
+  return useUserAssetsStore.getState(address).getLegacyUserAsset(loweredUniqueId) ?? undefined;
 };
 
 const getAssetPrice = (
