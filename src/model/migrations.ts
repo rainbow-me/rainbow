@@ -800,10 +800,6 @@ export default async function runMigrations() {
    */
   const v30 = async () => {
     const wallets = { ...getWallets() };
-    if (!wallets) {
-      logger.debug('[runMigrations]: v30 migration - no wallets found');
-      return;
-    }
 
     if (Platform.OS === 'ios') {
       for (const wallet of Object.values(wallets)) {
