@@ -14,7 +14,8 @@ const PLACEHOLDER_HEIGHT = PROFILE_BALANCE_ROW_HEIGHT;
 const PLACEHOLDER_WIDTH = 200;
 
 export const ProfileBalanceRow = React.memo(function ProfileBalanceRow() {
-  const isLoading = useLiveWalletBalance(state => state === null);
+  const isLoading = useLiveWalletBalance(s => s === null);
+
   return isLoading ? (
     <Box height={PLACEHOLDER_HEIGHT} width={PLACEHOLDER_WIDTH}>
       <Skeleton>
@@ -28,7 +29,7 @@ export const ProfileBalanceRow = React.memo(function ProfileBalanceRow() {
 
 const AnimatedNumber = () => {
   const backgroundColor = useBackgroundColor('surfacePrimary');
-  const balance = useStoreSharedValue(useLiveWalletBalance, state => state ?? '');
+  const balance = useStoreSharedValue(useLiveWalletBalance, s => s ?? '');
 
   return (
     <Box alignItems="center" height={PROFILE_BALANCE_ROW_HEIGHT} paddingHorizontal="36px" width="full">

@@ -33,7 +33,7 @@ export const SectionHeader = memo(function SectionHeader({ title, onPress, isDar
       <Box height={{ custom: HEIGHT }} paddingHorizontal="20px" justifyContent="center">
         <Inline alignHorizontal="justify" alignVertical="center">
           <Inline horizontalSpace={'8px'} alignVertical="center">
-            <Text size="22pt" color={isZero ? 'labelTertiary' : 'label'} weight="heavy">
+            <Text size="22pt" color="label" weight="heavy">
               {title}
             </Text>
             <Box
