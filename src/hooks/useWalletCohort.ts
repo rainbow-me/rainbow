@@ -24,7 +24,7 @@ function identifyWalletCohort(wallets: WalletsState['wallets']): void {
   useLastTrackedAtStore.setState(now);
 
   requestIdleCallback(() => {
-    const identify = Object.values(wallets).reduce(
+    const traits = Object.values(wallets).reduce(
       (result, wallet) => {
         const addresses = wallet.addresses;
         if (!addresses) return result;
@@ -73,17 +73,6 @@ function identifyWalletCohort(wallets: WalletsState['wallets']): void {
       }
     );
 
-    analytics.identify({
-      hardwareAccounts: identify.hardwareAccounts,
-      hasImported: identify.hasImported,
-      importedPrivateKeys: identify.importedPrivateKeys,
-      importedRecoveryPhrases: identify.importedRecoveryPhrases,
-      ledgerDevices: identify.ledgerDevices,
-      ownedAccounts: identify.ownedAccounts,
-      privateKeys: identify.privateKeys,
-      recoveryPhrases: identify.recoveryPhrases,
-      trezorDevices: identify.trezorDevices,
-      watchedAccounts: identify.watchedAccounts,
-    });
+    analytics.identify(traits);
   });
 }
