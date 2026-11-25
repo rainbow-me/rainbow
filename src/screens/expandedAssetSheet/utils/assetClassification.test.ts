@@ -66,9 +66,9 @@ describe('getAssetClassification', () => {
       { text: 'NVIDIA Corporation', emphasized: true },
       { text: " stock.\n\nIt's issued by ", emphasized: false },
       { text: 'Robinhood', emphasized: true },
-      { text: ' on ', emphasized: false },
+      { text: ' on the ', emphasized: false },
       { text: 'Robinhood Chain', emphasized: true },
-      { text: '. You can buy, sell and hold it in your wallet like any other token.', emphasized: false },
+      { text: ' network. You can buy, sell and hold it in your wallet like any other token.', emphasized: false },
     ]);
   });
 

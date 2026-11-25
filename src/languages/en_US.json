@@ -687,7 +687,7 @@
         "stablecoin_label": "Stablecoin",
         "tokenized_stock": "Tokenized Stock",
         "stablecoin": "Stablecoin",
-        "tokenized_stock_info": "%{token} is a token that tracks the price of %{underlying} stock.\n\nIt's issued by %{issuer} on %{chain}. You can buy, sell and hold it in your wallet like any other token.",
+        "tokenized_stock_info": "%{token} is a token that tracks the price of %{underlying} stock.\n\nIt's issued by %{issuer} on the %{chain} network. You can buy, sell and hold it in your wallet like any other token.",
         "stablecoin_info": "A stablecoin is a token designed to hold a steady value. %{token} is designed to stay at %{peg} and is issued by %{issuer}.",
         "peg": "1 %{currency}"
       },
