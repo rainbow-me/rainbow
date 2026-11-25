@@ -42,7 +42,7 @@ import { CellType, type CellTypes } from './ViewTypes';
 /**
  * Renders a prepared wallet row with the list's compiled display state.
  */
-export default function renderWalletRow(data: CellTypes, extendedState: ExtendedState) {
+export function renderWalletRow(data: CellTypes, extendedState: ExtendedState): React.ReactNode {
   switch (data.type) {
     case CellType.ASSETS_HEADER_SPACE_AFTER:
     case CellType.NFT_SPACE_AFTER:
@@ -62,6 +62,7 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
     case CellType.CLAIMABLES_SPACE_BEFORE:
     case CellType.SPACER:
       return null;
+
     case CellType.COIN_DIVIDER:
       return (
         <CoinDivider
@@ -71,6 +72,7 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
           nativeCurrency={extendedState.nativeCurrency}
         />
       );
+
     case CellType.DISCOVER_MORE_BUTTON:
       return (
         <CardRowWrapper>
@@ -96,6 +98,7 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
           <RotatingLearnCard />
         </CardRowWrapper>
       );
+
     case CellType.POLYMARKET_FEATURE_CARD: {
       return (
         <CardRowWrapper>
@@ -110,10 +113,13 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
         </CardRowWrapper>
       );
     }
+
     case CellType.PROFILE_STICKY_HEADER:
       return <ProfileStickyHeader />;
+
     case CellType.COIN:
       return <FastBalanceCoinRow extendedState={extendedState} asset={data.asset} isPinned={data.isPinned} isHidden={data.isHidden} />;
+
     case CellType.PROFILE_ACTION_BUTTONS_ROW:
       return (
         <ProfileRowWrapper>
@@ -138,6 +144,7 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
           <ProfileNameRow testIDPrefix="profile-name" />
         </ProfileRowWrapper>
       );
+
     case CellType.NFTS_HEADER:
       return <WrappedCollectiblesHeader />;
     case CellType.NFTS_LOADING:
@@ -147,14 +154,17 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
     case CellType.FAMILY_HEADER:
     case CellType.NFT:
       return renderNftRow(data, extendedState.theme);
+
     case CellType.POSITIONS_HEADER:
       return <WrappedPositionsListHeader total={data.total} />;
     case CellType.POSITION:
       return <WrappedPosition placement={data.index % 2 === 0 ? 'left' : 'right'} position={data.position} />;
+
     case CellType.CLAIMABLES_HEADER:
       return <ClaimablesListHeader total={data.total} />;
     case CellType.CLAIMABLE:
       return <Claimable claimable={data.claimable} />;
+
     case CellType.PERPS_HEADER: {
       return <PerpsHeader isDarkMode={extendedState.theme.isDarkMode} />;
     }
@@ -162,6 +172,7 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
       return <SectionAvailableBalance balance={data.balance} isDarkMode={extendedState.theme.isDarkMode} onPress={navigateToPerps} />;
     case CellType.PERPS_POSITION:
       return <PerpsPositionRow position={data.position} />;
+
     case CellType.POLYMARKET_HEADER:
       return (
         <PolymarketHeader
@@ -184,11 +195,14 @@ export default function renderWalletRow(data: CellTypes, extendedState: Extended
     }
     case CellType.POLYMARKET_POSITION:
       return <PolymarketPositionRow position={data.position} />;
+
     case CellType.TOKENS_HEADER: {
       return <TokensHeader />;
     }
+
     case CellType.LOADING_ASSETS:
       return <AssetListItemSkeleton />;
+
     default:
       assertNever(data);
   }

@@ -25,7 +25,7 @@ import { useNavigationStore } from '@/state/navigation/navigationStore';
 import { nftsActions } from '@/state/nfts/nfts';
 import { SessionEntryPromptSync } from '@/state/sync/SessionEntryPromptSync';
 
-import RecyclerAssetList2 from '../../components/asset-list/RecyclerAssetList2';
+import { RecyclerAssetList } from '../../components/asset-list/RecyclerAssetList2';
 import { Page } from '../../components/layout';
 
 const UtilityComponents = memo(function UtilityComponents() {
@@ -68,21 +68,20 @@ function handleWalletScreenMount(): void {
   });
 }
 
-function WalletScreen() {
+export const WalletScreen = memo(function WalletScreen() {
   const insets = useSafeAreaInsets();
-  const setSubscribedTokens = useLiveTokenListSubscription();
 
-  const isLoadingUserAssets = useUserAssetsStore(s => s.isInitialLoad());
   const { highContrastAccentColor } = useAccountAccentColor();
-
+  const isLoadingUserAssets = useUserAssetsStore(s => s.isInitialLoad());
   const listContainerStyle = useMemo(() => ({ flex: 1, marginTop: -(navbarHeight + insets.top) }), [insets.top]);
 
-  const { onViewableItemsChanged } = useViewabilityTracker(VIEWABILITY_SELECTORS, setSubscribedTokens);
+  const setSubscribedTokens = useLiveTokenListSubscription();
+  const onViewableItemsChanged = useViewabilityTracker(VIEWABILITY_SELECTORS, setSubscribedTokens).onViewableItemsChanged;
 
   return (
     <PerformanceMeasureView interactive={!isLoadingUserAssets} screenName="WalletScreen">
       <Box as={Page} flex={1} testID="wallet-screen" onLayout={handleWalletScreenMount} style={listContainerStyle}>
-        <RecyclerAssetList2
+        <RecyclerAssetList
           accentColor={highContrastAccentColor}
           onEndReached={nftsActions.fetchNextPage}
           onViewableItemsChanged={onViewableItemsChanged}
@@ -93,6 +92,4 @@ function WalletScreen() {
       </Box>
     </PerformanceMeasureView>
   );
-}
-
-export default React.memo(WalletScreen);
+});

@@ -66,7 +66,7 @@ import useDimensions from '@/hooks/useDimensions';
 import { BASE_TAB_BAR_HEIGHT, TAB_BAR_HEIGHT } from '@/navigation/constants';
 import { tabReselectEvents } from '@/navigation/tabEvents';
 import { DiscoverScreen } from '@/screens/DiscoverScreen';
-import WalletScreen from '@/screens/WalletScreen/WalletScreen';
+import { WalletScreen } from '@/screens/WalletScreen/WalletScreen';
 import { useStoreSharedValue } from '@/state/internal/hooks/useStoreSharedValue';
 import { setActiveRoute, useNavigationStore } from '@/state/navigation/navigationStore';
 import { darkModeThemeColors, lightModeThemeColors } from '@/styles/colors';

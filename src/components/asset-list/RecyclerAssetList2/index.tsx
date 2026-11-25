@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Platform, Animated as RNAnimated } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -25,7 +25,7 @@ import { useTheme } from '@/theme/ThemeContext';
 
 import { RecyclerAssetListScrollPositionContext } from './core/Contexts';
 import { RawMemoRecyclerAssetList, type ViewableItemsChangedCallback } from './core/RawRecyclerList';
-import renderWalletRow from './core/RowRenderer';
+import { renderWalletRow } from './core/RowRenderer';
 import { StickyHeaderManager } from './core/StickyHeaders';
 import { type CellTypes } from './core/ViewTypes';
 import { ProfileNameRow } from './profile-header/ProfileNameRow';
@@ -39,36 +39,39 @@ export interface RecyclerAssetList2Props {
   onViewableItemsChanged?: ViewableItemsChangedCallback;
 }
 
-function RecyclerAssetList({ accentColor, disablePullDownToRefresh, onEndReached, onViewableItemsChanged }: RecyclerAssetList2Props) {
+export const RecyclerAssetList = memo(function RecyclerAssetList({
+  accentColor,
+  disablePullDownToRefresh,
+  onEndReached,
+  onViewableItemsChanged,
+}: RecyclerAssetList2Props) {
+  const insets = useSafeAreaInsets();
+  const position = useStableValue(() => new RNAnimated.Value(0));
+  const scrollIndicatorInsets = useMemo(() => ({ bottom: insets.bottom + 14, top: 132 }), [insets.bottom]);
+
   const listData = useWalletSectionsData();
   const extendedState = useExtendedStateStore();
-  const insets = useSafeAreaInsets();
-
-  const position = useStableValue(() => new RNAnimated.Value(0));
+  const rowRenderer = useCallback((_type: string | number, data: CellTypes) => renderWalletRow(data, extendedState), [extendedState]);
 
   return (
     <RecyclerAssetListScrollPositionContext.Provider value={position}>
       <NavbarOverlay accentColor={accentColor} position={position} />
+
       <StickyHeaderManager yOffset={navbarHeight + insets.top - 8}>
         <RawMemoRecyclerAssetList
           listData={listData}
           extendedState={extendedState}
-          rowRenderer={(_type, data: CellTypes) => renderWalletRow(data, extendedState)}
+          rowRenderer={rowRenderer}
           disablePullDownToRefresh={!!disablePullDownToRefresh}
           onEndReached={onEndReached}
-          scrollIndicatorInsets={{
-            bottom: insets.bottom + 14,
-            top: 132,
-          }}
+          scrollIndicatorInsets={scrollIndicatorInsets}
           type="wallet"
           onViewableItemsChanged={onViewableItemsChanged}
         />
       </StickyHeaderManager>
     </RecyclerAssetListScrollPositionContext.Provider>
   );
-}
-
-export default React.memo(RecyclerAssetList);
+});
 
 // //////////////////////////////////////////////////////////
 
