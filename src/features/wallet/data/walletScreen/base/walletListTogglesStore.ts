@@ -66,7 +66,7 @@ export const useWalletListTogglesStore = createBaseStore<ListSectionTogglesState
     },
   }),
 
-  { persistThrottleMs: 0, storageKey: 'listSectionTogglesStore' }
+  { storageKey: 'listSectionTogglesStore' }
 );
 
 export const useCurrentWalletToggles = createDerivedStore(

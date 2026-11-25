@@ -35,7 +35,7 @@ export const usePinnedCoinsStore = createBaseStore<PinnedCoinsState>(
     },
   }),
 
-  { persistThrottleMs: 0, storageKey: 'pinnedCoinsStore' }
+  { storageKey: 'pinnedCoinsStore' }
 );
 
 export const pinnedCoinsActions = createStoreActions(usePinnedCoinsStore);
