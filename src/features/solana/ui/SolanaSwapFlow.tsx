@@ -32,7 +32,7 @@ import {
   prepareSwapTrade,
   useSolanaMvpExecutionStore,
 } from '@/features/solana/data/mvpTrades';
-import { refreshSolanaBalances, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
+import { useSolanaBalancesStore, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { type SolanaSwapSelection } from '@/features/solana/data/swapSelection';
 import { type PreparedSwap } from '@/features/solana/data/swapTypes';
 import { appearance, SolanaSwapAmountControls, SolanaSwapCard } from '@/features/solana/ui/SolanaSwapControls';
@@ -181,7 +181,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
     if (result.status === 'CONFIRMED') {
       await Promise.allSettled([
         refreshBalances(),
-        refreshSolanaBalances(),
+        useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 }),
         useUserAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
       ]);
     }

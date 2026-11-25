@@ -123,7 +123,7 @@ vi.mock('@/features/solana/data/mvpTrades', () => ({
 }));
 vi.mock('@/features/solana/data/solanaBalancesStore', () => ({
   useSolanaWalletBalances: () => ({ data: mocks.balancesData }),
-  refreshSolanaBalances: vi.fn(),
+  useSolanaBalancesStore: { getState: () => ({ fetch: vi.fn().mockResolvedValue(null) }) },
 }));
 vi.mock('@/features/solana/ui/SolanaSwapControls', () => ({
   appearance: () => ({ highContrastColor: { light: '#7057E8', dark: '#A18AFF' }, textColor: { light: '#FFFFFF', dark: '#FFFFFF' } }),

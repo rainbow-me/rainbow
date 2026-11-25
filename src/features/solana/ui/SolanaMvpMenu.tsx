@@ -11,7 +11,7 @@ import {
   prepareMvpTrade,
   useSolanaMvpExecutionStore,
 } from '@/features/solana/data/mvpTrades';
-import { refreshSolanaBalances } from '@/features/solana/data/solanaBalancesStore';
+import { useSolanaBalancesStore } from '@/features/solana/data/solanaBalancesStore';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
 import { enableSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
 import { WrappedAlert as Alert } from '@/helpers/alert';
@@ -136,7 +136,11 @@ function SolanaMvpControls() {
         onPress={() =>
           run(async () => {
             const result = await checkMvpExecution();
-            if (result.status === 'CONFIRMED') void refreshSolanaBalances().catch(() => undefined);
+            if (result.status === 'CONFIRMED')
+              void useSolanaBalancesStore
+                .getState()
+                .fetch(undefined, { staleTime: 0 })
+                .catch(() => undefined);
             const source = result.onchain?.source;
             const baseTransactions =
               source?.kind === 'evm' && source.chainId === ChainId.base
