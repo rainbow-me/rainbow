@@ -11,6 +11,7 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 
 import { calculateSpotPnl, type SpotPnlVariant, type TokenTrades } from '../core/spotPnl';
@@ -52,7 +53,7 @@ function SpotPnlPillContent({
   const nativeCurrency = userAssetsStoreManager(state => state.currency);
   const fetchedTrades = useTokenTradesStore(state => state.getData());
   const isSettled = useTokenTradesStore(state => state.getStatus('isSuccess') || state.getStatus('isError'));
-  const walletAddress = userAssetsStoreManager(state => state.address);
+  const walletAddress = useWalletsStore(state => state.accountAddress);
   const codexTokenId = useSpotPnlTokenId();
   const position = `${walletAddress}:${codexTokenId}`;
   const lastTrades = useRef<{ position: string; trades: TokenTrades } | null>(null);

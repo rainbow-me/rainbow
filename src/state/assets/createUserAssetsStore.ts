@@ -1,43 +1,39 @@
 import { createQueryStore } from '@storesjs/stores';
 import { type Address } from 'viem';
 
-import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { getUniqueId } from '@/entities/assetId';
+import { type SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { convertAmountToNativeDisplayWorklet } from '@/features/currency/utils/nativeDisplay';
 import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
-import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
 import { useConnectedToAnvilStore } from '@/state/connectedToAnvil';
+import { memoizeState } from '@/state/internal/utils/memoizeState';
 import { type LiveTokensData } from '@/state/liveTokens/types';
+import { isTrustedLiveToken } from '@/state/liveTokens/utils';
 import { toUnixTime } from '@/worklets/dates';
 
 import { deserializeUserAssetsState, serializeUserAssetsState, type UserAssetsStateToPersist } from './persistence';
-import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState } from './types';
+import { type FetchedUserAssetsData, type UserAssetsParams, type UserAssetsState, type UserAssetsStoreType } from './types';
 import { userAssetsStoreManager } from './userAssetsStoreManager';
 import {
-  calculateHiddenAssetsBalance,
   fetchUserAssets,
-  getDefaultCacheKeys,
-  getFilteredUserAssetIds,
   parsedSearchAssetToParsedAddressAsset,
   selectHighestValueAsset,
   setUserAssets,
+  updateHiddenAssetsBalance,
 } from './utils';
 
-const SEARCH_CACHE_MAX_ENTRIES = 50;
-const CACHE_ITEMS_TO_PRESERVE = getDefaultCacheKeys();
-
-export const createUserAssetsStore = (address: Address | string) =>
-  createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
+export function createUserAssetsStore(address: Address): UserAssetsStoreType {
+  const store = createQueryStore<FetchedUserAssetsData, UserAssetsParams, UserAssetsState, FetchedUserAssetsData, UserAssetsStateToPersist>(
     {
       fetcher: fetchUserAssets,
       setData: ({ data, set }) => {
-        if (data?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
-          set(state => setUserAssets({ address, state, userAssets: data.userAssets, positionTokenAddresses }));
-        }
+        if (!data) return;
+        set(state => setUserAssets({ state, userAssets: data }));
       },
+      onFetched: () => updateHiddenAssetsBalance(store.getState()),
       enabled: address.length > 0,
       keepPreviousData: true,
       params: {
@@ -51,169 +47,74 @@ export const createUserAssetsStore = (address: Address | string) =>
     (set, get) => ({
       address,
       chainBalances: new Map(),
-      currentAbortController: new AbortController(),
-      filter: 'all',
       hiddenAssets: new Set<UniqueId>(),
-      hiddenAssetsBalance: null,
-      idsByChain: new Map<UserAssetFilter, UniqueId[]>(),
-      inputSearchQuery: '',
-      legacyUserAssets: [],
-      searchCache: new Map(),
       userAssets: new Map(),
 
-      getBalanceSortedChainList: () => {
-        const chainBalances = [...get().chainBalances.entries()];
-        chainBalances.sort(([, balanceA], [, balanceB]) => balanceB - balanceA);
-        return chainBalances.map(([chainId]) => chainId);
+      getBalanceSortedChainList: memoizeState(get, 'chainBalances', state => Array.from(state.chainBalances.keys())),
+
+      getChainsWithBalance: memoizeState(get, 'chainBalances', state => {
+        const chains: ChainId[] = [];
+        for (const [chain, balance] of state.chainBalances) if (balance) chains.push(chain);
+        return chains;
+      }),
+
+      getHighestValueAsset: options => {
+        const state = get();
+        return selectHighestValueAsset(state.userAssets.values(), state.hiddenAssets, options);
       },
 
-      getChainsWithBalance: () => {
-        const chainBalances = [...get().chainBalances.entries()];
-        const chainsWithBalances = chainBalances.filter(([, balance]) => !!balance);
-        return chainsWithBalances.map(([chainId]) => chainId);
-      },
-
-      getFilteredUserAssetIds: () => {
-        const { filter, inputSearchQuery: rawSearchQuery, searchCache, selectUserAssetIds, setSearchCache } = get();
-        return getFilteredUserAssetIds({ filter, rawSearchQuery, searchCache, selectUserAssetIds, setSearchCache });
-      },
-
-      getHighestValueAsset: options => selectHighestValueAsset(get().userAssets.values(), options),
-
-      getNativeAssetForChain: (chainId: ChainId) => {
+      getNativeAssetForChain: chainId => {
         const nativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
         if (!nativeAsset) return null;
-        const nativeAssetUniqueId = getUniqueId(nativeAsset.address, chainId);
-        return get().userAssets.get(nativeAssetUniqueId) || null;
+        return get().userAssets.get(getUniqueId(nativeAsset.address, chainId)) || null;
       },
 
-      getUserAsset: (uniqueId: UniqueId) => get().userAssets.get(uniqueId) || null,
+      getUserAsset: uniqueId => get().userAssets.get(uniqueId) || null,
 
-      getLegacyUserAsset: (uniqueId: UniqueId) => {
+      getLegacyUserAsset: uniqueId => {
         const asset = get().userAssets.get(uniqueId);
         if (!asset) return null;
         return parsedSearchAssetToParsedAddressAsset(asset);
       },
 
-      getUserAssets: () => Array.from(get().userAssets.values()) || [],
+      getUserAssets: memoizeState(get, 'hiddenAssets', 'userAssets', state => {
+        const assets: ParsedSearchAsset[] = [];
+        for (const asset of state.userAssets.values()) if (!state.hiddenAssets.has(asset.uniqueId)) assets.push(asset);
+        return assets;
+      }),
 
-      selectUserAssetIds: function* (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) {
-        const { currentAbortController, idsByChain, userAssets } = get();
-        const assetIds = filter ? idsByChain.get(filter) || [] : idsByChain.get('all') || [];
+      isHidden: uniqueId => get().hiddenAssets.has(uniqueId),
 
-        for (const id of assetIds) {
-          if (currentAbortController?.signal?.aborted) return;
-          const asset = userAssets.get(id);
-          if (asset && selector(asset)) yield id;
-        }
+      isInitialLoad: () => {
+        const state = get();
+        return !state.userAssets.size && state.getStatus('isInitialLoad');
       },
 
-      selectUserAssets: function* (selector: (asset: ParsedSearchAsset) => boolean) {
-        const { currentAbortController, userAssets } = get();
+      getHiddenAssetsIds: memoizeState(get, 'hiddenAssets', state => Array.from(state.hiddenAssets)),
 
-        for (const [id, asset] of userAssets) {
-          if (currentAbortController?.signal?.aborted) return;
-          if (selector(asset)) yield [id, asset];
-        }
-      },
-
-      setSearchQuery: query =>
-        set(state => {
-          // Abort any ongoing search work
-          state.currentAbortController?.abort?.();
-          // Create a new AbortController for the new query
-          const abortController = new AbortController();
-
-          return { currentAbortController: abortController, inputSearchQuery: query.trim().toLowerCase() };
-        }),
-
-      setSearchCache: (queryKey, filteredIds: UniqueId[]) => {
-        set(state => {
-          const newCache = new Map(state.searchCache).set(queryKey, filteredIds);
-
-          // Prune the cache if it exceeds the maximum size
-          if (newCache.size > SEARCH_CACHE_MAX_ENTRIES) {
-            // Get the oldest key that isn't a key to preserve
-            for (const key of newCache.keys()) {
-              if (!CACHE_ITEMS_TO_PRESERVE.has(key)) {
-                newCache.delete(key);
-                break;
-              }
-            }
-          }
-          return { searchCache: newCache };
-        });
-      },
-
-      getHiddenAssetsIds: () => Array.from(get().hiddenAssets),
-
-      getTotalBalance: () => {
-        const chainBalances = get().chainBalances;
-        if (!chainBalances.size) return 0;
-        let total = 0;
-        for (const balance of chainBalances.values()) {
-          total += balance;
-        }
-        return total;
-      },
-
-      setHiddenAssets: (uniqueIds: UniqueId[]) => {
+      setHiddenAssets: uniqueIds => {
         set(state => {
           const hiddenAssets = new Set(state.hiddenAssets);
-          uniqueIds.forEach(uniqueId => {
-            if (hiddenAssets.has(uniqueId)) {
-              hiddenAssets.delete(uniqueId);
-            } else {
-              hiddenAssets.add(uniqueId);
-            }
-          });
-
-          const hiddenAssetsBalance = calculateHiddenAssetsBalance({
-            address,
-            hiddenAssets,
-            userAssets: state.userAssets,
-          });
-
-          return { hiddenAssets, hiddenAssetsBalance };
-        });
-      },
-
-      updateTokens: (tokens: LiveTokensData) => {
-        set(state => {
-          for (const [tokenId, token] of Object.entries(tokens)) {
-            if (!token || token.reliability.status !== 'PRICE_RELIABILITY_STATUS_TRUSTED') continue;
-
-            const asset = state.userAssets.get(tokenId);
-            const currency = userAssetsStoreManager.getState().currency;
-
-            if (!asset || (asset?.price?.changed_at && asset?.price?.changed_at > toUnixTime(token.updateTime))) continue;
-
-            if (asset?.price) {
-              asset.price = {
-                value: Number(token.price),
-                relative_change_24h: Number(token.change.change24hPct),
-              };
-            }
-            if (asset?.native?.price) {
-              asset.native.price = {
-                change: token.change.change24hPct,
-                amount: Number(token.price),
-                display: convertAmountToNativeDisplayWorklet(token.price, currency),
-              };
-            }
+          for (const uniqueId of uniqueIds) {
+            if (hiddenAssets.has(uniqueId)) hiddenAssets.delete(uniqueId);
+            else hiddenAssets.add(uniqueId);
           }
-          // We return the same state object to skip triggering selectors
-          return state;
+          return { hiddenAssets };
         });
+
+        updateHiddenAssetsBalance(get());
       },
 
-      reprocessAssetsData: () => {
-        const lastData = get().getData();
-        if (lastData?.userAssets) {
-          const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
-          set(state => setUserAssets({ address, state, userAssets: lastData.userAssets, positionTokenAddresses }));
-        }
+      updateAssets: (userAssets, chainIdsToUpdate) => {
+        set(state => setUserAssets({ state, userAssets, chainIdsToUpdate }));
+        updateHiddenAssetsBalance(get());
       },
+
+      mutatePrices: tokens =>
+        set(state => {
+          mutateAssetPrices(state.userAssets, tokens, userAssetsStoreManager.getState().currency);
+          return state;
+        }),
     }),
 
     address.length
@@ -222,15 +123,49 @@ export const createUserAssetsStore = (address: Address | string) =>
           partialize: state =>
             ({
               chainBalances: state.chainBalances,
-              filter: state.filter,
               hiddenAssets: state.hiddenAssets,
-              idsByChain: state.idsByChain,
-              legacyUserAssets: state.legacyUserAssets,
               userAssets: state.userAssets,
-            }) satisfies Required<UserAssetsStateToPersist>,
+            }) satisfies UserAssetsStateToPersist,
           serializer: serializeUserAssetsState,
           storageKey: `userAssets_${address}`,
           version: 2,
         }
       : undefined
   );
+
+  return store;
+}
+
+/**
+ * Intentionally mutates held assets' fallback prices for subsequent reads.
+ *
+ * Live displays observe the live tokens store, so these updates need not
+ * notify holdings subscribers or replace their asset objects.
+ */
+function mutateAssetPrices(assets: UserAssetsState['userAssets'], tokens: LiveTokensData, currency: SupportedCurrencyKey): void {
+  for (const tokenId in tokens) {
+    const token = tokens[tokenId];
+    if (!isTrustedLiveToken(token)) continue;
+
+    const asset = assets.get(tokenId);
+    if (!asset) continue;
+
+    const price = asset.price;
+    const updatedAt = toUnixTime(token.updateTime);
+    if (price?.changed_at && price.changed_at > updatedAt) continue;
+
+    const value = Number(token.price);
+    if (price) {
+      price.value = value;
+      price.relative_change_24h = Number(token.change.change24hPct);
+      price.changed_at = updatedAt;
+    }
+
+    const nativePrice = asset.native.price;
+    if (nativePrice) {
+      nativePrice.change = token.change.change24hPct;
+      nativePrice.amount = value;
+      nativePrice.display = convertAmountToNativeDisplayWorklet(token.price, currency);
+    }
+  }
+}

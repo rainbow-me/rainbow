@@ -8,11 +8,12 @@ import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRewardsBalanceStore } from '@/features/rnbw-rewards/stores/rewardsBalanceStore';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { type UserAsset } from '@/state/assets/types';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useAssetUpdatesStore } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore } from '@/state/staleBalances';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { watchAssetUpdates } from './useWatchAssetUpdates';
 
@@ -24,7 +25,6 @@ const mockGetAssetUpdates = vi.fn<() => Promise<{ data: { result: Record<string,
   },
 }));
 
-const mockGetTokenAddresses = vi.fn(() => new Set<string>());
 const mockClaimablesFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
 const mockRewardsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
 const mockPositionsFetch = vi.fn<(params?: unknown, options?: unknown) => Promise<null>>(async () => null);
@@ -55,16 +55,11 @@ vi.mock('@/redux/store', () => ({
   },
 }));
 
-vi.mock('@/state/wallets/walletsStore', () => ({
-  getAccountAddress: () => '0x123',
-  useAccountAddress: () => '0x123',
-  useWalletsStore: {
-    getState: () => ({
-      accountAddress: '0x123',
-    }),
-    subscribe: vi.fn(),
-  },
-}));
+vi.mock('@/state/wallets/walletsStore', async () => {
+  const { createBaseStore } = await import('@storesjs/stores');
+  const useWalletsStore = createBaseStore(() => ({ accountAddress: '0x123' }));
+  return { getAccountAddress: () => useWalletsStore.getState().accountAddress, useWalletsStore };
+});
 
 vi.mock('@/state/swaps/swapsStore', () => ({
   useSwapsStore: {
@@ -95,8 +90,8 @@ describe('watchAssetUpdates', () => {
     vi.clearAllMocks();
     resetStores();
 
-    userAssetsStore.getState(TEST_ADDRESS);
-    userAssetsStore.setState(
+    useUserAssetsStore.getState(TEST_ADDRESS);
+    useUserAssetsStore.setState(
       state => ({
         ...state,
         fetch: async (params, options) => mockUserAssetsFetch(params, options),
@@ -107,7 +102,6 @@ describe('watchAssetUpdates', () => {
     usePositionsStore.setState(state => ({
       ...state,
       fetch: async (params, options) => mockPositionsFetch(params, options),
-      getTokenAddresses: mockGetTokenAddresses,
     }));
     useClaimablesStore.setState(state => ({
       ...state,
@@ -239,7 +233,7 @@ describe('watchAssetUpdates', () => {
     expect(mockRewardsFetch).toHaveBeenCalledWith(undefined, { force: true });
     expect(invalidateAddressNftsQueries).toHaveBeenCalledWith(TEST_ADDRESS);
 
-    const userAssets = userAssetsStore.getState(TEST_ADDRESS).userAssets;
+    const userAssets = useUserAssetsStore.getState(TEST_ADDRESS).userAssets;
     expect(userAssets.get(getUniqueId(BASE_TOKEN_ADDRESS, 8453))?.balance.amount).toBe('1');
     expect(userAssets.get(getUniqueId(OPTIMISM_TOKEN_ADDRESS, 10))?.balance.amount).toBe('1');
     expect(userAssets.get(getUniqueId(MAINNET_TOKEN_ADDRESS, 1))?.balance.amount).toBe('7');
@@ -333,7 +327,7 @@ describe('watchAssetUpdates', () => {
     expect(mockRewardsFetch).not.toHaveBeenCalled();
     expect(invalidateAddressNftsQueries).not.toHaveBeenCalled();
 
-    const userAssets = userAssetsStore.getState(TEST_ADDRESS).userAssets;
+    const userAssets = useUserAssetsStore.getState(TEST_ADDRESS).userAssets;
     expect(userAssets.get(getUniqueId(BASE_TOKEN_ADDRESS, 8453))?.balance.amount).toBe('1');
     expect(userAssets.get(getUniqueId(OPTIMISM_TOKEN_ADDRESS, 10))?.balance.amount).toBe('2');
 
@@ -350,7 +344,7 @@ describe('watchAssetUpdates', () => {
     expect(mockRewardsFetch).toHaveBeenCalledWith(undefined, { force: true });
     expect(invalidateAddressNftsQueries).toHaveBeenCalledWith(TEST_ADDRESS);
 
-    const finalUserAssets = userAssetsStore.getState(TEST_ADDRESS).userAssets;
+    const finalUserAssets = useUserAssetsStore.getState(TEST_ADDRESS).userAssets;
     expect(finalUserAssets.get(getUniqueId(BASE_TOKEN_ADDRESS, 8453))?.balance.amount).toBe('1');
     expect(finalUserAssets.get(getUniqueId(OPTIMISM_TOKEN_ADDRESS, 10))?.balance.amount).toBe('1');
   });
@@ -600,17 +594,16 @@ describe('watchAssetUpdates', () => {
 function resetStores() {
   useAssetUpdatesStore.setState({ watchedTransactions: {} });
   staleBalancesStore.setState({ staleBalances: {} });
+  useWalletsStore.setState({ accountAddress: TEST_ADDRESS });
   userAssetsStoreManager.setState({
-    address: TEST_ADDRESS,
-    cachedStore: null,
     currency: 'ETH',
     hiddenAssetBalances: {},
   });
 }
 
 function seedUserAssets(assets: ParsedSearchAsset[]) {
-  userAssetsStore.getState(TEST_ADDRESS);
-  userAssetsStore.setState(
+  useUserAssetsStore.getState(TEST_ADDRESS);
+  useUserAssetsStore.setState(
     state => ({
       ...state,
       address: TEST_ADDRESS,
@@ -790,7 +783,7 @@ function buildUserAsset({
         },
       },
       price: {
-        changedAt: 0,
+        changedAt: '1970-01-01T00:00:00Z',
         relativeChange24h: 0,
         value: 1,
       },

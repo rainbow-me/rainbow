@@ -21,10 +21,11 @@ import { Box } from '@/design-system';
 import { clearCustomGasSettings } from '@/features/gas/hooks/useCustomGas';
 import { ChainId } from '@/features/network/types/backendNetworks';
 import { useDelayedMount } from '@/hooks/useDelayedMount';
-import { userAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { userAssetsActions } from '@/state/assets/userAssets';
+import { userAssetsSearchActions } from '@/state/assets/userAssetsSearch';
 import { useSponsoredSwapStore } from '@/state/swaps/sponsoredSwapStore';
 import { useSwapsStore } from '@/state/swaps/swapsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
 
 import { ReviewButton } from './components/ReviewButton';
@@ -101,7 +102,7 @@ const useCleanupOnUnmount = () => {
   useEffect(() => {
     return () => {
       const preferredChainId = useSwapsStore.getState().preferredNetwork;
-      const defaultInputAsset = userAssetsStore.getState().getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
+      const defaultInputAsset = userAssetsActions.getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId });
 
       useSwapsStore.setState(state => {
         const didInputAssetChange = state.inputAsset?.uniqueId !== defaultInputAsset?.uniqueId;
@@ -117,9 +118,7 @@ const useCleanupOnUnmount = () => {
       });
 
       useSwapsSearchStore.setState(state => (state.searchQuery.length ? { searchQuery: '' } : state));
-      userAssetsStore.setState(state =>
-        state.filter === 'all' && !state.inputSearchQuery.length ? state : { filter: 'all', inputSearchQuery: '' }
-      );
+      userAssetsSearchActions.reset();
       useSponsoredSwapStore.setState({ queryCache: {} });
 
       clearCustomGasSettings();
@@ -129,17 +128,16 @@ const useCleanupOnUnmount = () => {
 
 const WalletAddressObserver = () => {
   const { hasEnoughFundsForGas, setAsset } = useSwapContext();
-  const accountAddress = userAssetsStoreManager(state => state.address);
+  const accountAddress = useWalletsStore(state => state.accountAddress);
   const lastAccountAddress = useRef(accountAddress);
 
   const setNewInputAsset = useCallback(() => {
-    const { filter, getHighestValueAsset } = userAssetsStore.getState();
     const preferredChainId = useSwapsStore.getState().preferredNetwork;
 
-    if (filter !== 'all') userAssetsStore.setState({ filter: 'all' });
+    userAssetsSearchActions.setChainFilter(undefined);
 
     setAsset({
-      asset: getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
+      asset: userAssetsActions.getHighestValueAsset({ nativeAsset: 'preferred', preferredChainId }),
       didWalletChange: true,
       type: SwapAssetType.inputAsset,
     });

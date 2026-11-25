@@ -173,7 +173,6 @@ export const event = {
   positionsOpenedSheet: 'Opened position Sheet',
   positionsOpenedExternalDapp: 'Viewed external dapp',
   positionsOpenedAsset: 'Opened asset from position',
-  positionsError: 'positions.error',
 
   appIconUnlockSheetViewed: 'app_icon_unlock_sheet.viewed',
   appIconUnlockSheetCTAPressed: 'app_icon_unlock_sheet.cta_pressed',
@@ -702,10 +701,6 @@ export type EventProperties = {
     positionsValue: string;
     positionsCurrency: string;
   };
-  [event.positionsError]:
-    | { kind: 'price_not_found'; tokenAddress: string; chainId: number }
-    | { kind: 'skipped_portfolio_item'; itemName: string; protocol: string }
-    | { kind: 'unknown'; errorMessage: string };
 
   [event.appIconUnlockSheetViewed]: {
     appIcon: UnlockableAppIconKey;

@@ -1,7 +1,7 @@
 import { type OptionallyPersistedStore, type QueryStoreState } from '@storesjs/stores';
 import { type Address, type Prettify } from 'viem';
 
-import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type AddressOrEth, type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import type { ParsedAddressAsset } from '@/entities/tokens';
 import type { SupportedCurrencyKey } from '@/features/currency/supportedCurrencies';
 import { type ChainId } from '@/features/network/types/backendNetworks';
@@ -9,29 +9,14 @@ import { type ChainId } from '@/features/network/types/backendNetworks';
 import { type LiveTokensData } from '../liveTokens/types';
 import { type UserAssetsStateToPersist } from './persistence';
 
-export type UserAssetsStoreType = OptionallyPersistedStore<
-  QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>,
-  UserAssetsStateToPersist
->;
+export type QueryEnabledUserAssetsState = QueryStoreState<FetchedUserAssetsData, UserAssetsParams, UserAssetsState>;
+export type UserAssetsStoreType = OptionallyPersistedStore<QueryEnabledUserAssetsState, UserAssetsStateToPersist>;
 
-export type UserAssetsRouter = UserAssetsStoreType & {
-  getState(address?: Address | string): QueryEnabledUserAssetsState;
-  setState(
-    partial:
-      | QueryEnabledUserAssetsState
-      | Partial<QueryEnabledUserAssetsState>
-      | ((state: QueryEnabledUserAssetsState) => QueryEnabledUserAssetsState | Partial<QueryEnabledUserAssetsState>),
-    replace?: boolean,
-    address?: Address | string
-  ): void;
-};
-
-export type FetchedUserAssetsData = {
-  chainIdsWithErrors: ChainId[] | null;
-  userAssets: UserAsset[] | null;
-} | null;
+export type FetchedUserAssetsData = UserAsset[] | null;
 
 export type HighestValueAssetOptions = {
+  /** Excludes the token with this ID before applying native asset and chain preferences. */
+  excludeAssetId?: UniqueId;
   /** Restricts search to native assets or prefers native assets when available. */
   nativeAsset?: 'preferred' | 'required';
   /** Chain to prioritize, if assets are available on the specified chain. */
@@ -39,113 +24,75 @@ export type HighestValueAssetOptions = {
 };
 
 export type UserAssetsParams = {
-  address: Address | string;
+  address: Address;
   currency: SupportedCurrencyKey;
   testnetMode: boolean;
 };
 
-export type QueryEnabledUserAssetsState = ReturnType<UserAssetsStoreType['getState']>;
-
 export interface UserAssetsState {
-  address: Address | string;
+  address: Address;
   chainBalances: Map<ChainId, number>;
-  currentAbortController: AbortController;
-  filter: UserAssetFilter;
   hiddenAssets: Set<UniqueId>;
-  hiddenAssetsBalance: string | null;
-  idsByChain: Map<UserAssetFilter, UniqueId[]>;
-  inputSearchQuery: string;
-  legacyUserAssets: ParsedAddressAsset[];
-  searchCache: Map<string, UniqueId[]>;
+  /** Complete asset holdings in balance order, including tokens represented by positions. */
   userAssets: Map<UniqueId, ParsedSearchAsset>;
   getBalanceSortedChainList: () => ChainId[];
   getChainsWithBalance: () => ChainId[];
-  getFilteredUserAssetIds: () => UniqueId[];
   getHiddenAssetsIds: () => UniqueId[];
   getHighestValueAsset: (options?: Prettify<HighestValueAssetOptions>) => ParsedSearchAsset | null;
   getLegacyUserAsset: (uniqueId: UniqueId) => ParsedAddressAsset | null;
   getNativeAssetForChain: (chainId: ChainId) => ParsedSearchAsset | null;
-  getTotalBalance: () => number;
   getUserAsset: (uniqueId: UniqueId) => ParsedSearchAsset | null;
   getUserAssets: () => ParsedSearchAsset[];
-  selectUserAssetIds: (selector: (asset: ParsedSearchAsset) => boolean, filter?: UserAssetFilter) => Generator<UniqueId, void, unknown>;
-  selectUserAssets: (selector: (asset: ParsedSearchAsset) => boolean) => Generator<[UniqueId, ParsedSearchAsset], void, unknown>;
+  isHidden: (uniqueId: UniqueId) => boolean;
+  isInitialLoad: () => boolean;
+  /** Lazily updates fallback prices without notifying store subscribers. */
+  mutatePrices: (tokens: LiveTokensData) => void;
   setHiddenAssets: (uniqueIds: UniqueId[]) => void;
-  setSearchCache: (queryKey: string, filteredIds: UniqueId[]) => void;
-  setSearchQuery: (query: string) => void;
-  updateTokens: (tokens: LiveTokensData) => void;
-  reprocessAssetsData: () => void;
+  /** Replaces asset holdings on the specified chains, or all holdings when chains are omitted. */
+  updateAssets: (userAssets: UserAsset[], chainIdsToUpdate?: ChainId[]) => void;
 }
 
 export type Asset = {
-  address: string;
-  chainId: number;
-  name: string;
-  symbol: string;
-  decimals: number;
-  type: string;
+  address: AddressOrEth;
+  chainId: ChainId;
+  name?: string;
+  symbol?: string;
+  decimals?: number;
+  type?: string;
   iconUrl?: string;
-  network: string;
-  verified: boolean;
-  transferable: boolean;
-  probableSpam?: boolean;
+  network?: string;
+  mainnetAddress?: AddressOrEth;
+  verified?: boolean;
+  transferable?: boolean;
   creationDate?: string;
   colors: {
-    primary: string;
+    primary?: string;
     fallback?: string;
   };
   price: {
-    value: number;
-    changedAt: number;
-    relativeChange24h: number;
+    value?: number;
+    /** RFC3339 timestamp of the last price update, when known. */
+    changedAt?: string;
+    relativeChange24h?: number;
   };
-  networks?: Record<
-    string,
-    {
-      address: string;
-      decimals: number;
-    }
-  >;
-  bridging: {
-    bridgeable: boolean;
-    networks: Record<
-      string,
-      {
-        bridgeable: boolean;
-      }
-    >;
-  };
-};
-
-// same structre as ParsedAsset & ParsedUserAsset
-export type EnrichedAsset = Asset & {
-  balance: {
-    amount: string;
-    display: string;
-  };
-  native: {
-    balance: {
-      amount: string;
-      display: string;
+  networks?: {
+    [chainId in ChainId]?: {
+      address: chainId extends ChainId.mainnet ? AddressOrEth : Address;
+      decimals?: number;
     };
-    price?: {
-      change: string;
-      amount: number;
-      display: string;
-    };
+  };
+  bridging?: {
+    bridgeable?: boolean;
+    networks?: { [chainId in ChainId]?: { bridgeable?: boolean } };
   };
 };
 
 export type UserAsset = {
   asset: Asset;
   quantity: string;
-  updatedAt: string;
+  updatedAt?: string;
   value: string;
   smallBalance?: boolean;
-};
-
-export type EnrichedUserAsset = UserAsset & {
-  asset: EnrichedAsset;
 };
 
 export type GetAssetsResponse = {
@@ -153,10 +100,9 @@ export type GetAssetsResponse = {
     requestTime: string;
     responseTime: string;
     requestId: string;
-    currency: string;
+    currency?: SupportedCurrencyKey;
     success: boolean;
-    chainIdsWithErrors?: ChainId[];
   };
   result?: Record<string, UserAsset>;
-  errors: { chainId: ChainId; error: string }[];
+  errors?: { code?: string; message?: string; details?: Record<string, string> }[];
 };

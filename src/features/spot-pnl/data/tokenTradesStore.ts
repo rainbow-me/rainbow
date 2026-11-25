@@ -10,7 +10,7 @@ import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { postCodex } from '@/resources/platform/codex';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
-import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 import { type WalletTokenTrades } from '../core/spotPnl';
 import { usePnlEligibleToken } from './pnlEligibleTokenStore';
@@ -91,7 +91,7 @@ export const useTokenTradesStore = createTokenTradesStore({
   // Gated on the flags alone: an ineligible token leaves `codexTokenId` null, which fetches nothing
   enabled: $ => $(useSpotPnlEnabledStore),
   params: {
-    walletAddress: $ => $(userAssetsStoreManager).address,
+    walletAddress: $ => $(useWalletsStore).accountAddress,
     codexTokenId: $ => $(usePnlEligibleToken, token => token?.codexTokenId ?? null),
     heldBalance: $ => $(useViewedTokenBalance),
   },

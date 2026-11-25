@@ -28,7 +28,7 @@ export type SearchAsset = {
   isRainbowCurated: boolean;
   isNativeAsset?: boolean;
   isVerified: boolean;
-  mainnetAddress: AddressOrEth;
+  mainnetAddress?: AddressOrEth;
   market?: Market;
   name: string;
   networks: {

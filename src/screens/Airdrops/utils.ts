@@ -23,7 +23,7 @@ import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { isStaging } from '@/resources/addys/client';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { getNextNonce } from '@/state/nonces';
 import { addNewTransaction } from '@/state/pendingTransactions/addNewTransaction';
 import ethereumUtils from '@/utils/ethereumUtils';
@@ -214,7 +214,7 @@ export async function getGasInfo({
   const chainNativeAsset = useBackendNetworksStore.getState().getChainsNativeAsset()[chainId];
   const gasFeeWei = calculateMaxGasFeeWorklet(gasSettings, gasLimit);
   const gasFeeNativeToken = formatUnits(safeBigInt(gasFeeWei), chainNativeAsset.decimals);
-  const userNativeAsset = userAssetsStore.getState().getNativeAssetForChain(chainId);
+  const userNativeAsset = userAssetsActions.getNativeAssetForChain(chainId);
   const nativeAssetBalance = userNativeAsset?.balance?.amount || '0';
   const nativeAssetPrice = (userNativeAsset?.price?.value || ethereumUtils.getPriceOfNativeAssetForNetwork({ chainId })).toString();
 

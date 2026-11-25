@@ -13,7 +13,7 @@ import {
   RNBW_TOKEN_UNIQUE_ID,
 } from '@/features/rnbw-staking/constants';
 import { convertAmountToBalanceDisplay } from '@/helpers/utilities';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 
 type SyntheticRnbwSourceStaticConfig = Pick<
@@ -70,7 +70,7 @@ export const RNBW_SYNTHETIC_SOURCE_STATIC_CONFIG: SyntheticRnbwSourceStaticConfi
 export function buildSyntheticRnbwSourceAsset({
   includeRewardsBalance = false,
 }: { includeRewardsBalance?: boolean } = {}): ExtendedAnimatedAssetWithColors | null {
-  const walletAsset = useUserAssetsStore.getState().getUserAsset(RNBW_TOKEN_UNIQUE_ID) ?? null;
+  const walletAsset = userAssetsActions.getUserAsset(RNBW_TOKEN_UNIQUE_ID) ?? null;
   const rewardsData = includeRewardsBalance ? useRewardsBalanceStore.getState().getData() : null;
   const unitPrice = snapshotUnitPrice(rewardsData, walletAsset);
 

@@ -4,54 +4,62 @@ import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDi
 import { useHyperliquidBalance } from '@/features/perps/stores/derived/useHyperliquidBalance';
 import { usePolymarketAccountValueSummary } from '@/features/polymarket/stores/derived/usePolymarketAccountValueSummary';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
+import { useWalletAssetsStore } from '@/features/wallet/data/walletAssetsStore';
 import { add, greaterThan, multiply, subtract } from '@/helpers/utilities';
+import type { UserAssetsState } from '@/state/assets/types';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { useLiveTokensStore } from '@/state/liveTokens/liveTokensStore';
-import { deepEqual } from '@/worklets/comparisons';
+import type { LiveTokensData } from '@/state/liveTokens/types';
+import { isTrustedLiveToken } from '@/state/liveTokens/utils';
 
 export const useLiveWalletBalance = createDerivedStore(
   $ => {
-    const liveTokens = $(useLiveTokensStore, state => state.tokens);
-    const initialBalance = $(useUserAssetsStore, state => state.getTotalBalance());
-    const userAssets = $(useUserAssetsStore, state => state.userAssets);
-    const isFetching = $(useUserAssetsStore, state => state.status === 'loading');
-    const nativeCurrency = $(userAssetsStoreManager, state => state.currency);
+    const liveTokens = $(useLiveTokensStore, s => s.tokens);
+    const initialBalance = $(useWalletAssetsStore, s => s.balance);
+    const userAssets = $(useWalletAssetsStore, s => s.assets);
+    const isInitialLoad = $(useUserAssetsStore, s => s.isInitialLoad());
+    const hiddenAssets = $(useUserAssetsStore, s => s.hiddenAssets);
+    const nativeCurrency = $(userAssetsStoreManager, s => s.currency);
 
     const perpsBalanceNative = $(useHyperliquidBalance);
-    const claimablesBalance = $(useClaimablesStore, state => state.getBalance());
-    const positionsBalance = $(usePositionsStore, state => state.getBalance());
-    const polymarketAccountValue = $(usePolymarketAccountValueSummary, state => state.totalValueNative);
+    const claimablesBalance = $(useClaimablesStore, s => s.getBalance());
+    const positionsBalance = $(usePositionsStore, s => s.getBalance());
+    const polymarketAccountValue = $(usePolymarketAccountValueSummary, s => s.totalValueNative);
 
-    let valueDifference = '0';
-    if (liveTokens) {
-      for (const [tokenId, token] of Object.entries(liveTokens)) {
-        if (!token) continue;
-        const userAsset = userAssets.get(tokenId);
-        const canUseLivePrice = token.reliability.status === 'PRICE_RELIABILITY_STATUS_TRUSTED';
+    if (!initialBalance && isInitialLoad) return null;
 
-        if (userAsset && canUseLivePrice) {
-          // override the asset’s price with the live token price
-          let liveAssetBalance = multiply(token.price, userAsset.balance.amount);
-
-          if (greaterThan(liveAssetBalance, token.reliability.metadata.liquidityCap)) {
-            liveAssetBalance = token.reliability.metadata.liquidityCap;
-          }
-
-          const assetBalanceDifference = subtract(liveAssetBalance, userAsset.native.balance.amount);
-          valueDifference = add(valueDifference, assetBalanceDifference);
-        }
-      }
-    }
-
-    const liveAssetBalance = initialBalance ? add(initialBalance, valueDifference) : '0';
+    const liveAssetBalance = initialBalance ? add(initialBalance, calculateDifference(liveTokens, userAssets, hiddenAssets)) : '0';
     const otherBalances = add(add(add(positionsBalance, claimablesBalance), perpsBalanceNative), polymarketAccountValue);
     const totalBalanceAmount = add(liveAssetBalance, otherBalances);
-    const isLoading = initialBalance === 0 && isFetching;
 
-    return isLoading ? null : convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
+    return convertAmountToNativeDisplay(totalBalanceAmount, nativeCurrency);
   },
 
-  { debounce: 250, equalityFn: deepEqual, lockDependencies: true }
+  { debounce: 250, lockDependencies: true }
 );
+
+function calculateDifference(
+  liveTokens: LiveTokensData,
+  userAssets: UserAssetsState['userAssets'],
+  hiddenAssets: UserAssetsState['hiddenAssets']
+): string {
+  let valueDifference = '0';
+
+  for (const tokenId in liveTokens) {
+    const asset = userAssets.get(tokenId);
+    if (!asset || hiddenAssets.has(tokenId)) continue;
+
+    const token = liveTokens[tokenId];
+    if (!isTrustedLiveToken(token)) continue;
+
+    const liquidityCap = token.reliability.metadata.liquidityCap;
+    let liveBalance = multiply(token.price, asset.balance.amount);
+    if (greaterThan(liveBalance, liquidityCap)) liveBalance = liquidityCap;
+
+    valueDifference = add(valueDifference, subtract(liveBalance, asset.native.balance.amount));
+  }
+
+  return valueDifference;
+}

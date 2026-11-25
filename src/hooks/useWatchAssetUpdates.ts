@@ -13,9 +13,9 @@ import { logger, RainbowError } from '@/logger';
 import { invalidateAddressNftsQueries } from '@/resources/nfts';
 import { getPlatformClient } from '@/resources/platform/client';
 import { type GetAssetsResponse, type UserAsset } from '@/state/assets/types';
-import { userAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { filterZeroBalanceAssets, setUserAssets } from '@/state/assets/utils';
+import { filterZeroBalanceAssets } from '@/state/assets/utils';
 import { useAssetUpdatesStore, type AssetUpdateTransaction, type WatchedAssetUpdateTransaction } from '@/state/assetUpdates/assetUpdates';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { staleBalancesStore, type StaleBalancesByChainId } from '@/state/staleBalances';
@@ -177,7 +177,7 @@ export async function watchAssetUpdates({
     }
 
     await Promise.all([
-      ...(timedOutHashes.length ? [userAssetsStore.getState(address).fetch(undefined, { force: true })] : []),
+      ...(timedOutHashes.length ? [useUserAssetsStore.getState(address).fetch(undefined, { force: true })] : []),
       refetchOtherAssets({ address }),
     ]);
   } catch (e) {
@@ -203,18 +203,8 @@ function updateUserAssets({
   newAssets: Record<string, UserAsset>;
   chainIds: number[];
 }) {
-  const userAssets = filterZeroBalanceAssets(Object.values(newAssets)).sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
-  const positionTokenAddresses = usePositionsStore.getState().getTokenAddresses();
-
-  userAssetsStore.setState(state =>
-    setUserAssets({
-      address,
-      state,
-      userAssets,
-      positionTokenAddresses,
-      chainIdsToUpdate: chainIds,
-    })
-  );
+  const userAssets = filterZeroBalanceAssets(Object.values(newAssets));
+  useUserAssetsStore.getState(address).updateAssets(userAssets, chainIds);
 }
 
 function readFetchedRawQuantity(assetId: string, newAssets: Record<string, UserAsset>) {

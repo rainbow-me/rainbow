@@ -14,7 +14,7 @@ function setStoreData(data: RainbowPositions): void {
   store.queryCache[store.queryKey] = {
     data,
     lastFetchedAt: Date.now(),
-    cacheTime: 0,
+    cacheTime: 60_000,
     errorInfo: null,
   };
 }
@@ -40,7 +40,7 @@ describe('positionsStore Integration Tests', () => {
       const result = await fetchPositions(params, null);
 
       expect(result).toEqual(FIXTURE_LIST_POSITIONS_SUCCESS);
-      expect(result.result?.positions).toHaveLength(60);
+      expect(result?.result?.positions).toHaveLength(60);
     });
   });
 

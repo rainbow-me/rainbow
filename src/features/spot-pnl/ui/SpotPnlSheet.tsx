@@ -29,7 +29,7 @@ import { useExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { getCodexTokenId } from '@/resources/platform/codex';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useAccountProfileInfo } from '@/state/wallets/walletsStore';
+import { useAccountProfileInfo, useWalletsStore } from '@/state/wallets/walletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import isLowerCaseMatch from '@/utils/isLowerCaseMatch';
 
@@ -69,7 +69,7 @@ export const SpotPnlSheet = memo(function SpotPnlSheet() {
   const {
     params: { address, chainId, ensName, entryPoint, trades, walletAddress: routeWalletAddress },
   } = useRoute<typeof Routes.SPOT_PNL_SHEET>();
-  const selectedWalletAddress = userAssetsStoreManager(state => state.address);
+  const selectedWalletAddress = useWalletsStore(state => state.accountAddress);
   const walletAddress = routeWalletAddress ?? selectedWalletAddress;
   // Codex returns lowercased addresses, so a Top Holders row for the selected wallet differs in case
   const isSelectedWallet = !!walletAddress && isLowerCaseMatch(walletAddress, selectedWalletAddress ?? undefined);

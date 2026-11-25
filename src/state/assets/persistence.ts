@@ -1,95 +1,64 @@
 import { type StorageValue } from '@storesjs/stores';
 
-import { type ParsedSearchAsset, type UniqueId, type UserAssetFilter } from '@/__swaps__/types/assets';
+import { type ParsedSearchAsset, type UniqueId } from '@/__swaps__/types/assets';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { logger, RainbowError } from '@/logger';
 
-import { type UserAssetsState } from './types';
+import { type QueryEnabledUserAssetsState, type UserAssetsState } from './types';
 
-export type UserAssetsStateToPersist = Pick<
-  Partial<UserAssetsState>,
-  'chainBalances' | 'filter' | 'hiddenAssets' | 'idsByChain' | 'legacyUserAssets' | 'userAssets'
->;
+export type UserAssetsStateToPersist = Pick<UserAssetsState, 'chainBalances' | 'hiddenAssets' | 'userAssets'>;
 
-type PersistedUserAssetsState = Pick<UserAssetsStateToPersist, 'filter' | 'legacyUserAssets'> & {
-  chainBalances: Array<[ChainId, number]>; // Map
-  hiddenAssets: UniqueId[]; // Set
-  idsByChain: Array<[UserAssetFilter, UniqueId[]]>; // Map
-  userAssets: Array<[UniqueId, ParsedSearchAsset]>; // Map
-};
+type PersistedQueryState = Pick<QueryEnabledUserAssetsState, 'error' | 'lastFetchedAt' | 'queryCache' | 'queryKey' | 'status'>;
 
+type PersistedUserAssetsState = {
+  chainBalances: Array<[ChainId, number]>;
+  hiddenAssets: UniqueId[];
+  userAssets: Array<[UniqueId, ParsedSearchAsset]>;
+} & PersistedQueryState;
+
+/**
+ * Serializes map and set fields as arrays.
+ */
 export function serializeUserAssetsState({ state, version }: StorageValue<UserAssetsStateToPersist>): string {
   try {
-    const transformedStateToPersist: PersistedUserAssetsState = {
-      ...state,
-      chainBalances: state.chainBalances ? Array.from(state.chainBalances.entries()) : [],
-      idsByChain: state.idsByChain ? Array.from(state.idsByChain.entries()) : [],
-      userAssets: state.userAssets ? Array.from(state.userAssets.entries()) : [],
-      hiddenAssets: state.hiddenAssets ? Array.from(state.hiddenAssets.values()) : [],
-    };
-    return JSON.stringify({ state: transformedStateToPersist, version });
+    return JSON.stringify({
+      state: {
+        ...state,
+        chainBalances: Array.from(state.chainBalances),
+        hiddenAssets: Array.from(state.hiddenAssets),
+        userAssets: Array.from(state.userAssets),
+      },
+      version,
+    });
   } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to serialize state for user assets storage`), { error });
+    logger.error(new RainbowError('[userAssetsStore]: Failed to serialize user assets'), { error });
     throw error;
   }
 }
 
-export function deserializeUserAssetsState<SerializedState>(serializedState: SerializedState): StorageValue<UserAssetsStateToPersist> {
-  let parsedState: { state: PersistedUserAssetsState; version: number };
+/**
+ * Restores map and set fields from their persisted arrays.
+ */
+export function deserializeUserAssetsState(serializedState: unknown): StorageValue<UserAssetsStateToPersist & PersistedQueryState> {
+  let parsed: StorageValue<PersistedUserAssetsState>;
+
   try {
-    if (typeof serializedState !== 'string') throw new Error(`Expected string serialized state`);
-    parsedState = JSON.parse(serializedState);
+    if (typeof serializedState === 'string') parsed = JSON.parse(serializedState);
+    else throw new Error('Expected string serialized state');
   } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to parse serialized state from user assets storage`), { error });
+    logger.error(new RainbowError('[userAssetsStore]: Failed to parse serialized user assets'), { error });
     throw error;
   }
 
-  const { state, version } = parsedState;
-
-  let chainBalances = new Map<ChainId, number>();
-  try {
-    if (state.chainBalances) {
-      chainBalances = new Map(state.chainBalances);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert chainBalances from user assets storage`), { error });
-  }
-
-  let idsByChain = new Map<UserAssetFilter, UniqueId[]>();
-  try {
-    if (state.idsByChain) {
-      idsByChain = new Map(state.idsByChain);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert idsByChain from user assets storage`), { error });
-  }
-
-  let userAssetsData: Map<UniqueId, ParsedSearchAsset> = new Map();
-  try {
-    if (state.userAssets.length) {
-      userAssetsData = new Map(state.userAssets);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert userAssets from user assets storage`), { error });
-  }
-
-  let hiddenAssets = new Set<UniqueId>();
-  try {
-    if (state.hiddenAssets) {
-      hiddenAssets = new Set(state.hiddenAssets);
-    }
-  } catch (error) {
-    logger.error(new RainbowError(`[userAssetsStore]: Failed to convert hiddenAssets from user assets storage`), { error });
-  }
+  const { state, version } = parsed;
 
   return {
     state: {
       ...state,
-      chainBalances,
-      hiddenAssets,
-      idsByChain,
-      userAssets: userAssetsData,
-    } satisfies UserAssetsStateToPersist,
+      chainBalances: new Map(state.chainBalances),
+      hiddenAssets: new Set(state.hiddenAssets),
+      userAssets: new Map(state.userAssets),
+    },
     version,
   };
 }

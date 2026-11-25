@@ -21,6 +21,7 @@ import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { useUserAssetSearchResults } from '@/state/assets/userAssetsSearch';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
 import { DEVICE_WIDTH } from '@/utils/deviceUtils';
 import safeAreaInsetValues from '@/utils/safeAreaInsetValues';
@@ -139,7 +140,7 @@ function DepositTokenListCore({ inputProgress, onSelectToken }: DepositTokenList
   const accountAddress = useAccountAddress();
   const { depositActions, useDepositStore } = useDepositContext();
   const selectedChainId = useDepositStore(state => state.listChainId);
-  const userAssetIds = useUserAssetsStore(state => state.getFilteredUserAssetIds());
+  const userAssetIds = useUserAssetSearchResults();
   const userAssets = useUserAssetsStore(state => state.userAssets);
 
   const searchResults = useMemo(() => {

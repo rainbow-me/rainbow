@@ -11,7 +11,7 @@ import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { time } from '@/framework/core/utils/time';
 import { logger, RainbowError } from '@/logger';
 import { createQueryKey, queryClient } from '@/react-query';
-import { useUserAssetsStore } from '@/state/assets/userAssets';
+import { userAssetsActions } from '@/state/assets/userAssets';
 import { useClaimablesStore } from '@/state/claimables/claimables';
 import { NFTS_PAGE_SIZE } from '@/state/nfts/constants';
 import { useNftsStore } from '@/state/nfts/nfts';
@@ -35,7 +35,7 @@ export const refreshAccountData = async () => {
     delay(MIN_REFRESH_DURATION),
     refreshWalletInfo({ addresses: [accountAddress] }),
     hyperliquidAccountActions.fetch(undefined, { force: true }),
-    useUserAssetsStore.getState().fetch(undefined, { staleTime: 0 }),
+    userAssetsActions.fetch(undefined, { staleTime: 0 }),
     usePolymarketPositionsStore.getState().fetch(undefined, { staleTime: time.seconds(2) }),
     usePolymarketBalanceStore.getState().fetch(undefined, { staleTime: 0 }),
     useBackendNetworksStore.getState().fetch(undefined, { staleTime: time.seconds(30) }),
