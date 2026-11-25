@@ -8,10 +8,6 @@ export enum AddressMenuAction {
   Settings = 'settings',
 }
 
-export type AddressMenuActionData = {
-  address: string;
-};
-
 export type AddressItem = {
   id: EthereumAddress;
   address: EthereumAddress;
@@ -26,3 +22,5 @@ export type AddressItem = {
   balance: string;
   image: string | null | undefined;
 };
+
+export type AddressMenuActionData = Pick<AddressItem, 'address' | 'walletId'>;

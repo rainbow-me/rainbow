@@ -22,7 +22,7 @@ import { removeFirstEmojiFromString } from '@/helpers/emojiHandler';
 import * as i18n from '@/languages';
 import { AddressAvatar } from '@/screens/change-wallet/components/AddressAvatar';
 import { SelectedAddressBadge } from '@/screens/change-wallet/components/SelectedAddressBadge';
-import { AddressMenuAction, type AddressItem } from '@/screens/change-wallet/model';
+import { AddressMenuAction, type AddressItem, type AddressMenuActionData } from '@/screens/change-wallet/model';
 import { usePinnedWalletsStore } from '@/state/wallets/pinnedWalletsStore';
 import { useTheme } from '@/theme/ThemeContext';
 import { useDelegationDisabled, useDelegations } from '@rainbow-me/sdk';
@@ -77,7 +77,7 @@ export const AddressRowButton = ({
 };
 interface AddressRowProps {
   menuItems: MenuItem<AddressMenuAction>[];
-  onPressMenuItem: (actionKey: AddressMenuAction, data: { address: string }) => void;
+  onPressMenuItem: (actionKey: AddressMenuAction, data: AddressMenuActionData) => void;
   data: AddressItem;
   editMode: boolean;
   isSelected: boolean;
@@ -131,7 +131,7 @@ export function AddressRow({ data, editMode, isSelected, onPress, menuItems, onP
         <DropdownMenu<AddressMenuAction>
           triggerAction="longPress"
           menuConfig={menuConfig}
-          onPressMenuItem={action => onPressMenuItem(action, { address })}
+          onPressMenuItem={action => onPressMenuItem(action, data)}
         >
           <ButtonPressAnimation scaleTo={0.96} onPress={onPress}>
             {children}
@@ -239,7 +239,7 @@ export function AddressRow({ data, editMode, isSelected, onPress, menuItems, onP
             {editMode && (
               <>
                 <AddressRowButton onPress={() => pinWallet(address)} color={colors.appleBlue} icon="􀎧" size="icon 12px" />
-                <DropdownMenu<AddressMenuAction> menuConfig={menuConfig} onPressMenuItem={action => onPressMenuItem(action, { address })}>
+                <DropdownMenu<AddressMenuAction> menuConfig={menuConfig} onPressMenuItem={action => onPressMenuItem(action, data)}>
                   <AddressRowButton icon="􀍠" size="icon 12px" />
                 </DropdownMenu>
               </>

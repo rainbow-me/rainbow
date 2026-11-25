@@ -16,10 +16,8 @@ import { Panel, PANEL_WIDTH } from '@/components/SmoothPager/ListPanel';
 import { TapToDismiss } from '@/components/TapToDismiss';
 import { FeatureHintTooltip, type TooltipRef } from '@/components/tooltips/FeatureHintTooltip';
 import { Box, globalColors, HitSlop, Inline, Text } from '@/design-system';
-import type { EthereumAddress } from '@/entities/wallet';
 import { NOTIFICATIONS } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
-import { type RainbowWallet } from '@/features/wallet/types';
 import { showActionSheetWithOptions } from '@/framework/ui/utils/actionsheet';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
 import WalletTypes from '@/helpers/walletTypes';
@@ -81,18 +79,6 @@ export function ChangeWalletSheet() {
       usePinnedWalletsStore.setState({ hasShownEditHintTooltip: true });
     }
   }, [initialHasShownEditHintTooltip]);
-
-  const walletsByAddress = useMemo(() => {
-    return Object.values(wallets || {}).reduce(
-      (acc, wallet) => {
-        (wallet.addresses || []).forEach(account => {
-          acc[account.address] = wallet;
-        });
-        return acc;
-      },
-      {} as Record<EthereumAddress, RainbowWallet>
-    );
-  }, [wallets]);
 
   const allWalletItems = useMemo(() => {
     const sortedWallets: AddressItem[] = [];
@@ -290,24 +276,15 @@ export function ChangeWalletSheet() {
   }, []);
 
   const onPressWalletSettings = useCallback(
-    (address: string) => {
-      const wallet = walletsByAddress[address];
-
-      if (!wallet) {
-        logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing wallet settings'), {
-          address,
-        });
-        return;
-      }
-
+    (walletId: string) => {
       navigate(Routes.SETTINGS_SHEET, {
         params: {
-          walletId: wallet.id,
+          walletId,
         },
         screen: SettingsPages.backup.key,
       });
     },
-    [navigate, walletsByAddress]
+    [navigate]
   );
 
   const onPressAddAnotherWallet = useCallback(() => {
@@ -330,17 +307,10 @@ export function ChangeWalletSheet() {
   }, [featureHintTooltipRef]);
 
   const onPressAccount = useCallback(
-    (address: string) => {
-      const wallet = walletsByAddress[address];
-      if (!wallet) {
-        logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing account'), {
-          address,
-        });
-        return;
-      }
-      onChangeAccount(wallet.id, address as Address);
+    (item: AddressItem) => {
+      void onChangeAccount(item.walletId, ensureValidHex(item.address));
     },
-    [onChangeAccount, walletsByAddress]
+    [onChangeAccount]
   );
 
   const addressMenuConfig = useMemo<MenuConfig<AddressMenuAction>>(() => {
@@ -398,8 +368,8 @@ export function ChangeWalletSheet() {
   }, [notificationsEnabled]);
 
   const onPressMenuItem = useCallback(
-    (actionKey: AddressMenuAction, { address }: AddressMenuActionData) => {
-      const wallet = walletsByAddress[address];
+    (actionKey: AddressMenuAction, { address, walletId }: AddressMenuActionData) => {
+      const wallet = wallets[walletId];
       if (!wallet) {
         logger.error(new RainbowError('[ChangeWalletSheet]: No wallet for address found when pressing menu item'), {
           actionKey,
@@ -417,14 +387,14 @@ export function ChangeWalletSheet() {
           onPressRemove(wallet.id, address);
           break;
         case AddressMenuAction.Settings:
-          onPressWalletSettings(address);
+          onPressWalletSettings(wallet.id);
           break;
         case AddressMenuAction.Copy:
           onPressCopyAddress(address);
           break;
       }
     },
-    [walletsByAddress, onPressEdit, onPressNotifications, onPressRemove, onPressCopyAddress, onPressWalletSettings]
+    [wallets, onPressEdit, onPressNotifications, onPressRemove, onPressCopyAddress, onPressWalletSettings]
   );
 
   const navigation = useNavigation();

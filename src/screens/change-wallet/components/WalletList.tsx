@@ -13,7 +13,6 @@ import { DndProvider } from '@/components/drag-and-drop/DndProvider';
 import type { UniqueIdentifier } from '@/components/drag-and-drop/types/common';
 import { type MenuItem } from '@/components/DropdownMenu';
 import { Box, Separator, Text } from '@/design-system';
-import { type EthereumAddress } from '@/entities/wallet';
 import styled from '@/framework/ui/styled-thing';
 import { useStableValue } from '@/hooks/useStableValue';
 import * as i18n from '@/languages';
@@ -43,7 +42,7 @@ interface Props {
   editMode: boolean;
   menuItems: MenuItem<AddressMenuAction>[];
   onPressMenuItem: (actionKey: AddressMenuAction, data: AddressMenuActionData) => void;
-  onPressAccount: (address: EthereumAddress) => void;
+  onPressAccount: (item: AddressItem) => void;
 }
 
 export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAccount, editMode }: Props) {
@@ -173,7 +172,7 @@ export function WalletList({ walletItems, menuItems, onPressMenuItem, onPressAcc
                     data={item}
                     editMode={editMode}
                     isSelected={selectedWallet ? selectedWallet === item.address : item.isSelected}
-                    onPress={() => onPressAccount(item.address)}
+                    onPress={() => onPressAccount(item)}
                   />
                 </Draggable>
               ))}

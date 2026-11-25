@@ -59,7 +59,7 @@ const AVATAR_GAP = {
 
 type PinnedWalletsGridProps = {
   walletItems: AddressItem[];
-  onPress: (address: string) => void;
+  onPress: (item: AddressItem) => void;
   menuItems: MenuItem<AddressMenuAction>[];
   onPressMenuItem: (actionKey: AddressMenuAction, data: AddressMenuActionData) => void;
   editMode: boolean;
@@ -142,9 +142,9 @@ export function PinnedWalletsGrid({ walletItems, onPress, editMode, menuItems, o
                       menuItems: filteredMenuItems,
                       menuTitle: walletName,
                     }}
-                    onPressMenuItem={action => onPressMenuItem(action, { address: account.address })}
+                    onPressMenuItem={action => onPressMenuItem(action, account)}
                   >
-                    <ButtonPressAnimation scaleTo={0.86} onPress={() => onPress(account.address)}>
+                    <ButtonPressAnimation scaleTo={0.86} onPress={() => onPress(account)}>
                       {children}
                     </ButtonPressAnimation>
                   </DropdownMenu>
