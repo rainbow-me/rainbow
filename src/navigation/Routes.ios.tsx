@@ -74,6 +74,7 @@ import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { CheckIdentifierScreen } from '@/screens/CheckIdentifierScreen';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { AssetTypeInfoSheet } from '@/screens/expandedAssetSheet/AssetTypeInfoSheet';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import { LearnWebViewScreen } from '@/screens/LearnWebViewScreen';
 import { Portal } from '@/screens/Portal';
@@ -350,6 +351,7 @@ function NativeStackNavigator() {
       <NativeStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} {...learnSheetConfig} />
       <NativeStack.Screen component={SpotPnlSheet} name={Routes.SPOT_PNL_SHEET} {...panelConfig} />
       <NativeStack.Screen component={SpotPnlExcludedTokensSheet} name={Routes.SPOT_PNL_EXCLUDED_TOKENS_SHEET} {...panelConfig} />
+      <NativeStack.Screen component={AssetTypeInfoSheet} name={Routes.ASSET_TYPE_INFO_SHEET} {...panelConfig} />
     </NativeStack.Navigator>
   );
 }

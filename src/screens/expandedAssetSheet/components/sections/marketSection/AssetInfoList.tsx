@@ -1,9 +1,9 @@
 import React, { memo, useMemo } from 'react';
 
-import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn, useAnimatedStyle, useDerivedValue, useSharedValue, withSpring } from 'react-native-reanimated';
 
 import { SPRING_CONFIGS } from '@/components/animations/animationConfigs';
+import { ButtonPressAnimation } from '@/components/animations/ButtonPressAnimation';
 import { ShimmerAnimation } from '@/components/animations/ShimmerAnimation';
 import { GestureHandlerButton } from '@/components/buttons/GestureHandlerButton';
 import { useLiveTokenValue } from '@/components/live-token-text/useLiveTokenValue';
@@ -20,6 +20,7 @@ import { Row } from '../../shared/Row';
 import { CreatorInfoRow } from '../shared/CreatorInfoRow';
 
 const DEFAULT_VISIBLE_ITEM_COUNT = 3;
+const INFO_HIT_SLOP = 14;
 const LAYOUT_ANIMATION = FadeIn.duration(160);
 
 const SkeletonRow = ({ width, height }: { width: number; height: number }) => {
@@ -47,15 +48,18 @@ export function AssetInfoItem({
   value,
   icon,
   highlighted,
-  valueIconUrl,
+  valueIcon,
+  info,
 }: {
   accentColor: string;
   title: string;
   value: string;
   icon: string;
   highlighted: boolean;
-  valueIconUrl?: string;
+  valueIcon?: React.ReactNode;
+  info?: { onPress: () => void; accessibilityLabel: string };
 }) {
+  const { isDarkMode } = useColorMode();
   return (
     <Row highlighted={highlighted}>
       <Box width="full">
@@ -63,25 +67,33 @@ export function AssetInfoItem({
           <TextIcon color="labelSecondary" containerSize={20} size="icon 15px" weight="medium">
             {icon}
           </TextIcon>
-          <Text style={{ flex: 1 }} numberOfLines={1} ellipsizeMode="tail" color="labelSecondary" weight="medium" size="17pt">
+          <Text style={{ flexGrow: 1 }} numberOfLines={1} color="labelSecondary" weight="medium" size="17pt">
             {title}
           </Text>
-          {valueIconUrl ? (
-            <Box flexDirection="row" alignItems="center" gap={4}>
-              <FastImage source={{ uri: valueIconUrl }} style={{ width: 16, height: 16, borderRadius: 8 }} />
+          <Box flexDirection="row" flexShrink={1} alignItems="center" gap={4}>
+            {valueIcon}
+            <Box flexShrink={1}>
               <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text align="right" color={{ custom: accentColor }} weight="semibold" size="17pt">
+                <Text align="right" color={{ custom: accentColor }} ellipsizeMode="tail" numberOfLines={1} weight="semibold" size="17pt">
                   {value}
                 </Text>
               </TextShadow>
             </Box>
-          ) : (
-            <TextShadow blur={12} shadowOpacity={0.24}>
-              <Text align="right" color={{ custom: accentColor }} weight="semibold" size="17pt">
-                {value}
-              </Text>
-            </TextShadow>
-          )}
+            {info && (
+              <ButtonPressAnimation onPress={info.onPress} hitSlop={INFO_HIT_SLOP} scaleTo={0.8}>
+                <Box accessible accessibilityRole="button" accessibilityLabel={info.accessibilityLabel} paddingLeft="2px">
+                  <TextIcon
+                    color={{ custom: isDarkMode ? opacity(accentColor, 0.56) : accentColor }}
+                    containerSize={16}
+                    size="icon 13px"
+                    weight="semibold"
+                  >
+                    {'􀅴'}
+                  </TextIcon>
+                </Box>
+              </ButtonPressAnimation>
+            )}
+          </Box>
         </Animated.View>
       </Box>
     </Row>

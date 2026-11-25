@@ -682,6 +682,15 @@
       "registered_on": "Registered on"
     },
     "expanded_state": {
+      "asset_type": {
+        "stock_label": "Stock",
+        "stablecoin_label": "Stablecoin",
+        "tokenized_stock": "Tokenized Stock",
+        "stablecoin": "Stablecoin",
+        "tokenized_stock_info": "%{token} is a token that tracks the price of %{underlying} stock.\n\nIt's issued by %{issuer} on %{chain}. You can buy, sell and hold it in your wallet like any other token.",
+        "stablecoin_info": "A stablecoin is a token designed to hold a steady value. %{token} is designed to stay at %{peg} and is issued by %{issuer}.",
+        "peg": "1 %{currency}"
+      },
       "asset": {
         "about_asset": "About %{assetName}",
         "balance": "Balance",
@@ -755,7 +764,14 @@
           "created_by": "Creator",
           "protocol": "Protocol",
           "created_via": "Created Via",
-          "what_is": "What is %{assetName}?"
+          "what_is": "What is %{assetName}?",
+          "asset_type": "Asset Type",
+          "underlying_asset": "Underlying Asset",
+          "issuer": "Issuer",
+          "onchain_ticker": "Onchain Ticker",
+          "offchain_ticker": "Offchain Ticker",
+          "blockchain": "Blockchain",
+          "about_asset_type": "About %{assetType}"
         },
         "details": {
           "title": "Details",

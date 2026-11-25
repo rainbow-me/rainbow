@@ -1,12 +1,17 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 
+import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
 import { Box } from '@/design-system';
+import { ChainImage } from '@/features/network/components/ChainImage';
 import * as i18n from '@/languages';
+import Navigation from '@/navigation/Navigation';
+import Routes from '@/navigation/routesNames';
 import { AssetInfoItem } from '@/screens/expandedAssetSheet/components/sections/marketSection/AssetInfoList';
 import { SheetSeparator } from '@/screens/expandedAssetSheet/components/shared/Separator';
+import { type AboutRowIcon } from '@/screens/expandedAssetSheet/utils/assetClassification';
 
 import { SectionId, useExpandedAssetSheetContext } from '../../context/ExpandedAssetSheetContext';
 import { CollapsibleSection } from '../shared/CollapsibleSection';
@@ -21,10 +26,22 @@ type RowItem = {
   value: string;
 };
 
+const RoundedSquareIcon = memo(function RoundedSquareIcon({ url }: { url: string }) {
+  return <FastImage source={{ uri: url }} style={{ width: 16, height: 16, borderRadius: 4 }} />;
+});
+
+function renderValueIcon(icon: AboutRowIcon | undefined) {
+  if (!icon) return undefined;
+  if (icon.type === 'chain') return <ChainImage chainId={icon.chainId} position="relative" size={16} />;
+  return <RoundedSquareIcon url={icon.url} />;
+}
+
 export const AboutContent = memo(function AboutContent() {
-  const { assetMetadata: metadata, accentColors } = useExpandedAssetSheetContext();
+  const { assetMetadata: metadata, assetClassification, accentColors, basicAsset } = useExpandedAssetSheetContext();
   const launchpad = metadata?.launchpad?.launchpad;
   const launchpadCreator = metadata?.launchpad?.creatorAddress as Address | undefined;
+  const classificationRows = assetClassification?.rows ?? [];
+  const offset = classificationRows.length;
 
   const rowItems = useMemo(() => {
     const items: RowItem[] = [];
@@ -50,11 +67,57 @@ export const AboutContent = memo(function AboutContent() {
     return items;
   }, [launchpad?.name, launchpad?.platform, launchpad?.platformIconURL, launchpad?.protocolIconURL]);
 
+  const infoText = assetClassification?.infoText;
+  const assetTypeTitle = assetClassification?.assetTypeTitle;
+  const openAssetTypeInfo = useCallback(() => {
+    if (!infoText || !assetTypeTitle) return;
+    Navigation.handleAction(Routes.ASSET_TYPE_INFO_SHEET, {
+      title: assetTypeTitle,
+      infoText,
+      tokenName: basicAsset.name,
+      iconUrl: basicAsset.iconUrl ?? undefined,
+      symbol: basicAsset.symbol,
+      chainId: basicAsset.chainId,
+      accentColor: accentColors.color,
+    });
+  }, [accentColors.color, assetTypeTitle, basicAsset.chainId, basicAsset.iconUrl, basicAsset.name, basicAsset.symbol, infoText]);
+
+  // Without classification rows, launchpad rows keep their original striping, which reserves the creator slot even when it's empty
+  const launchpadStart = offset + (launchpadCreator || offset === 0 ? 1 : 0);
+  const isLaunchpadRowHighlighted = (index: number) => (launchpadStart + index) % 2 === 0;
+  // The last row's highlight decides whether the list overlaps the section's bottom spacing
+  const isLastRowHighlighted =
+    rowItems.length > 0 ? isLaunchpadRowHighlighted(rowItems.length - 1) : launchpadCreator ? offset % 2 === 0 : (offset - 1) % 2 === 0;
+
   return (
     <Box gap={40}>
-      <Box gap={4} marginBottom={rowItems.length % 2 === 0 ? '-12px' : undefined}>
+      <Box gap={4} marginBottom={isLastRowHighlighted ? '-12px' : undefined}>
+        {classificationRows.map((row, index) => (
+          <AssetInfoItem
+            key={row.key}
+            accentColor={accentColors.color}
+            title={row.title}
+            value={row.value}
+            icon={row.icon}
+            valueIcon={renderValueIcon(row.valueIcon)}
+            info={
+              row.key === 'asset_type' && infoText
+                ? {
+                    onPress: openAssetTypeInfo,
+                    accessibilityLabel: i18n.t(i18n.l.expanded_state.sections.about.about_asset_type, { assetType: row.value }),
+                  }
+                : undefined
+            }
+            highlighted={index % 2 === 0}
+          />
+        ))}
         {launchpadCreator && (
-          <CreatorInfoRow address={launchpadCreator} icon="􀉭" label={i18n.t(i18n.l.expanded_state.sections.about.created_by)} />
+          <CreatorInfoRow
+            address={launchpadCreator}
+            highlighted={offset % 2 === 0}
+            icon="􀉭"
+            label={i18n.t(i18n.l.expanded_state.sections.about.created_by)}
+          />
         )}
         {rowItems.map((item, index) => (
           <AssetInfoItem
@@ -63,9 +126,10 @@ export const AboutContent = memo(function AboutContent() {
             title={item.title}
             value={item.value}
             icon={item.icon}
-            valueIconUrl={item.iconName}
-            // +1 due to creator row already highlighting
-            highlighted={(index + 1) % 2 === 0}
+            valueIcon={
+              item.iconName ? <FastImage source={{ uri: item.iconName }} style={{ width: 16, height: 16, borderRadius: 8 }} /> : undefined
+            }
+            highlighted={isLaunchpadRowHighlighted(index)}
           />
         ))}
       </Box>
@@ -90,19 +154,20 @@ type AboutSectionProps = {
 };
 
 export const AboutSection = memo(function AboutSection({ placement }: AboutSectionProps) {
-  const { assetMetadata: metadata } = useExpandedAssetSheetContext();
+  const { assetMetadata: metadata, assetClassification } = useExpandedAssetSheetContext();
 
   const { hasContent, isDeemphasized } = useMemo(() => {
     const hasCreator = !!metadata?.launchpad?.creatorAddress;
     const hasProtocol = !!metadata?.launchpad?.launchpad?.name;
     const hasPlatform = !!metadata?.launchpad?.launchpad?.platform;
+    const hasClassification = !!assetClassification;
 
-    const hasContent = hasCreator || hasProtocol || hasPlatform;
-    // De-emphasize if only creator exists (no protocol or platform)
-    const isDeemphasized = hasCreator && !hasProtocol && !hasPlatform;
+    const hasContent = hasClassification || hasCreator || hasProtocol || hasPlatform;
+    // De-emphasize if only creator exists (no protocol, platform or classification)
+    const isDeemphasized = hasCreator && !hasProtocol && !hasPlatform && !hasClassification;
 
     return { hasContent, isDeemphasized };
-  }, [metadata]);
+  }, [metadata, assetClassification]);
 
   if (!shouldShowAboutSection(placement, hasContent, isDeemphasized)) return null;
 
