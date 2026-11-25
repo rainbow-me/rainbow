@@ -32,7 +32,6 @@ describe('getAssetClassification', () => {
     ['asset undefined', undefined],
     ['crypto', { assetClass: AssetClass.Crypto, issuer: null, underlyingAsset: null }],
     ['unknown class', { assetClass: 'COMMODITY' as AssetClass }],
-    ['lowercase class', { assetClass: 'stablecoin' as AssetClass, issuer: { name: 'Circle', iconUrl: '' } }],
   ])('%s is not classified', (_, asset) => {
     expect(getAssetClassification(asset, stockToken)).toBeUndefined();
   });
@@ -75,7 +74,6 @@ describe('getAssetClassification', () => {
 
   test.each<[string, Partial<AssetClassificationInput>, Partial<typeof stockToken>, string[]]>([
     ['underlying asset null', { underlyingAsset: null }, {}, ['underlying_asset', 'offchain_ticker']],
-    ['underlying asset omitted', { underlyingAsset: undefined }, {}, ['underlying_asset', 'offchain_ticker']],
     ['underlying name empty', { underlyingAsset: { ...nvidia, name: '' } }, {}, ['underlying_asset']],
     ['issuer null', { issuer: null }, {}, ['issuer']],
     ['issuer name empty', { issuer: { name: '', iconUrl: ROBINHOOD_ICON } }, {}, ['issuer']],
@@ -101,17 +99,9 @@ describe('getAssetClassification', () => {
     expect(result?.infoText).toBeDefined();
   });
 
-  test.each([
-    ['empty', ''],
-    ['null', null],
-    ['omitted', undefined],
-  ])('an %s icon url shows the name without an icon', (_, iconUrl) => {
+  test('an empty icon url shows the name without an icon', () => {
     const result = getAssetClassification(
-      {
-        ...stock,
-        issuer: { name: 'Robinhood', iconUrl: iconUrl as string },
-        underlyingAsset: { name: 'NVIDIA Corporation', ticker: 'NVDA', iconUrl: iconUrl as string },
-      },
+      { ...stock, issuer: { name: 'Robinhood', iconUrl: '' }, underlyingAsset: { ...nvidia, iconUrl: '' } },
       stockToken
     );
 

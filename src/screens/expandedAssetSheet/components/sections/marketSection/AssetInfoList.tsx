@@ -50,6 +50,7 @@ export function AssetInfoItem({
   highlighted,
   valueIcon,
   info,
+  truncateValue = false,
 }: {
   accentColor: string;
   title: string;
@@ -58,6 +59,8 @@ export function AssetInfoItem({
   highlighted: boolean;
   valueIcon?: React.ReactNode;
   info?: { onPress: () => void; accessibilityLabel: string };
+  /** Keep the title whole and cut the value instead */
+  truncateValue?: boolean;
 }) {
   const { isDarkMode } = useColorMode();
   return (
@@ -67,14 +70,28 @@ export function AssetInfoItem({
           <TextIcon color="labelSecondary" containerSize={20} size="icon 15px" weight="medium">
             {icon}
           </TextIcon>
-          <Text style={{ flexGrow: 1 }} numberOfLines={1} color="labelSecondary" weight="medium" size="17pt">
+          <Text
+            style={truncateValue ? { flexGrow: 1 } : { flex: 1 }}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            color="labelSecondary"
+            weight="medium"
+            size="17pt"
+          >
             {title}
           </Text>
-          <Box flexDirection="row" flexShrink={1} alignItems="center" gap={4}>
+          <Box flexDirection="row" flexShrink={truncateValue ? 1 : undefined} alignItems="center" gap={4}>
             {valueIcon}
-            <Box flexShrink={1}>
+            <Box flexShrink={truncateValue ? 1 : undefined}>
               <TextShadow blur={12} shadowOpacity={0.24}>
-                <Text align="right" color={{ custom: accentColor }} ellipsizeMode="tail" numberOfLines={1} weight="semibold" size="17pt">
+                <Text
+                  align="right"
+                  color={{ custom: accentColor }}
+                  ellipsizeMode="tail"
+                  numberOfLines={truncateValue ? 1 : undefined}
+                  weight="semibold"
+                  size="17pt"
+                >
                   {value}
                 </Text>
               </TextShadow>

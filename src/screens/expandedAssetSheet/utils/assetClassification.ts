@@ -28,7 +28,6 @@ export type InfoTextPart = { text: string; emphasized: boolean };
 
 export type AssetClassification = {
   label: string;
-  assetTypeTitle: string;
   rows: AboutRow[];
   infoText: InfoTextPart[] | undefined;
 };
@@ -91,11 +90,15 @@ export function getAssetClassification(
 
   switch (asset?.assetClass) {
     case AssetClass.TokenizedEquity: {
-      const assetTypeTitle = i18n.t(i18n.l.expanded_state.asset_type.tokenized_stock);
       const symbol = nonEmpty(token.symbol);
       const ticker = nonEmpty(asset.underlyingAsset?.ticker);
       const rows: (AboutRow | undefined)[] = [
-        { key: 'asset_type', title: i18n.t(i18n.l.expanded_state.sections.about.asset_type), value: assetTypeTitle, icon: '􀬎' },
+        {
+          key: 'asset_type',
+          title: i18n.t(i18n.l.expanded_state.sections.about.asset_type),
+          value: i18n.t(i18n.l.expanded_state.asset_type.tokenized_stock),
+          icon: '􀬎',
+        },
         underlyingName
           ? {
               key: 'underlying_asset',
@@ -124,7 +127,6 @@ export function getAssetClassification(
       ];
       return {
         label: i18n.t(i18n.l.expanded_state.asset_type.stock_label),
-        assetTypeTitle,
         rows: rows.filter(row => !!row),
         infoText: translateParts(i18n.l.expanded_state.asset_type.tokenized_stock_info, {
           token: tokenName,
@@ -135,14 +137,17 @@ export function getAssetClassification(
       };
     }
     case AssetClass.Stablecoin: {
-      const assetTypeTitle = i18n.t(i18n.l.expanded_state.asset_type.stablecoin);
       const rows: (AboutRow | undefined)[] = [
-        { key: 'asset_type', title: i18n.t(i18n.l.expanded_state.sections.about.asset_type), value: assetTypeTitle, icon: '􀬎' },
+        {
+          key: 'asset_type',
+          title: i18n.t(i18n.l.expanded_state.sections.about.asset_type),
+          value: i18n.t(i18n.l.expanded_state.asset_type.stablecoin),
+          icon: '􀬎',
+        },
         issuerRow,
       ];
       return {
         label: i18n.t(i18n.l.expanded_state.asset_type.stablecoin_label),
-        assetTypeTitle,
         rows: rows.filter(row => !!row),
         infoText: translateParts(i18n.l.expanded_state.asset_type.stablecoin_info, {
           token: tokenName,
