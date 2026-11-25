@@ -5,7 +5,7 @@ import { IS_TEST } from '@/env';
 import { RNBW_REWARDS } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { useRnbwFeatureCardStore } from '@/features/rnbw-rewards/data/rnbwFeatureCardStore';
 
 import { useEditTokensStore } from '../base/editStateStore';
 
@@ -21,7 +21,7 @@ export const useRnbwFeatureCardSection = createDerivedStore(
     const editing = $(useEditTokensStore, s => s.isCoinListEdited);
     const remoteEnabled = $(useRemoteConfigStore, s => s.getRemoteConfigKey('rnbw_rewards_enabled'));
     const experimentalEnabled = $(useExperimentalConfigStore, s => s.getFlag(RNBW_REWARDS));
-    const dismissed = $(useRnbwFeatureCard, s => s.isDismissed);
+    const dismissed = $(useRnbwFeatureCardStore, s => s.isDismissed);
 
     return !editing && !IS_TEST && !dismissed && (remoteEnabled || experimentalEnabled) ? FEATURE_CARD_SECTION : EMPTY_SECTION;
   },

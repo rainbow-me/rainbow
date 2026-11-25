@@ -12,7 +12,7 @@ import { opacity } from '@/design-system/utils/opacity';
 import { RNBW_MEMBERSHIP } from '@/features/config/constants/experimental';
 import { useExperimentalFlag } from '@/features/config/hooks/experimentalHooks';
 import { useRemoteConfig } from '@/features/config/stores/remoteConfig';
-import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { useRnbwFeatureCardStore } from '@/features/rnbw-rewards/data/rnbwFeatureCardStore';
 import * as i18n from '@/languages';
 import Navigation from '@/navigation/Navigation';
 import Routes from '@/navigation/routesNames';
@@ -80,7 +80,7 @@ export const RnbwFeatureCard = memo(function RnbwFeatureCard() {
 });
 
 function DismissButton() {
-  const { dismiss } = useRnbwFeatureCard();
+  const { dismiss } = useRnbwFeatureCardStore.getState();
 
   const onDismiss = (e?: GestureResponderEvent) => {
     if (e && 'stopPropagation' in e) {

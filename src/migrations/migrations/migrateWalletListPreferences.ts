@@ -1,5 +1,6 @@
 import { createMMKV } from 'react-native-mmkv';
 
+import { useRnbwFeatureCardStore } from '@/features/rnbw-rewards/data/rnbwFeatureCardStore';
 import { usePinnedCoinsStore, type BooleanMap } from '@/features/wallet/data/walletScreen/base/pinnedCoinsStore';
 import {
   useWalletListTogglesStore,
@@ -9,6 +10,8 @@ import {
 import { MigrationName, type Migration } from '@/migrations/types';
 
 const PINNED_PREFIX = 'pinned-coins-obj-';
+const RNBW_CARD_DISMISSED_KEY = 'dismissed-rnbw-feature-card';
+
 const TOGGLE_PREFIXES = [
   ['claimables-open-', 'claimables'],
   ['positions-open-', 'positions'],
@@ -16,7 +19,7 @@ const TOGGLE_PREFIXES = [
 ] as const;
 
 /**
- * Moves per-wallet pins and section toggles into their persisted stores.
+ * Moves wallet-list preferences into their persisted stores.
  */
 export function migrateWalletListPreferences(): Migration {
   return {
@@ -36,9 +39,7 @@ export function migrateWalletListPreferences(): Migration {
           if (!isBooleanMap(value)) throw new Error(`Invalid saved pins: ${key}`);
 
           const pins: BooleanMap = {};
-          for (const id in value) {
-            if (value[id]) pins[id.toLowerCase()] = true;
-          }
+          for (const id in value) if (value[id]) pins[id.toLowerCase()] = true;
 
           pinnedCoins[key.slice(PINNED_PREFIX.length)] = pins;
           migratedKeys.push(key);
@@ -53,6 +54,7 @@ export function migrateWalletListPreferences(): Migration {
             ...(togglesByWallet[address] ?? walletListTogglesActions.getCurrentToggles(address)),
             [section]: storage.getBoolean(key) ?? false,
           };
+
           migratedKeys.push(key);
           break;
         }
@@ -65,6 +67,9 @@ export function migrateWalletListPreferences(): Migration {
       useWalletListTogglesStore.setState(state => ({
         togglesByWallet: { ...togglesByWallet, ...state.togglesByWallet },
       }));
+
+      if (storage.getBoolean(RNBW_CARD_DISMISSED_KEY)) useRnbwFeatureCardStore.getState().dismiss();
+      storage.remove(RNBW_CARD_DISMISSED_KEY);
 
       for (const key of migratedKeys) {
         storage.remove(key);
