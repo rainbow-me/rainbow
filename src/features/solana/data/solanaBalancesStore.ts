@@ -27,7 +27,12 @@ export const useSolanaBalancesAddress = createDerivedStore($ => {
 
 type Params = { address: string | null; currency: SupportedCurrencyKey };
 
-export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Params>({
+export type SolanaBalancesData = Omit<SolanaBalances, 'balances'> & {
+  balances: Map<string, SolanaBalance>;
+  orderedBalances: Pick<SolanaBalance, 'uniqueId' | 'value'>[];
+};
+
+export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Params, SolanaBalancesData | null>({
   params: {
     address: $ => $(useSolanaBalancesAddress),
     currency: $ => $(userAssetsStoreManager).currency,
@@ -37,6 +42,14 @@ export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Pa
     // Manual fetches must obey the same flag/account gate as automatic fetches.
     if (!params.address || params.address !== useSolanaBalancesAddress.getState()) return Promise.resolve(null);
     return fetchSolanaBalances(params.address, params.currency, abortController);
+  },
+  transform: data => {
+    if (!data) return null;
+    return {
+      ...data,
+      balances: new Map(data.balances.map(balance => [balance.uniqueId, balance])),
+      orderedBalances: data.balances.map(({ uniqueId, value }) => ({ uniqueId, value })),
+    };
   },
   keepPreviousData: true,
   staleTime: time.seconds(30),
@@ -59,13 +72,10 @@ export const useSolanaWalletBalances = createDerivedStore(
 );
 
 export const useSolanaBalanceList = createDerivedStore<Pick<SolanaBalance, 'uniqueId' | 'value'>[]>(
-  $ => {
-    const balances = $(useSolanaWalletBalances, state => state.data?.balances);
-    return balances?.map(({ uniqueId, value }) => ({ uniqueId, value })) ?? [];
-  },
+  $ => $(useSolanaWalletBalances, state => state.data?.orderedBalances) ?? [],
   { equalityFn: deepEqual, lockDependencies: true }
 );
 
 export function selectSolanaBalance(state: ReturnType<typeof useSolanaWalletBalances.getState>, uniqueId: string) {
-  return state.data?.balances.find(balance => balance.uniqueId === uniqueId);
+  return state.data?.balances.get(uniqueId);
 }

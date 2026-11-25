@@ -28,8 +28,9 @@ vi.mock('@/design-system/utils/opacity', () => ({ opacity: (color: string) => co
 vi.mock('@/features/network/types/backendNetworks', () => ({ ChainId: { mainnet: 1 } }));
 vi.mock('@/features/token/ui/utils/formatLiquidityCappedBalance', () => ({ formatLiquidityCappedBalance: vi.fn() }));
 vi.mock('@/features/solana/data/solanaBalancesStore', () => ({
-  useSolanaWalletBalances: (selector: (value: unknown) => unknown) => selector({ data: { balances: state.balances } }),
-  selectSolanaBalance: (_: unknown, id: string) => state.balances.find(balance => balance.uniqueId === id),
+  useSolanaWalletBalances: (selector: (value: unknown) => unknown) =>
+    selector({ data: { balances: new Map(state.balances.map(balance => [balance.uniqueId, balance])) } }),
+  selectSolanaBalance: (value: { data: { balances: Map<string, SolanaBalance> } }, id: string) => value.data.balances.get(id),
 }));
 vi.mock('@/hooks/useAccountAsset', () => ({ default: state.evmReads }));
 vi.mock('@/hooks/useCoinListEditOptions', () => ({ useCoinListFinishEditingOptions: () => ({ selectedItems: [] }) }));

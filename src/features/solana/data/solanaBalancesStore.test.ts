@@ -193,6 +193,16 @@ it('isolates rows and updates list placement only for IDs or values', async () =
     await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
   }
   await publish([sol, bonk]);
+  const indexed = useSolanaWalletBalances.getState().data;
+  expect(indexed?.balances).toBeInstanceOf(Map);
+  expect(indexed?.balances.size).toBe(2);
+  expect(selectSolanaBalance(useSolanaWalletBalances.getState(), sol.uniqueId)).toBe(sol);
+  expect(selectSolanaBalance(useSolanaWalletBalances.getState(), bonk.uniqueId)).toBe(bonk);
+  expect(selectSolanaBalance(useSolanaWalletBalances.getState(), bonk.uniqueId.toLowerCase())).toBeUndefined();
+  expect(indexed?.orderedBalances).toEqual([
+    { uniqueId: sol.uniqueId, value: sol.value },
+    { uniqueId: bonk.uniqueId, value: bonk.value },
+  ]);
   const listChanged = vi.fn();
   const solChanged = vi.fn();
   const bonkChanged = vi.fn();
