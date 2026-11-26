@@ -52,8 +52,7 @@ export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Pa
     };
   },
   keepPreviousData: true,
-  staleTime: time.seconds(30),
-  cacheTime: time.minutes(10),
+  staleTime: time.minutes(1),
   retry: 2,
 });
 

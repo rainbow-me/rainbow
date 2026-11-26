@@ -86,3 +86,7 @@ After removing unused compatibility conversion: 102 focused tests across 13 file
 ## Image proxy verification
 
 On November 24, 2026, fresh balances returned SOL and BONK icon URLs hosted by `token-media.defined.fi`. Both signed 120px requests returned HTTP 200 (`image/png`) through `img.p.rainbow.me`. The legacy `rainbow.imgix.net` host returned HTTP 410 (`deleted_source`) for both. Icons follow the existing `image_cdn_enabled` remote-config selection; failed requests show the existing fallback, never a direct-origin retry. USDC was not present in the queried balance response.
+
+### Refresh timing and persistence
+
+Solana matches the EVM user-assets store configuration: `staleTime: time.minutes(1)` and no explicit `cacheTime` (the installed stores library defaults to seven days). Forced refreshes still use `staleTime: 0`. Solana caches transformed balances per query in memory; EVM uses `setData` to populate its own asset state, so its query cache tracks fetch metadata rather than fetched balances. EVM separately persists processed assets to disk. Solana balance persistence is not implemented: after an app restart, Solana balances require a successful fetch. Matching the timing options does not add persistence.
