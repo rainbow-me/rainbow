@@ -51,7 +51,7 @@ Balance requests use the shared Solana feature gate regardless of store installa
 
 Solana loading participates in the existing wallet asset-list skeleton behavior. There is no Solana-specific loading/error text row. Failed refreshes retain matching cached balances; request errors and pull-to-refresh retry remain available in the query layer.
 
-Solana recycler items carry asset IDs, matching the EVM row contract. The query transform indexes each fetched response as a `balances` map keyed by case-sensitive `uniqueId`, alongside an `orderedBalances` list of IDs and values for placement. Rows use map lookups. A derived store exposes the ordered list and preserves its array reference when those fields are equal. Unlike the EVM custom `setData` path, this keeps both structures in the query cache so account/currency switching retains the existing cache behavior. The list reads that cached array directly; memoized rows subscribe to their own flat balance record with shallow equality and receive currency from the existing recycler state. Equal values in fresh responses do not invalidate unrelated row subscriptions.
+Solana recycler items carry asset IDs, matching the EVM row contract. The query transform indexes each fetched response as a `balances` map keyed by case-sensitive `uniqueId`, alongside an `orderedBalances` list of IDs and values for placement. Rows use map lookups. A derived store exposes the ordered list and preserves its array reference when those fields are equal. Like EVM, `setData` retains both structures in persisted asset state, keyed by address and gated by the current currency. The list reads that stored array directly; memoized rows subscribe to their own flat balance record with shallow equality and receive currency from the existing recycler state. Equal values in fresh responses do not invalidate unrelated row subscriptions.
 
 ## Shared row and editing
 
@@ -89,4 +89,10 @@ On November 24, 2026, fresh balances returned SOL and BONK icon URLs hosted by `
 
 ### Refresh timing and persistence
 
-Solana matches the EVM user-assets store configuration: `staleTime: time.minutes(1)` and no explicit `cacheTime` (the installed stores library defaults to seven days). Forced refreshes still use `staleTime: 0`. Solana caches transformed balances per query in memory; EVM uses `setData` to populate its own asset state, so its query cache tracks fetch metadata rather than fetched balances. EVM separately persists processed assets to disk. Solana balance persistence is not implemented: after an app restart, Solana balances require a successful fetch. Matching the timing options does not add persistence.
+Solana matches the EVM user-assets store configuration: `staleTime: time.minutes(1)` and no explicit `cacheTime` (the installed stores library defaults to seven days). Forced refreshes still use `staleTime: 0`.
+
+Like EVM, Solana uses `setData` to retain processed balances separately from the expiring query cache. `balancesByAddress` holds the latest indexed balances, ordered list, total and currency for each Solana address. The standard store persistence writes this state to MMKV under `solanaBalances`, version 1; the stores library's built-in serializer restores nested Maps. Query bookkeeping is handled by the query store itself. No key material is included.
+
+After restarting, saved balances are available immediately while the store refreshes. A failed refresh preserves them, even after query-cache expiry. The selected address, currency, feature flag and wallet eligibility still gate display; a successful response replaces the saved balances, including an empty response. The existing EVM storage and fetch paths are unchanged.
+
+Manual restart check (2 minutes): load Solana balances, wait five seconds for the standard storage write, close the app, disable networking, and reopen it. Confirm the same account shows saved tokens; switch accounts or currency and confirm mismatched values are hidden. Restore networking and pull to refresh to confirm updated balances replace the saved values.

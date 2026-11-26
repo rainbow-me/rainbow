@@ -1,5 +1,5 @@
 import { type createBaseStore } from '@storesjs/stores';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 
 import { type SolanaAssetId } from '@/__swaps__/types/assets';
 import { type SolanaBalance, type SolanaBalances } from '@/features/solana/core/balances';
@@ -73,6 +73,7 @@ beforeEach(() => {
     },
   });
   vi.mocked(fetchSolanaBalances).mockReset().mockResolvedValue(data);
+  useSolanaBalancesStore.setState({ balancesByAddress: {}, queryCache: {}, lastFetchedAt: null });
   unsubscribe = useSolanaWalletBalances.subscribe(() => undefined);
 });
 afterEach(() => {
@@ -98,7 +99,7 @@ describe('isolated Solana balances lifecycle', () => {
       rejectRequest = reject;
     });
     vi.mocked(fetchSolanaBalances).mockReturnValue(pending);
-    useSolanaBalancesStore.setState({ queryCache: {}, lastFetchedAt: null });
+    useSolanaBalancesStore.setState({ balancesByAddress: {}, queryCache: {}, lastFetchedAt: null });
     const request = useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
     expect(useSolanaWalletBalances.getState().isLoading).toBe(true);
     expect(useSolanaWalletBalances.getState().data).toBeNull();
@@ -250,4 +251,87 @@ it('isolates rows and updates list placement only for IDs or values', async () =
   } finally {
     stops.forEach(stop => stop());
   }
+});
+
+describe('Solana balance persistence', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+  it('restores indexed balances and list placement offline even after query-cache expiry, then refreshes them', async () => {
+    const balance: SolanaBalance = {
+      assetId: 'sol',
+      uniqueId: 'So11111111111111111111111111111111111111111_1399811149' as SolanaAssetId,
+      name: 'Solana',
+      symbol: 'SOL',
+      amount: '1',
+      rawUnits: false,
+      value: '100',
+    };
+    vi.mocked(fetchSolanaBalances).mockResolvedValue({ ...data, balances: [balance], total: '100' });
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
+    const { name, storage, version } = useSolanaBalancesStore.persist.getOptions();
+    if (!name || !storage) throw new Error('Solana balance persistence is not configured');
+    await vi.advanceTimersByTimeAsync(5000);
+    const saved = await storage.getItem(name);
+    expect(saved?.state.balancesByAddress[address].balances).toBeInstanceOf(Map);
+    expect(saved?.state.balancesByAddress[address].balances.get(balance.uniqueId)).toEqual(balance);
+    expect(saved?.state.balancesByAddress[address].balances.get(balance.uniqueId)).not.toBe(balance);
+
+    vi.setSystemTime(Date.now() + 8 * 24 * 60 * 60 * 1000);
+    unsubscribe();
+    useSolanaBalancesStore.setState({ balancesByAddress: {}, queryCache: {}, lastFetchedAt: null });
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
+    await storage.setItem(name, { ...useSolanaBalancesStore.getState(), ...saved?.state }, version);
+    await vi.advanceTimersByTimeAsync(5000);
+    await useSolanaBalancesStore.persist.rehydrate();
+    expect(selectSolanaBalance(useSolanaWalletBalances.getState(), balance.uniqueId)).toEqual(balance);
+    expect(useSolanaBalanceList.getState()).toEqual([{ uniqueId: balance.uniqueId, value: '100' }]);
+
+    vi.mocked(fetchSolanaBalances).mockClear().mockRejectedValue(new Error('offline'));
+    onTestFinished(useSolanaWalletBalances.subscribe(() => undefined));
+    await vi.waitFor(() => expect(fetchSolanaBalances).toHaveBeenCalledWith(address, 'USD', expect.any(AbortController)));
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
+    expect(useSolanaWalletBalances.getState().data?.total).toBe('100');
+
+    userAssetsStoreManager.setState({ currency: 'EUR' });
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
+    userAssetsStoreManager.setState({ currency: 'USD' });
+    expect(useSolanaWalletBalances.getState().data?.total).toBe('100');
+    flags.setState(false, true);
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
+    vi.mocked(fetchSolanaBalances).mockResolvedValue({ ...data, balances: [], total: '0' });
+    flags.setState(true, true);
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
+    await vi.waitFor(() => expect(useSolanaWalletBalances.getState().data?.total).toBe('0'));
+    expect(useSolanaBalanceList.getState()).toEqual([]);
+  });
+
+  it('restores each address independently and hides persisted balances for removed wallets', async () => {
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
+    const otherAddress = '11111111111111111111111111111111';
+    const mappings = useAccountMetadataStore.getState().accounts;
+    vi.mocked(fetchSolanaBalances).mockResolvedValue({ ...data, address: otherAddress, total: '2' });
+    useAccountMetadataStore.setState({
+      accounts: { '["balances-test",0]': { ...mappings['["balances-test",0]'], address: otherAddress } },
+    });
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
+    await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
+    expect(useSolanaWalletBalances.getState().data?.total).toBe('2');
+
+    const { name, storage, version } = useSolanaBalancesStore.persist.getOptions();
+    if (!name || !storage) throw new Error('Solana balance persistence is not configured');
+    await vi.advanceTimersByTimeAsync(5000);
+    const saved = await storage.getItem(name);
+    unsubscribe();
+    useSolanaBalancesStore.setState({ balancesByAddress: {}, queryCache: {}, lastFetchedAt: null });
+    await storage.setItem(name, { ...useSolanaBalancesStore.getState(), ...saved?.state }, version);
+    await vi.advanceTimersByTimeAsync(5000);
+    await useSolanaBalancesStore.persist.rehydrate();
+    expect(useSolanaWalletBalances.getState().data?.total).toBe('2');
+    vi.mocked(fetchSolanaBalances).mockRejectedValue(new Error('offline'));
+    onTestFinished(useSolanaWalletBalances.subscribe(() => undefined));
+    useAccountMetadataStore.setState({ accounts: mappings });
+    expect(useSolanaWalletBalances.getState().data?.total).toBe('1.25');
+    useWalletsStore.setState({ wallets: {} });
+    expect(useSolanaWalletBalances.getState().data).toBeNull();
+  });
 });

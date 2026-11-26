@@ -32,43 +32,60 @@ export type SolanaBalancesData = Omit<SolanaBalances, 'balances'> & {
   orderedBalances: Pick<SolanaBalance, 'uniqueId' | 'value'>[];
 };
 
-export const useSolanaBalancesStore = createQueryStore<SolanaBalances | null, Params, SolanaBalancesData | null>({
-  params: {
-    address: $ => $(useSolanaBalancesAddress),
-    currency: $ => $(userAssetsStoreManager).currency,
-  },
-  enabled: $ => !!$(useSolanaBalancesAddress),
-  fetcher: (params, abortController) => {
-    // Manual fetches must obey the same flag/account gate as automatic fetches.
-    if (!params.address || params.address !== useSolanaBalancesAddress.getState()) return Promise.resolve(null);
-    return fetchSolanaBalances(params.address, params.currency, abortController);
-  },
-  transform: data => {
-    if (!data) return null;
-    return {
-      ...data,
-      balances: new Map(data.balances.map(balance => [balance.uniqueId, balance])),
-      orderedBalances: data.balances.map(({ uniqueId, value }) => ({ uniqueId, value })),
-    };
-  },
-  keepPreviousData: true,
-  staleTime: time.minutes(1),
-  retry: 2,
-});
+type SolanaBalancesState = {
+  balancesByAddress: Record<string, SolanaBalancesData>;
+};
 
-// Dependencies are unconditional; retain the query subscription across derived-state updates.
-export const useSolanaWalletBalances = createDerivedStore(
-  $ => {
-    const address = $(useSolanaBalancesAddress);
-    const currency = $(userAssetsStoreManager).currency;
-    const data = $(useSolanaBalancesStore, state => state.getData());
-    const isInitialLoad = $(useSolanaBalancesStore, state => state.getStatus('isInitialLoad'));
-    // keepPreviousData preserves failed refreshes, but must never leak another account/currency.
-    const current = address && data?.address === address && data.currency === currency ? data : null;
-    return { data: current, isLoading: !!address && isInitialLoad, currency };
+export const useSolanaBalancesStore = createQueryStore<
+  SolanaBalances | null,
+  Params,
+  SolanaBalancesState,
+  SolanaBalancesData | null,
+  SolanaBalancesState
+>(
+  {
+    params: {
+      address: $ => $(useSolanaBalancesAddress),
+      currency: $ => $(userAssetsStoreManager).currency,
+    },
+    enabled: $ => !!$(useSolanaBalancesAddress),
+    fetcher: (params, abortController) => {
+      // Manual fetches must obey the same flag/account gate as automatic fetches.
+      if (!params.address || params.address !== useSolanaBalancesAddress.getState()) return Promise.resolve(null);
+      return fetchSolanaBalances(params.address, params.currency, abortController);
+    },
+    transform: data => {
+      if (!data) return null;
+      return {
+        ...data,
+        balances: new Map(data.balances.map(balance => [balance.uniqueId, balance])),
+        orderedBalances: data.balances.map(({ uniqueId, value }) => ({ uniqueId, value })),
+      };
+    },
+    setData: ({ data, set }) => {
+      if (data) set(state => ({ balancesByAddress: { ...state.balancesByAddress, [data.address]: data } }));
+    },
+    keepPreviousData: true,
+    staleTime: time.minutes(1),
+    retry: 2,
   },
-  { lockDependencies: true }
+  () => ({ balancesByAddress: {} }),
+  {
+    partialize: state => ({ balancesByAddress: state.balancesByAddress }),
+    storageKey: 'solanaBalances',
+    version: 1,
+  }
 );
+
+export const useSolanaWalletBalances = createDerivedStore($ => {
+  const address = $(useSolanaBalancesAddress);
+  const currency = $(userAssetsStoreManager).currency;
+  const data = $(useSolanaBalancesStore, state => (address ? state.balancesByAddress[address] : undefined));
+  const isInitialLoad = $(useSolanaBalancesStore, state => state.getStatus('isInitialLoad'));
+  // Persisted balances remain visible during refreshes, but must match the current account/currency.
+  const current = address && data?.address === address && data.currency === currency ? data : null;
+  return { data: current, isLoading: !!address && isInitialLoad, currency };
+});
 
 export const useSolanaBalanceList = createDerivedStore<Pick<SolanaBalance, 'uniqueId' | 'value'>[]>(
   $ => $(useSolanaWalletBalances, state => state.data?.orderedBalances) ?? [],
