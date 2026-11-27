@@ -1,14 +1,14 @@
 import { createBaseStore } from '@storesjs/stores';
 
-import { type SolanaSwapAssetId, type SwapAssetId } from '@/features/solana/core/swap';
+import { type SolanaSwapAsset, type SwapAsset } from '@/features/solana/core/swap';
 import { useSolanaBalancesAddress } from '@/features/solana/data/solanaBalancesStore';
 import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 export type SolanaSwapSelection = {
   address: string;
   accountKey: string;
-  inputAsset: SwapAssetId | null;
-  outputAsset: SolanaSwapAssetId;
+  inputAsset: SwapAsset | null;
+  outputAsset: SolanaSwapAsset;
   amount: string;
 };
 

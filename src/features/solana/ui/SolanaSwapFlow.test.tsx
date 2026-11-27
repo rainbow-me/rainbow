@@ -1,7 +1,9 @@
 import { afterAll, afterEach, beforeEach, expect, it, vi } from 'vitest';
 
 import { type SolanaAssetId } from '@/__swaps__/types/assets';
+import { SOLANA_MAINNET_CHAIN } from '@/features/solana/core/chainId';
 import { SWAP_ASSETS } from '@/features/solana/core/swap';
+import { parseSolanaSearchResults } from '@/features/solana/core/tokenSearch';
 import { type SolanaBalancesData } from '@/features/solana/data/solanaBalancesStore';
 
 import { SolanaSwapFlow } from './SolanaSwapFlow';
@@ -130,7 +132,7 @@ vi.mock('@/features/solana/ui/SolanaSwapControls', () => ({
   SolanaSwapAmountControls: 'Controls',
   SolanaSwapCard: 'Card',
 }));
-vi.mock('@/features/solana/ui/SolanaSwapTokenRow', () => ({ SolanaSwapTokenRow: 'Token' }));
+vi.mock('@/features/solana/ui/SolanaSwapTokenPicker', () => ({ SolanaSwapTokenPicker: 'Picker' }));
 vi.mock('@/features/wallet/data/enableSolanaAccount', () => ({ getEnabledSolanaAccount: () => ({ address: 'sol-account' }) }));
 vi.mock('@/helpers/alert', () => ({ WrappedAlert: { alert: vi.fn() } }));
 vi.mock('@/helpers/utilities', () => ({ handleSignificantDecimals: (amount: string) => amount }));
@@ -153,9 +155,12 @@ vi.mock('@/utils/safeAreaInsetValues', () => ({ default: { top: 0, bottom: 0 } }
 vi.mock('@rainbow-me/solana-sdk', () => ({ isTerminalStatus: () => false, SolanaCluster: { Mainnet: 'mainnet' } }));
 
 let tree: unknown;
-const selection = { address: 'sol-account', inputAsset: 'base-eth', outputAsset: 'sol', amount: '0.001' } as Parameters<
-  typeof SolanaSwapFlow
->[0]['selection'];
+const selection = {
+  address: 'sol-account',
+  inputAsset: SWAP_ASSETS['base-eth'],
+  outputAsset: SWAP_ASSETS['sol'],
+  amount: '0.001',
+} as Parameters<typeof SolanaSwapFlow>[0]['selection'];
 function render() {
   let renders = 0;
   do {
@@ -190,8 +195,9 @@ function quote(inputAsset: 'base-eth' | 'bonk' = 'base-eth') {
   const input = inputAsset === 'base-eth' ? 1000000000000000n : 10000000000n;
   return {
     account: { address: 'sol-account' },
-    inputAsset,
-    outputAsset: 'sol',
+    inputAsset: SWAP_ASSETS[inputAsset],
+    sourceChain: inputAsset === 'base-eth' ? 'evm' : 'solana',
+    outputAsset: SWAP_ASSETS['sol'],
     input,
     networkFeeLamports: inputAsset === 'base-eth' ? 0n : 15000n,
     prepared: {
@@ -209,7 +215,7 @@ function quote(inputAsset: 'base-eth' | 'bonk' = 'base-eth') {
 
 beforeEach(() => {
   vi.useFakeTimers();
-  selection.inputAsset = 'base-eth';
+  selection.inputAsset = SWAP_ASSETS['base-eth'];
   selection.amount = '0.001';
   hooks.slots = [];
   hooks.cursor = 0;
@@ -253,7 +259,7 @@ it('recovers automatically after a slider-triggered quote failure without keepin
   expect(outputCard(tree)?.props.amount).toBe('0');
   await advance(12000);
   await advance(500);
-  expect(mocks.prepare).toHaveBeenLastCalledWith('base-eth', 'sol', '0.002');
+  expect(mocks.prepare).toHaveBeenLastCalledWith(SWAP_ASSETS['base-eth'], SWAP_ASSETS.sol, '0.002');
   expect((review().props.disabled as { value: boolean }).value).toBe(false);
   expect(find('Warning')).toBeUndefined();
 });
@@ -284,7 +290,7 @@ it('requests a replacement when the slider or Max selects the same amount again'
 });
 
 it.each(['base-eth', 'bonk'] as const)('shows the user-paid %s fee in review, using SOL when fiat metadata is missing', async input => {
-  selection.inputAsset = input;
+  selection.inputAsset = SWAP_ASSETS[input];
   selection.amount = input === 'bonk' ? '100000' : '0.001';
   mocks.balances.mockResolvedValue({ 'base-eth': 10000000000000000n, 'sol': 20000000n, 'bonk': 10000000000n });
   mocks.prepare.mockResolvedValue(quote(input));
@@ -302,7 +308,7 @@ it.each(['base-eth', 'bonk'] as const)('shows the user-paid %s fee in review, us
 });
 
 it.each(['USD', 'EUR'])('uses SOL pricing only when balances match the selected currency (%s)', async balanceCurrency => {
-  selection.inputAsset = 'bonk';
+  selection.inputAsset = SWAP_ASSETS['bonk'];
   selection.amount = '100000';
   mocks.balancesData = {
     address: selection.address,
@@ -332,7 +338,7 @@ it.each(['USD', 'EUR'])('uses SOL pricing only when balances match the selected 
 });
 
 it('shows a read-only fee beside the shared action button before review and preserves hold-to-submit', async () => {
-  selection.inputAsset = 'bonk';
+  selection.inputAsset = SWAP_ASSETS['bonk'];
   selection.amount = '100000';
   mocks.balances.mockResolvedValue({ sol: 20000000n, bonk: 10000000000n });
   mocks.prepare.mockResolvedValue(quote('bonk'));
@@ -374,7 +380,7 @@ it('preserves the icon column while hiding its glyph during fetching, like EVM',
 });
 
 it.each(['base-eth', 'bonk'] as const)('marks %s network fees Free only when source gas is also sponsored', async input => {
-  selection.inputAsset = input;
+  selection.inputAsset = SWAP_ASSETS[input];
   selection.amount = input === 'bonk' ? '100000' : '0.001';
   mocks.balances.mockResolvedValue({ 'base-eth': 10000000000000000n, 'sol': 20000000n, 'bonk': 10000000000n });
   mocks.prepare.mockResolvedValue(quote(input));
@@ -400,4 +406,51 @@ it.each(['base-eth', 'bonk'] as const)('marks %s network fees Free only when sou
   (required('Controls').props.onChange as (amount: string) => void)(selection.amount);
   render();
   expect(required('GasButtonView').props.selectedGas).not.toMatchObject({ type: 'SelectedGasView' });
+});
+
+it('selects two arbitrary Solana tokens through the shared picker and quotes their exact descriptors', async () => {
+  const tokens = parseSolanaSearchResults({
+    sections: [
+      {
+        type: 'SECTION_TYPE_TOKENS',
+        items: [
+          {
+            id: 'jup',
+            token: {
+              symbol: 'JUP',
+              instances: [{ assetId: `${SOLANA_MAINNET_CHAIN}/token:JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN`, decimals: 6 }],
+            },
+          },
+          {
+            id: 'wsol',
+            token: {
+              symbol: 'WSOL',
+              instances: [{ assetId: `${SOLANA_MAINNET_CHAIN}/token:So11111111111111111111111111111111111111112`, decimals: 9 }],
+            },
+          },
+        ],
+      },
+    ],
+  });
+  mocks.balances.mockResolvedValue({ [tokens[0].id]: 1234567n, sol: 20000000n });
+  mocks.prepare.mockResolvedValue({ ...quote(), inputAsset: tokens[0], outputAsset: tokens[1], sourceChain: 'solana' });
+  render();
+  (required('Card').props.onSelect as () => void)();
+  render();
+  (required('Picker').props.onSelect as (asset: unknown) => void)(tokens[0]);
+  render();
+  function cards(node: unknown): Element[] {
+    if (Array.isArray(node)) return node.flatMap(cards);
+    if (!node || typeof node !== 'object' || !('props' in node)) return [];
+    const item = node as Element;
+    return item.type === 'Card' ? [item] : cards(item.props.children);
+  }
+  (cards(tree)[1].props.onSelect as () => void)();
+  render();
+  (required('Picker').props.onSelect as (asset: unknown) => void)(tokens[1]);
+  render();
+  (required('Controls').props.onChange as (value: string) => void)('1.234567');
+  render();
+  await advance(500);
+  expect(mocks.prepare).toHaveBeenLastCalledWith(tokens[0], tokens[1], '1.234567');
 });

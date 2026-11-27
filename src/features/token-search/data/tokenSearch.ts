@@ -3,7 +3,8 @@ import { createDerivedStore } from '@storesjs/stores';
 import { TOKEN_SEARCH_V2 } from '@/features/config/constants/experimental';
 import { useExperimentalConfigStore } from '@/features/config/stores/experimentalConfigStore';
 import { useRemoteConfigStore } from '@/features/config/stores/remoteConfig';
-import { type ChainId } from '@/features/network/types/backendNetworks';
+import { type SupportedChainId } from '@/features/network/types/supportedChainId';
+import { SOLANA_CHAIN_ID, SOLANA_MAINNET_CHAIN } from '@/features/solana/core/chainId';
 import { getPlatformClient } from '@/resources/platform/client';
 
 import { type TokenSearchCategory, type TokenSearchResult } from '../core/tokenSearch';
@@ -13,9 +14,9 @@ export type TokenSearchParams = {
   query: string;
   category?: TokenSearchCategory;
   /** Strict filter: only assets deployed on these chains are returned, with only those deployments. */
-  chainIds?: ChainId[];
+  chainIds?: SupportedChainId[];
   /** Ranking hint: breaks ties in favor of assets deployed on this chain, and lists that deployment first. */
-  preferredChainId?: ChainId;
+  preferredChainId?: SupportedChainId;
   /** Maximum items per section, excluding `top`. */
   limit?: number;
 };
@@ -42,6 +43,6 @@ export async function fetchTokenSearch(
   return response.data.result;
 }
 
-function toCaip2ChainId(chainId: ChainId): string {
-  return `eip155:${chainId}`;
+function toCaip2ChainId(chainId: SupportedChainId): string {
+  return chainId === SOLANA_CHAIN_ID ? SOLANA_MAINNET_CHAIN : `eip155:${chainId}`;
 }

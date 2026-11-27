@@ -1,44 +1,29 @@
 # 5. Use the normal swap screen for Solana
 
-Start at `src/__swaps__/screens/Swap/Swap.tsx` (2 minutes): the selected, enabled Solana route chooses SolanaSwapFlow; the existing EVM screen remains its own path.
+[PR #7963](https://github.com/rainbow-me/rainbow/pull/7963), based on PR #7962. Start at `src/__swaps__/screens/Swap/Swap.tsx`: an enabled Solana selection chooses SolanaSwapFlow; EVM retains its existing screen and provider tree.
 
-Depends on paired wallet identity, balances, SDK execution and the shared presentation views. The final behavior matches the preserved working stack: Base ETH plus SOL/USDC/BONK inputs; SOL/USDC/BONK outputs; source-wallet fees and sponsored fee display; refresh after execution. It retains the current internal-MVP limitations rather than adding routes or new presentation.
+Inputs are Base ETH and owned Solana tokens returned by search. Outputs are searchable Solana tokens. SOL, USDC and BONK remain the empty-query defaults; they are no longer a trading allowlist. Developer Settings retains enablement, balances/status and the exclusive SOL → Base USDC test route.
 
 ## Reading order (20–30 minutes)
 
-1. Swap entry, TokenToBuyList/TokenToSellList, selection store and options: verify feature/account gates and reset selection across wallets.
-2. SolanaSwapFlow: trace amount changes, quote cancellation/expiry, review locking, exact submission and pending-status recovery. Read the flow tests beside it.
-3. SolanaSwapControls/TokenRow: verify shared presentation and EVM controls, token/mint information, fee state, and original network assets. Read token-row tests.
-4. Developer menu: Enable Solana, balance refresh, execution checks and SOL → Base USDC remain. The three duplicate developer swaps stay removed.
-5. Run `docs/solana-swap-test-plan.md` and record receipts in its CSV. No funded swaps or simulator visual validation were performed during this reorganization.
+1. `features/token-search/data/tokenSearch.ts` and `features/solana/core/tokenSearch.ts`: shared endpoint CAIP-2 parameters, mainnet mint parsing, decimals, native SOL versus WSOL, verification and duplicate filtering. Existing EVM parameters remain unchanged.
+2. `features/solana/data/solanaTokenSearchStore.ts`, `ui/useSolanaSwapOptions.ts` and `ui/SolanaSwapOptions.tsx`: feature/account gating, separate input/output queries and held-token input filtering. EVM input search lowercases text, so Solana retains its own original input query.
+3. `features/solana/ui/SolanaSwapTokenPicker.tsx`, `SolanaSwapTokenRow.tsx` and `SolanaSwapControls.tsx`: reuse the shared search field, coin row, amount controls and proxied icon component. Solana-enabled Paste accepts 44 characters; the existing EVM default remains 42.
+4. `features/solana/core/swap.ts`, `data/swapSelection.ts`, `data/swapTypes.ts` and `data/mvpTrades.ts`: selected asset descriptors carry exact mint/decimals through amounts, balances, quote validation and existing SDK execution. Check source-wallet fees, required provider sponsorship and exact reviewed output identity.
+5. `features/solana/ui/SolanaSwapFlow.tsx` and adjacent tests: selection, stale-quote cancellation, review/signing, pending-status recovery and balance refresh. Follow the [manual test matrix](../solana-swap-test-plan.md) for native and settlement checks.
 
-The current preview SDK, hardcoded asset options, separate controller and review detail block are retained MVP choices. This stack does not claim that a feature flag alone proves production safety.
+Paths above are relative to `src/`. Shared search-field changes are in `src/components/token-search/{SearchInput,SearchInputButton}.tsx` and the swap adapter `src/__swaps__/screens/Swap/components/SearchInput.tsx`. Tests sit beside changed modules, including clipboard-length and arbitrary-token SDK execution coverage.
 
-## Changed-file inventory
+## Backend contract
 
-- `docs/solana-swap-test-plan.md`
-- `docs/solana-swap-test-results.csv`
-- `src/__swaps__/screens/Swap/Swap.tsx`
-- `src/__swaps__/screens/Swap/components/TokenList/TokenToBuyList.tsx`
-- `src/__swaps__/screens/Swap/components/TokenList/TokenToSellList.tsx`
-- `src/features/solana/data/swapSelection.test.ts`
-- `src/features/solana/data/swapSelection.ts`
-- `src/features/solana/ui/SolanaMvpMenu.tsx`
-- `src/features/solana/ui/SolanaSwapControls.tsx`
-- `src/features/solana/ui/SolanaSwapFlow.test.tsx`
-- `src/features/solana/ui/SolanaSwapFlow.tsx`
-- `src/features/solana/ui/SolanaSwapOptions.tsx`
-- `src/features/solana/ui/SolanaSwapTokenRow.test.tsx`
-- `src/features/solana/ui/SolanaSwapTokenRow.tsx`
+[Kamil’s search update](https://rainbowhaus.slack.com/archives/C0B550KTXJT/p1795780678285899) specifies `chainIds=solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp`, with mixed EVM/Solana CAIP-2 filters supported by the same endpoint. Live read-only requests confirmed name/symbol results, mixed-chain responses and Solana metadata. Empty queries returned no results, so the default list stays local.
 
-This guide and its listed 14 implementation/configuration/test files define this layer.
+The Solana UI makes a Solana-filtered request through the shared client; EVM keeps its existing request/parser. Native SOL uses `/native:So11111111111111111111111111111111111111111`; SPL tokens use `/token:<mint>`. WSOL is a separate token. Mint casing is preserved. Unverified tokens may appear; scam/high-risk results are excluded. Search discovery does not guarantee a provider quote, liquidity or token-program support.
 
-## Current-develop compatibility
+## Verification and limits
 
-The swap-screen conflict was resolved by preserving develop’s memoization, SwapRouteParamsObserver and existing provider/render tree. Solana selection wraps the EVM screen, and cleanup remains at the outer screen lifetime. The token-list patches apply on top of current token search rather than reverting it.
+The search update passes 253 tests across 21 files, including existing EVM search coverage, arbitrary token selection/amounts, quote identity and mocked SDK buy/sell execution. Full TypeScript and dependency checks pass. Live endpoint requests were read-only. Native layout/keyboard/gestures, physical-device authentication and funded swaps have not been rerun for this update.
 
-## Automated verification
+The preview SDK, public RPC, Cloudflare service configuration, separate Solana controller and existing review block remain MVP constraints. Token favorites and expanded sheets are not added here. The feature flag does not by itself prove production safety; shared presentation also affects EVM.
 
-The complete stack passes 356 focused tests across 28 files (wallet, Solana, EVM swaps, network badges and wallet sections), full TypeScript, dependency rules and the JavaScript type baseline (1,373 existing errors, no regressions). Native visuals, authentication and funded settlement have not been rerun on this new stack.
-
-Store builds use the same Solana gate as wallet access and balances. No Solana-specific `IS_STORE_INSTALL` exclusion remains; the existing global configuration policy still makes store builds rely on remote `solana_enabled`.
+Store builds use remote `solana_enabled`; internal builds also honor the existing local override. No remote configuration values changed. Existing internal accounts using old Base64 key records must be re-enabled before signing; current storage uses Base58 without a legacy migration.

@@ -32,6 +32,7 @@ export type AnimatedButtonStyles = {
 
 export const SearchInputButton = ({
   enablePaste,
+  maxPasteLength = 42,
   showButtonWhenNoAsset,
   pastedSearchInputValue,
   isSearchFocused,
@@ -43,6 +44,7 @@ export const SearchInputButton = ({
   animatedButtonStyles,
 }: {
   enablePaste: boolean;
+  maxPasteLength?: number;
   showButtonWhenNoAsset: boolean;
   pastedSearchInputValue: SharedValue<string>;
   isSearchFocused: Readonly<SharedValue<boolean>>;
@@ -69,12 +71,11 @@ export const SearchInputButton = ({
 
   const onPaste = useCallback(() => {
     Clipboard.getString().then(text => {
-      // Slice the pasted text to the length of an ETH address
-      const pastedText = text.trim().slice(0, 42);
+      const pastedText = text.trim().slice(0, maxPasteLength);
       pastedSearchInputValue.value = pastedText;
       onPasteSearchQuery(pastedText);
     });
-  }, [pastedSearchInputValue, onPasteSearchQuery]);
+  }, [pastedSearchInputValue, onPasteSearchQuery, maxPasteLength]);
 
   const buttonInfo = useDerivedValue(() => {
     const clipboardDataAvailable = hasClipboardData || Platform.OS === 'android';

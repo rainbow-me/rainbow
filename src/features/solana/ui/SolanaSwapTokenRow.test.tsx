@@ -14,17 +14,21 @@ vi.mock('@/hooks/useClipboard', () => ({ setClipboard: mocks.copy }));
 vi.mock('@/utils/openInBrowser', () => ({ openInBrowser: mocks.open }));
 vi.mock('@/languages', () => ({
   t: (key: string) => key,
-  l: { exchange: { coin_row: { copy_contract_address: 'Copy contract address', view_on: 'View on' } } },
+  l: {
+    token_search: { section_header: { verified: 'Verified', unverified: 'Unverified' } },
+    exchange: { coin_row: { token: 'Token', copy_contract_address: 'Copy contract address', view_on: 'View on' } },
+  },
 }));
 
 beforeEach(() => vi.clearAllMocks());
 
 it('uses the shared output row and preserves mint case for copy and explorer actions', () => {
   const onPress = vi.fn();
-  const row = SolanaSwapTokenRow({ assetId: 'bonk', output: true, onPress });
+  const row = SolanaSwapTokenRow({ token: SWAP_ASSETS['bonk'], output: true, onPress });
   expect(row.type).toBe('CoinRowView');
   expect(row.props).toMatchObject({ name: 'Bonk', subtitle: 'BONK', output: true, onPress });
   const [info, star] = row.props.actions.props.children;
+  expect(info.props.menuConfig.menuTitle).toBe('Unverified Token');
   const select = (actionKey: string) => info.props.onPressMenuItem({ nativeEvent: { actionKey } });
   select('copyAddress');
   expect(mocks.copy).toHaveBeenCalledWith(SWAP_ASSETS.bonk.asset.address);
@@ -34,14 +38,14 @@ it('uses the shared output row and preserves mint case for copy and explorer act
 });
 
 it('does not offer a fabricated token mint for native SOL', () => {
-  const row = SolanaSwapTokenRow({ assetId: 'sol', output: true, onPress: vi.fn() });
+  const row = SolanaSwapTokenRow({ token: SWAP_ASSETS['sol'], output: true, onPress: vi.fn() });
   const [info] = row.props.actions.props.children;
   expect(info.props.disabled).toBe(true);
   expect(info.props.onPress).toBeUndefined();
 });
 
 it('uses the input row without output actions', () => {
-  const row = SolanaSwapTokenRow({ assetId: 'usdc', balance: '12', output: false, onPress: vi.fn() });
+  const row = SolanaSwapTokenRow({ token: SWAP_ASSETS['usdc'], balance: '12', output: false, onPress: vi.fn() });
   expect(row.props.subtitle).toBe('12 USDC');
   expect(row.props.actions).toBeUndefined();
 });

@@ -25,7 +25,7 @@ import {
   swapInputAmount,
   swapMaxAmount,
   validateSwapReview,
-  type SwapAssetId,
+  type SwapAsset,
 } from '@/features/solana/core/swap';
 import {
   checkMvpExecution,
@@ -38,7 +38,7 @@ import { useSolanaBalancesStore, useSolanaWalletBalances } from '@/features/sola
 import { type SolanaSwapSelection } from '@/features/solana/data/swapSelection';
 import { type PreparedSwap } from '@/features/solana/data/swapTypes';
 import { appearance, SolanaSwapAmountControls, SolanaSwapCard } from '@/features/solana/ui/SolanaSwapControls';
-import { SolanaSwapTokenRow } from '@/features/solana/ui/SolanaSwapTokenRow';
+import { SolanaSwapTokenPicker } from '@/features/solana/ui/SolanaSwapTokenPicker';
 import { getEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
 import { WrappedAlert as Alert } from '@/helpers/alert';
 import { handleSignificantDecimals } from '@/helpers/utilities';
@@ -64,7 +64,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
   const [output, setOutput] = useState(selection.outputAsset);
   const [amount, setAmount] = useState(selection.amount);
   const [picker, setPicker] = useState<'input' | 'output' | null>(selection.inputAsset ? null : 'input');
-  const [balances, setBalances] = useState<Partial<Record<SwapAssetId, bigint>>>({});
+  const [balances, setBalances] = useState<Partial<Record<string, bigint>>>({});
   const [trade, setTrade] = useState<PreparedSwap | null>(null);
   const [lastOutput, setLastOutput] = useState('0');
   const [reviewing, setReviewing] = useState(false);
@@ -86,12 +86,12 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
   const currency = userAssetsStoreManager(state => state.currency);
   const { data: solanaBalances } = useSolanaWalletBalances();
   const baseEth = useUserAssetsStore(state => state.getNativeAssetForChain(8453));
-  const nativeValue = (id: SwapAssetId | null, value: string) => {
+  const nativeValue = (id: SwapAsset | null, value: string) => {
     let price = new BigNumber(0);
-    if (id === 'base-eth') price = new BigNumber(baseEth?.native.price?.amount ?? 0);
+    if (id?.chain === 'evm') price = new BigNumber(baseEth?.native.price?.amount ?? 0);
     else if (id) {
       const item = solanaBalances?.balances.get(
-        getUniqueId(id === 'sol' ? 'So11111111111111111111111111111111111111111' : SWAP_ASSETS[id].asset.address, SOLANA_CHAIN_ID)
+        getUniqueId(id.asset.kind === 'token' ? id.asset.address : 'So11111111111111111111111111111111111111111', SOLANA_CHAIN_ID)
       );
       if (item?.value && !item.rawUnits && new BigNumber(item.amount).gt(0)) price = new BigNumber(item.value).div(item.amount);
     }
@@ -114,9 +114,9 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
   const refreshBalances = useCallback(async () => {
     const account = getEnabledSolanaAccount();
     if (account.address !== selection.address) throw new Error('The selected account changed.');
-    const result = await getSwapBalances(account);
-    if (mounted.current) setBalances(result);
-  }, [selection.address]);
+    const result = await getSwapBalances(account, [SWAP_ASSETS['base-eth'], ...SOLANA_SWAP_OUTPUTS, ...(input ? [input] : []), output]);
+    if (mounted.current) setBalances(current => ({ ...current, ...result }));
+  }, [selection.address, input, output]);
 
   useEffect(() => {
     const refresh = () => {
@@ -142,7 +142,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
     setTrade(null);
     setError(null);
     setPreparing(false);
-    if (!input || input === output) return;
+    if (!input || input.id === output.id) return;
     try {
       swapInputAmount(amount, input);
     } catch {
@@ -155,7 +155,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
         .then(result => {
           if (mounted.current && request === generation.current) {
             setTrade(result);
-            setLastOutput(formatUnits(result.prepared.review.output.amount, SWAP_ASSETS[result.outputAsset].decimals));
+            setLastOutput(formatUnits(result.prepared.review.output.amount, result.outputAsset.decimals));
           }
         })
         .catch(e => {
@@ -234,20 +234,22 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
     },
     [invalidate]
   );
-  const choose = (id: SwapAssetId) => {
+  const choose = (id: SwapAsset) => {
     invalidate();
     setLastOutput('0');
     if (picker === 'input') {
       setInput(id);
       setAmount('0');
-      if (id === output) setOutput(id === 'sol' ? 'usdc' : 'sol');
-    } else if (id !== 'base-eth') setOutput(id);
+      if (id.id === output.id) setOutput(id.id === 'sol' ? SWAP_ASSETS.usdc : SWAP_ASSETS.sol);
+    } else if (id.chain !== 'evm') setOutput(id);
     setPicker(null);
   };
   const expired = !!trade && trade.prepared.review.expiresAt <= BigInt(Math.floor(now / 1000));
   const locked = submitting || pending || !!executionId;
   const inputIsZero = new BigNumber(amount).isZero();
-  const insufficientFunds = !!input && balances[input] !== undefined && new BigNumber(amount).gt(swapMaxAmount(input, balances[input]));
+  const inputBalance = input ? balances[input.id] : undefined;
+  const outputBalance = balances[output.id];
+  const insufficientFunds = !!input && inputBalance !== undefined && new BigNumber(amount).gt(swapMaxAmount(input, inputBalance));
 
   useEffect(() => {
     if ((!trade && !error) || preparing || locked || picker || sliderActive || (reviewing && !expired)) return;
@@ -347,17 +349,13 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
                 {picker === 'input' ? 'Token to Swap' : 'Token to Get'}
               </Text>
             </Box>
-            {(picker === 'input' ? (['base-eth', ...SOLANA_SWAP_OUTPUTS] as const) : SOLANA_SWAP_OUTPUTS.filter(id => id !== input)).map(
-              id => (
-                <SolanaSwapTokenRow
-                  key={id}
-                  assetId={id}
-                  output={picker === 'output'}
-                  balance={balances[id] === undefined ? undefined : formatUnits(balances[id], SWAP_ASSETS[id].decimals)}
-                  onPress={() => choose(id)}
-                />
-              )
-            )}
+            <SolanaSwapTokenPicker
+              output={picker === 'output'}
+              selected={picker === 'input' ? input : output}
+              balances={balances}
+              onSelect={choose}
+              onCancel={() => setPicker(null)}
+            />
             <Box padding="20px" gap={20}>
               <ButtonPressAnimation onPress={onBack}>
                 <Text color="blue" size="17pt" weight="semibold">
@@ -374,12 +372,12 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
         ) : (
           <>
             <SolanaSwapCard
-              assetId={input}
+              token={input}
               nativeValue={nativeValue(input, amount)}
               amount={amount}
               balance={
-                input && balances[input] !== undefined
-                  ? `${handleSignificantDecimals(formatUnits(balances[input], SWAP_ASSETS[input].decimals), SWAP_ASSETS[input].decimals)} ${SWAP_ASSETS[input].symbol}`
+                input && inputBalance !== undefined
+                  ? `${handleSignificantDecimals(formatUnits(inputBalance, input.decimals), input.decimals)} ${input.symbol}`
                   : 'Loading balance…'
               }
               onSelect={() => {
@@ -389,9 +387,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
                 }
               }}
               onMax={
-                input && balances[input] !== undefined && !locked
-                  ? () => changeAmount(swapMaxAmount(input, balances[input] ?? 0n))
-                  : undefined
+                input && inputBalance !== undefined && !locked ? () => changeAmount(swapMaxAmount(input, inputBalance ?? 0n)) : undefined
               }
             />
             <Box height={{ custom: 12 }} width={{ custom: 28 }} style={{ zIndex: 1 }} justifyContent="center" alignItems="center">
@@ -418,14 +414,14 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
               </Box>
             </Box>
             <SolanaSwapCard
-              assetId={output}
+              token={output}
               bottomInput
               nativeValue={nativeValue(output, outputAmount)}
               amount={outputAmount}
               balance={
-                balances[output] === undefined
+                outputBalance === undefined
                   ? 'No Balance'
-                  : `${handleSignificantDecimals(formatUnits(balances[output], SWAP_ASSETS[output].decimals), SWAP_ASSETS[output].decimals)} ${SWAP_ASSETS[output].symbol}`
+                  : `${handleSignificantDecimals(formatUnits(outputBalance, output.decimals), output.decimals)} ${output.symbol}`
               }
               onSelect={() => {
                 if (!locked) {
@@ -452,15 +448,13 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
                     Review swap
                   </Text>
                   <Text color="labelSecondary" size="15pt" weight="medium">
-                    Spend: {formatUnits(trade.input, SWAP_ASSETS[trade.inputAsset].decimals)} {SWAP_ASSETS[trade.inputAsset].symbol} on{' '}
-                    {SWAP_ASSETS[trade.inputAsset].network}
+                    Spend: {formatUnits(trade.input, trade.inputAsset.decimals)} {trade.inputAsset.symbol} on {trade.inputAsset.network}
                   </Text>
                   <Text color="labelSecondary" size="15pt" weight="medium">
-                    Receive: {formatUnits(trade.prepared.review.output.amount, SWAP_ASSETS[output].decimals)} {SWAP_ASSETS[output].symbol}
+                    Receive: {formatUnits(trade.prepared.review.output.amount, output.decimals)} {output.symbol}
                   </Text>
                   <Text color="labelSecondary" size="15pt" weight="medium">
-                    Minimum received: {formatUnits(trade.prepared.review.output.minimumAmount ?? 0n, SWAP_ASSETS[output].decimals)}{' '}
-                    {SWAP_ASSETS[output].symbol}
+                    Minimum received: {formatUnits(trade.prepared.review.output.minimumAmount ?? 0n, output.decimals)} {output.symbol}
                   </Text>
                   <Text color="labelSecondary" size="13pt" weight="medium">
                     Recipient: {trade.account.address}
@@ -474,7 +468,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
                     </Text>
                   </Box>
                   <Text color="labelSecondary" size="13pt" weight="medium">
-                    {input === 'base-eth'
+                    {input?.chain === 'evm'
                       ? 'Gas and provider fees sponsored. This route may authorize Rainbow EVM delegation.'
                       : 'Provider fees are sponsored.'}
                   </Text>
@@ -501,7 +495,7 @@ export function SolanaSwapFlow({ selection, onBack }: { selection: SolanaSwapSel
           <SolanaSwapAmountControls
             input={input}
             amount={amount}
-            balance={balances[input] ?? 0n}
+            balance={inputBalance ?? 0n}
             fetching={preparing}
             onChange={changeAmount}
             onInteraction={onSliderInteraction}

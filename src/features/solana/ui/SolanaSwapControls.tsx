@@ -21,7 +21,7 @@ import { Box, Text, useColorMode } from '@/design-system';
 import { ChainImage } from '@/features/network/components/ChainImage';
 import { SOLANA_NETWORK_COLOR, SOLANA_NETWORK_ICON, SOLANA_NETWORK_SHADOW_COLOR } from '@/features/solana/constants/networkAssets';
 import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
-import { editSwapAmount, SWAP_ASSETS, swapMaxAmount, swapPercentageAmount, type SwapAssetId } from '@/features/solana/core/swap';
+import { editSwapAmount, swapMaxAmount, swapPercentageAmount, type SwapAsset } from '@/features/solana/core/swap';
 import { addCommasToNumber } from '@/framework/ui/utils/addCommasToNumber';
 import { handleSignificantDecimals } from '@/helpers/utilities';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
@@ -32,37 +32,49 @@ const COLORS = {
   'usdc': { light: '#2775CA', dark: '#5496DF' },
   'bonk': { light: '#C26515', dark: '#EAA259' },
 };
-export function appearance(id: SwapAssetId | null) {
+export function appearance(id: SwapAsset | null) {
   'worklet';
-  const color = COLORS[id ?? 'base-eth'];
+  const key = id?.id ?? 'base-eth';
+  const color = key && key in COLORS ? COLORS[key as keyof typeof COLORS] : SOLANA_NETWORK_COLOR;
   return {
     color,
     highContrastColor: color,
-    mixedShadowColor: id === 'sol' ? SOLANA_NETWORK_SHADOW_COLOR : color,
+    mixedShadowColor: id?.id === 'sol' ? SOLANA_NETWORK_SHADOW_COLOR : color,
     textColor: { light: '#FFFFFF', dark: '#FFFFFF' },
-    symbol: id ? SWAP_ASSETS[id].symbol : '',
+    symbol: id ? id.symbol : '',
   };
 }
 
-export function SolanaSwapIcon({ assetId, size = 36 }: { assetId: SwapAssetId | null; size?: number }) {
-  const asset = useDerivedValue(() => appearance(assetId));
+export function SolanaSwapIcon({ token, size = 36 }: { token: SwapAsset | null; size?: number }) {
+  const asset = useDerivedValue(() => appearance(token));
   const eth = useUserAssetsStore(state => state.getNativeAssetForChain(8453));
-  if (assetId === 'base-eth')
+  if (token?.chain === 'evm')
     return <RainbowCoinIcon chainId={8453} icon={eth?.icon_url} symbol="ETH" size={size} chainSize={16} showBadge={size > 16} />;
+  if (token?.chain === 'solana' && token.iconUrl)
+    return (
+      <RainbowCoinIcon
+        chainId={SOLANA_CHAIN_ID}
+        icon={token.iconUrl}
+        symbol={token.symbol}
+        size={size}
+        chainSize={16}
+        showBadge={size > 16}
+      />
+    );
   return (
     <Box width={{ custom: size }} height={{ custom: size }}>
-      {assetId === 'sol' ? (
+      {token?.id === 'sol' ? (
         <Image source={SOLANA_NETWORK_ICON} style={{ width: size, height: size, borderRadius: size / 2 }} />
       ) : (
         <SwapCoinIconTextFallback asset={asset} height={size} width={size} style={{ borderRadius: size / 2, overflow: 'hidden' }} />
       )}
-      <ChainImage chainId={SOLANA_CHAIN_ID} size={16} badgeXPosition={-8} showBadge={!!assetId && size > 16} />
+      <ChainImage chainId={SOLANA_CHAIN_ID} size={16} badgeXPosition={-8} showBadge={!!token && size > 16} />
     </Box>
   );
 }
 
 export function SolanaSwapCard({
-  assetId,
+  token,
   amount,
   balance,
   nativeValue,
@@ -70,7 +82,7 @@ export function SolanaSwapCard({
   onMax,
   bottomInput,
 }: {
-  assetId: SwapAssetId | null;
+  token: SwapAsset | null;
   amount: string;
   balance: string;
   nativeValue: string;
@@ -78,11 +90,10 @@ export function SolanaSwapCard({
   onMax?: () => void;
   bottomInput?: boolean;
 }) {
-  const asset = useDerivedValue(() => appearance(assetId));
+  const asset = useDerivedValue(() => appearance(token));
   const progress = useSharedValue(0);
   const label = useDerivedValue(() => balance);
-  const displayAmount =
-    bottomInput && assetId ? handleSignificantDecimals(amount, SWAP_ASSETS[assetId].decimals) : addCommasToNumber(amount, '0');
+  const displayAmount = bottomInput && token ? handleSignificantDecimals(amount, token.decimals) : addCommasToNumber(amount, '0');
   const { isDarkMode } = useColorMode();
   const badge = <BalanceBadge label={label} />;
   return (
@@ -90,7 +101,7 @@ export function SolanaSwapCard({
       <SwapAssetFields
         icon={
           <Box paddingRight="10px">
-            <SolanaSwapIcon assetId={assetId} />
+            <SolanaSwapIcon token={token} />
           </Box>
         }
         amount={
@@ -108,7 +119,7 @@ export function SolanaSwapCard({
             asset={asset}
             disableShadow={isDarkMode}
             hugContent
-            label={assetId ? SWAP_ASSETS[assetId].symbol : 'Select'}
+            label={token ? token.symbol : 'Select'}
             onPressJS={onSelect}
             rightIcon="􀆏"
             small
@@ -143,7 +154,7 @@ export const SolanaSwapAmountControls = React.memo(function SolanaSwapAmountCont
   onChange,
   onInteraction,
 }: {
-  input: SwapAssetId;
+  input: SwapAsset;
   amount: string;
   balance: bigint;
   fetching: boolean;
@@ -166,8 +177,8 @@ export const SolanaSwapAmountControls = React.memo(function SolanaSwapAmountCont
   const canDelete = useDerivedValue(() => String(inputValues.value.inputAmount) !== '0');
   useEffect(() => {
     inputValues.value = { ...inputValues.value, inputAmount: amount };
-    const units = parseUnits(amount, SWAP_ASSETS[input].decimals);
-    const maximum = parseUnits(max, SWAP_ASSETS[input].decimals);
+    const units = parseUnits(amount, input.decimals);
+    const maximum = parseUnits(max, input.decimals);
     sliderXPosition.value = maximum > 0n ? Math.min(1, Number((units * 10000n) / maximum) / 10000) * SLIDER_WIDTH : 0;
   }, [amount, input, max, inputValues, sliderXPosition]);
   useEffect(() => {
@@ -215,7 +226,7 @@ export const SolanaSwapAmountControls = React.memo(function SolanaSwapAmountCont
     sliderXPosition,
     swapInfo: { value: { isBridging: false } },
   };
-  const decimals = SWAP_ASSETS[input].decimals;
+  const decimals = input.decimals;
   const edit = (key: number | '.' | 'backspace') => {
     'worklet';
     const current = String(inputValues.value.inputAmount);
@@ -227,7 +238,7 @@ export const SolanaSwapAmountControls = React.memo(function SolanaSwapAmountCont
   };
   return (
     <Box width="full" testID="solana-swap-amount-controls">
-      <SwapSliderView snapPoints={SLIDER_SNAP_POINTS} state={state} icon={<SolanaSwapIcon assetId={input} size={16} />} />
+      <SwapSliderView snapPoints={SLIDER_SNAP_POINTS} state={state} icon={<SolanaSwapIcon token={input} size={16} />} />
       <SwapNumberPadView
         canDelete={canDelete}
         addNumber={number => {

@@ -54,10 +54,10 @@ Gas RPC estimates cover network fees, not arbitrary account-creation transfers. 
 | Route / capability | Current reason |
 | --- | --- |
 | Base USDC → SOL / BONK / Solana USDC | Normal-sheet source list only adds Base ETH. Earlier Relay approval-proxy incompatibility needs a fresh backend check; no claim it is still unresolved today. Do not treat this as a currently available button. |
-| Solana → arbitrary EVM outputs | SDK supports Solana → EVM, but normal-sheet output picker is still SOL/USDC/BONK only. S10 is the existing developer route. |
+| Solana → arbitrary EVM outputs | SDK supports Solana → EVM, but normal-sheet output picker supports Solana tokens only. S10 is the existing developer route. |
 | Fully gasless Solana source | Current integration requires the source wallet to pay SOL gas; provider full sponsorship is distinct. Requires SDK/worker fee-payer support. |
 | User-paid rent with sponsored network/provider fees | Current SDK policy is full provider sponsorship, not the desired separately configurable rent policy. |
-| General token search and full token actions | Hardcoded default list; favorites/native SOL info and expanded sheets remain incomplete. Not settlement failures. |
+| Full token actions | Backend Solana search is integrated; favorites/native SOL info and expanded sheets remain incomplete. Not settlement failures. |
 
 **Next two-minute action:** open the results CSV and choose S01 (Base ETH → SOL) as the first new run after code review. Do not execute now if you are taking a break.
 
@@ -74,3 +74,13 @@ The new review stack preserves network artwork and the November 20 developer-but
 5. Check icons and values in light/dark mode. EVM row taps must still open their expanded sheet. Solana row taps outside Edit remain inactive; expanded-sheet integration is not part of this change.
 
 Status: Not run in the simulator for the shared-row change. Unit coverage checks selection callbacks, ID casing, persistence, row filtering, icon fallback and EVM navigation.
+
+## Backend Solana search (unsigned checks first, 5 minutes)
+
+1. Enable Solana and open the normal swap sheet. With empty search, SOL/USDC/BONK remain the default outputs. Search by name and symbol; confirm additional Solana results, metadata and proxied icons appear alongside the existing EVM results.
+2. Paste the full mixed-case JUP mint `JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN`. Confirm it is not lowercased or truncated, and the info menu copies that exact mint. Repeat inside the Solana flow's token picker.
+3. Select Base ETH → JUP, enter a small amount and review a fresh quote. Check JUP mint and 6-decimal amount/minimum. Search for WSOL and confirm it remains distinct from native SOL. A missing provider route is a quote failure, not proof of a search failure.
+4. With a held searched token, select it as input, then choose SOL or another searched Solana token as output. Check exact balance, slider, amount precision, SOL fee reserve and reviewed mints. Only confirm a funded transaction when ready to spend; record both receipts and balance changes in the existing CSV.
+5. Disable Solana and repeat ordinary EVM name/address search, Paste and token selection. Re-enable it and switch accounts: Solana results and held inputs must follow the eligible paired account.
+
+Status: automated search/selection/amount/SDK tests and read-only endpoint checks passed. These native/manual and funded cases have not been executed for this update.

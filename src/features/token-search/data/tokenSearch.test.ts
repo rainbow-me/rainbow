@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { SOLANA_CHAIN_ID, SOLANA_MAINNET_CHAIN } from '@/features/solana/core/chainId';
 
 import { fetchTokenSearch } from './tokenSearch';
 
@@ -37,5 +38,15 @@ describe('fetchTokenSearch', () => {
         limit: '20',
       },
     });
+  });
+});
+
+it('supports mixed EVM and Solana filters without changing mint case', async () => {
+  get.mockResolvedValue({ data: { result: {} } });
+  const mint = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
+  await fetchTokenSearch({ query: mint, chainIds: [ChainId.base, SOLANA_CHAIN_ID], preferredChainId: SOLANA_CHAIN_ID }, null);
+  expect(get).toHaveBeenLastCalledWith('/search/Search', {
+    abortController: null,
+    params: { query: mint, chainIds: `eip155:8453,${SOLANA_MAINNET_CHAIN}`, preferredChainId: SOLANA_MAINNET_CHAIN },
   });
 });
