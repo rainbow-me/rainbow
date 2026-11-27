@@ -39,7 +39,7 @@ interface RequestSimulationCardProps {
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
   isLoading: boolean;
-  txSimulationApiError: unknown;
+  isSimulationUnavailable: boolean;
   isPersonalSignRequest: boolean;
   noChanges: boolean;
   simulation: TransactionSimulationResult | undefined;
@@ -53,7 +53,7 @@ export const RequestSimulationCard = ({
   expandedCardBottomInset,
   isBalanceEnough,
   isLoading,
-  txSimulationApiError,
+  isSimulationUnavailable,
   isPersonalSignRequest,
   noChanges,
   simulation,
@@ -146,7 +146,7 @@ export const RequestSimulationCard = ({
     if (isBalanceEnough === false) {
       return 'blue';
     }
-    if (noChanges || isPersonalSignRequest || txSimulationApiError) {
+    if (noChanges || isPersonalSignRequest || isSimulationUnavailable) {
       return 'labelQuaternary';
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
@@ -156,7 +156,7 @@ export const RequestSimulationCard = ({
       return 'red';
     }
     return 'label';
-  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, isPersonalSignRequest, txSimulationApiError]);
+  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, isPersonalSignRequest, isSimulationUnavailable]);
 
   const titleText = useMemo(() => {
     if (isLoading) {
@@ -165,7 +165,7 @@ export const RequestSimulationCard = ({
     if (isBalanceEnough === false) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: nativeAsset.symbol });
     }
-    if (txSimulationApiError || isPersonalSignRequest) {
+    if (isSimulationUnavailable || isPersonalSignRequest) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_unavailable);
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
@@ -184,7 +184,7 @@ export const RequestSimulationCard = ({
   }, [
     isLoading,
     isBalanceEnough,
-    txSimulationApiError,
+    isSimulationUnavailable,
     isPersonalSignRequest,
     simulationScanResult,
     noChanges,
@@ -197,9 +197,9 @@ export const RequestSimulationCard = ({
       return false;
     }
     const shouldExpandOnLoad =
-      isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError || !!txSimulationApiError;
+      isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError || isSimulationUnavailable;
     return shouldExpandOnLoad;
-  }, [isBalanceEnough, isLoading, isPersonalSignRequest, noChanges, simulation, simulationError, txSimulationApiError]);
+  }, [isBalanceEnough, isLoading, isPersonalSignRequest, noChanges, simulation, simulationError, isSimulationUnavailable]);
 
   return (
     <FadedScrollCard
@@ -215,7 +215,7 @@ export const RequestSimulationCard = ({
             {!isLoading &&
             (simulationError ||
               isBalanceEnough === false ||
-              (!txSimulationApiError && simulationScanResult !== TransactionScanResultType.Ok)) ? (
+              (!isSimulationUnavailable && simulationScanResult !== TransactionScanResultType.Ok)) ? (
               <EventIcon
                 eventType={
                   simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok
@@ -236,7 +236,7 @@ export const RequestSimulationCard = ({
                   <Animated.View style={spinnerStyle}>
                     <Text
                       align="center"
-                      color={isLoading ? 'label' : isPersonalSignRequest || txSimulationApiError ? 'labelQuaternary' : 'label'}
+                      color={isLoading ? 'label' : isPersonalSignRequest || isSimulationUnavailable ? 'labelQuaternary' : 'label'}
                       size="icon 15px"
                       weight="bold"
                     >
@@ -286,7 +286,7 @@ export const RequestSimulationCard = ({
                     </Text>
                   </Box>
                 )}
-                {txSimulationApiError && (
+                {isSimulationUnavailable && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">
                     {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.tx_api_error)}
                   </Text>

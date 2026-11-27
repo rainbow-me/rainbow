@@ -222,9 +222,13 @@ export const SignTransactionSheet = () => {
     chainId,
   });
 
+  // Unknown support (networks persisted before the field existed) still tries the simulation.
+  const isSimulationUnsupported =
+    !isPersonalSignRequest && useBackendNetworksStore.getState().getChainSimulationSupport(chainId)?.enabled === false;
+
   const {
     data: simulationResult,
-    isLoading: txSimulationLoading,
+    isLoading: isSimulationQueryLoading,
     error: txSimulationApiError,
   } = useSimulation(
     {
@@ -238,9 +242,11 @@ export const SignTransactionSheet = () => {
       transactionDetails,
     },
     {
-      enabled: !isPersonalSignRequest,
+      enabled: !isPersonalSignRequest && !isSimulationUnsupported,
     }
   );
+  // A disabled query without data still reports isLoading.
+  const txSimulationLoading = isSimulationQueryLoading && !isSimulationUnsupported;
 
   const itemCount =
     (simulationResult?.simulationData?.in?.length || 0) +
@@ -675,7 +681,7 @@ export const SignTransactionSheet = () => {
                     isBalanceEnough={isBalanceEnough}
                     isPersonalSignRequest={isPersonalSignRequest}
                     isLoading={txSimulationLoading}
-                    txSimulationApiError={txSimulationApiError}
+                    isSimulationUnavailable={!!txSimulationApiError || isSimulationUnsupported}
                     noChanges={noChanges}
                     simulation={simulationResult?.simulationData}
                     simulationError={simulationResult?.simulationError}
