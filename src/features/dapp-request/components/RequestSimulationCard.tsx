@@ -34,13 +34,20 @@ import * as i18n from '@/languages';
 
 import { SimulatedEventRow } from './SimulatedEventRow';
 
+export type SimulationUnavailableReason = 'personalSign' | 'unsupportedChain' | 'failed';
+
+const UNAVAILABLE_MESSAGE_KEY = {
+  personalSign: i18n.l.walletconnect.simulation.simulation_card.messages.unavailable_personal_sign,
+  unsupportedChain: i18n.l.walletconnect.simulation.simulation_card.messages.tx_api_error,
+  failed: i18n.l.walletconnect.simulation.simulation_card.messages.tx_api_error,
+} satisfies Record<SimulationUnavailableReason, string>;
+
 interface RequestSimulationCardProps {
   chainId: ChainId;
   expandedCardBottomInset: number;
   isBalanceEnough: boolean | undefined;
   isLoading: boolean;
-  isSimulationFailedOrUnsupported: boolean;
-  isPersonalSignRequest: boolean;
+  simulationUnavailableReason: SimulationUnavailableReason | undefined;
   noChanges: boolean;
   simulation: TransactionSimulationResult | undefined;
   simulationError: TransactionErrorType | undefined;
@@ -53,8 +60,7 @@ export const RequestSimulationCard = ({
   expandedCardBottomInset,
   isBalanceEnough,
   isLoading,
-  isSimulationFailedOrUnsupported,
-  isPersonalSignRequest,
+  simulationUnavailableReason,
   noChanges,
   simulation,
   simulationError,
@@ -85,7 +91,7 @@ export const RequestSimulationCard = ({
   });
 
   useAnimatedReaction(
-    () => ({ isLoading, isPersonalSignRequest }),
+    () => ({ isLoading, isPersonalSignRequest: simulationUnavailableReason === 'personalSign' }),
     ({ isLoading, isPersonalSignRequest }, previous = { isLoading: false, isPersonalSignRequest: false }) => {
       if (isLoading && !previous?.isLoading) {
         spinnerRotation.value = withRepeat(withTiming(360, rotationConfig), -1, false);
@@ -96,7 +102,7 @@ export const RequestSimulationCard = ({
         spinnerRotation.value = withTiming(360, timingConfig);
       }
     },
-    [isLoading, isPersonalSignRequest]
+    [isLoading, simulationUnavailableReason]
   );
   const renderSimulationEventRows = useMemo(() => {
     if (isBalanceEnough === false) return null;
@@ -146,7 +152,7 @@ export const RequestSimulationCard = ({
     if (isBalanceEnough === false) {
       return 'blue';
     }
-    if (noChanges || isPersonalSignRequest || isSimulationFailedOrUnsupported) {
+    if (noChanges || simulationUnavailableReason) {
       return 'labelQuaternary';
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
@@ -156,15 +162,7 @@ export const RequestSimulationCard = ({
       return 'red';
     }
     return 'label';
-  }, [
-    isBalanceEnough,
-    isLoading,
-    noChanges,
-    simulationError,
-    simulationScanResult,
-    isPersonalSignRequest,
-    isSimulationFailedOrUnsupported,
-  ]);
+  }, [isBalanceEnough, isLoading, noChanges, simulationError, simulationScanResult, simulationUnavailableReason]);
 
   const titleText = useMemo(() => {
     if (isLoading) {
@@ -173,7 +171,7 @@ export const RequestSimulationCard = ({
     if (isBalanceEnough === false) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.not_enough_native_balance, { symbol: nativeAsset.symbol });
     }
-    if (isSimulationFailedOrUnsupported || isPersonalSignRequest) {
+    if (simulationUnavailableReason) {
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_unavailable);
     }
     if (simulationScanResult === TransactionScanResultType.Warning) {
@@ -189,25 +187,16 @@ export const RequestSimulationCard = ({
       return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.likely_to_fail);
     }
     return i18n.t(i18n.l.walletconnect.simulation.simulation_card.titles.simulation_result);
-  }, [
-    isLoading,
-    isBalanceEnough,
-    isSimulationFailedOrUnsupported,
-    isPersonalSignRequest,
-    simulationScanResult,
-    noChanges,
-    simulationError,
-    nativeAsset.symbol,
-  ]);
+  }, [isLoading, isBalanceEnough, simulationUnavailableReason, simulationScanResult, noChanges, simulationError, nativeAsset.symbol]);
 
   const isExpanded = useMemo(() => {
-    if (isLoading || isPersonalSignRequest) {
+    if (isLoading || simulationUnavailableReason === 'personalSign') {
       return false;
     }
     const shouldExpandOnLoad =
-      isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError || isSimulationFailedOrUnsupported;
+      isBalanceEnough === false || (!isEmpty(simulation) && !noChanges) || !!simulationError || !!simulationUnavailableReason;
     return shouldExpandOnLoad;
-  }, [isBalanceEnough, isLoading, isPersonalSignRequest, noChanges, simulation, simulationError, isSimulationFailedOrUnsupported]);
+  }, [isBalanceEnough, isLoading, noChanges, simulation, simulationError, simulationUnavailableReason]);
 
   return (
     <FadedScrollCard
@@ -223,7 +212,8 @@ export const RequestSimulationCard = ({
             {!isLoading &&
             (simulationError ||
               isBalanceEnough === false ||
-              (!isSimulationFailedOrUnsupported && simulationScanResult !== TransactionScanResultType.Ok)) ? (
+              ((!simulationUnavailableReason || simulationUnavailableReason === 'personalSign') &&
+                simulationScanResult !== TransactionScanResultType.Ok)) ? (
               <EventIcon
                 eventType={
                   simulationScanResult && simulationScanResult !== TransactionScanResultType.Ok
@@ -235,7 +225,7 @@ export const RequestSimulationCard = ({
               />
             ) : (
               <IconContainer>
-                {!isLoading && noChanges && !isPersonalSignRequest ? (
+                {!isLoading && noChanges && simulationUnavailableReason !== 'personalSign' ? (
                   <Text align="center" color="labelQuaternary" size="icon 17px" weight="bold">
                     {/* The extra space avoids icon clipping */}
                     {'􀻾 '}
@@ -244,7 +234,7 @@ export const RequestSimulationCard = ({
                   <Animated.View style={spinnerStyle}>
                     <Text
                       align="center"
-                      color={isLoading ? 'label' : isPersonalSignRequest || isSimulationFailedOrUnsupported ? 'labelQuaternary' : 'label'}
+                      color={isLoading ? 'label' : simulationUnavailableReason ? 'labelQuaternary' : 'label'}
                       size="icon 15px"
                       weight="bold"
                     >
@@ -287,17 +277,12 @@ export const RequestSimulationCard = ({
               </Text>
             ) : (
               <>
-                {isPersonalSignRequest && (
-                  <Box style={{ opacity: 0.6 }}>
+                {simulationUnavailableReason && (
+                  <Box style={simulationUnavailableReason === 'personalSign' ? { opacity: 0.6 } : undefined}>
                     <Text color="labelQuaternary" size="13pt" weight="semibold">
-                      {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.unavailable_personal_sign)}
+                      {i18n.t(UNAVAILABLE_MESSAGE_KEY[simulationUnavailableReason])}
                     </Text>
                   </Box>
-                )}
-                {isSimulationFailedOrUnsupported && (
-                  <Text color="labelQuaternary" size="13pt" weight="semibold">
-                    {i18n.t(i18n.l.walletconnect.simulation.simulation_card.messages.tx_api_error)}
-                  </Text>
                 )}
                 {simulationError && (
                   <Text color="labelQuaternary" size="13pt" weight="semibold">

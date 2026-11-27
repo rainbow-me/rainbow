@@ -56,7 +56,7 @@ import { deviceUtils } from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { RequestDetailsCard } from '../components/RequestDetailsCard';
-import { RequestSimulationCard } from '../components/RequestSimulationCard';
+import { RequestSimulationCard, type SimulationUnavailableReason } from '../components/RequestSimulationCard';
 import { SignedMessageCard } from '../components/SignedMessageCard';
 import { useConfirmTransaction } from '../hooks/useConfirmTransaction';
 import { useHasEnoughBalance } from '../hooks/useHasEnoughBalance';
@@ -223,8 +223,7 @@ export const SignTransactionSheet = () => {
   });
 
   // Unknown support (networks persisted before the field existed) still tries the simulation.
-  const isSimulationUnsupported =
-    !isPersonalSignRequest && useBackendNetworksStore.getState().getChainSimulationSupport(chainId)?.enabled === false;
+  const isChainSimulationDisabled = useBackendNetworksStore.getState().getChainSimulationSupport(chainId)?.enabled === false;
 
   const {
     data: simulationResult,
@@ -242,9 +241,17 @@ export const SignTransactionSheet = () => {
       transactionDetails,
     },
     {
-      enabled: !isPersonalSignRequest && !isSimulationUnsupported,
+      enabled: !isPersonalSignRequest && !isChainSimulationDisabled,
     }
   );
+
+  const simulationUnavailableReason: SimulationUnavailableReason | undefined = isPersonalSignRequest
+    ? 'personalSign'
+    : isChainSimulationDisabled
+      ? 'unsupportedChain'
+      : txSimulationApiError
+        ? 'failed'
+        : undefined;
 
   const itemCount =
     (simulationResult?.simulationData?.in?.length || 0) +
@@ -677,9 +684,8 @@ export const SignTransactionSheet = () => {
                     chainId={chainId}
                     expandedCardBottomInset={expandedCardBottomInset}
                     isBalanceEnough={isBalanceEnough}
-                    isPersonalSignRequest={isPersonalSignRequest}
                     isLoading={txSimulationLoading}
-                    isSimulationFailedOrUnsupported={!!txSimulationApiError || isSimulationUnsupported}
+                    simulationUnavailableReason={simulationUnavailableReason}
                     noChanges={noChanges}
                     simulation={simulationResult?.simulationData}
                     simulationError={simulationResult?.simulationError}
