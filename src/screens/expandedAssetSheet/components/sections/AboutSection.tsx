@@ -22,17 +22,19 @@ type RowItem = {
   value: string;
 };
 
-/** A token issuer, shown in Token Details, replaces the launchpad creator */
-function useLaunchpadCreator(): Address | undefined {
+/** Token Details shows the launchpad rows of classified tokens, and a token issuer replaces the creator */
+function useAboutLaunchpad() {
   const { assetMetadata: metadata, assetClassification } = useExpandedAssetSheetContext();
   const hasIssuer = !!assetClassification?.rows.some(row => row.key === 'token_issuer');
-  return hasIssuer ? undefined : (metadata?.launchpad?.creatorAddress as Address | undefined);
+  return {
+    creator: hasIssuer ? undefined : (metadata?.launchpad?.creatorAddress as Address | undefined),
+    launchpad: assetClassification ? undefined : metadata?.launchpad?.launchpad,
+  };
 }
 
 export const AboutContent = memo(function AboutContent() {
-  const { assetMetadata: metadata, accentColors } = useExpandedAssetSheetContext();
-  const launchpad = metadata?.launchpad?.launchpad;
-  const launchpadCreator = useLaunchpadCreator();
+  const { accentColors } = useExpandedAssetSheetContext();
+  const { creator: launchpadCreator, launchpad } = useAboutLaunchpad();
 
   const rowItems = useMemo(() => {
     const items: RowItem[] = [];
@@ -100,20 +102,19 @@ type AboutSectionProps = {
 };
 
 export const AboutSection = memo(function AboutSection({ placement }: AboutSectionProps) {
-  const { assetMetadata: metadata } = useExpandedAssetSheetContext();
-  const launchpadCreator = useLaunchpadCreator();
+  const { creator: launchpadCreator, launchpad } = useAboutLaunchpad();
 
   const { hasContent, isDeemphasized } = useMemo(() => {
     const hasCreator = !!launchpadCreator;
-    const hasProtocol = !!metadata?.launchpad?.launchpad?.name;
-    const hasPlatform = !!metadata?.launchpad?.launchpad?.platform;
+    const hasProtocol = !!launchpad?.name;
+    const hasPlatform = !!launchpad?.platform;
 
     const hasContent = hasCreator || hasProtocol || hasPlatform;
     // De-emphasize if only creator exists (no protocol or platform)
     const isDeemphasized = hasCreator && !hasProtocol && !hasPlatform;
 
     return { hasContent, isDeemphasized };
-  }, [launchpadCreator, metadata]);
+  }, [launchpad?.name, launchpad?.platform, launchpadCreator]);
 
   if (!shouldShowAboutSection(placement, hasContent, isDeemphasized)) return null;
 

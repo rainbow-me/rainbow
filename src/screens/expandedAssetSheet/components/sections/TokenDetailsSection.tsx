@@ -1,4 +1,4 @@
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, type ReactNode } from 'react';
 
 import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn } from 'react-native-reanimated';
@@ -21,19 +21,49 @@ import { CollapsibleSection } from '../shared/CollapsibleSection';
 
 const LAYOUT_ANIMATION = FadeIn.duration(160);
 
-const RoundedSquareIcon = memo(function RoundedSquareIcon({ url }: { url: string }) {
-  return <FastImage source={{ uri: url }} style={{ width: 16, height: 16, borderRadius: 4 }} />;
-});
+function ImageIcon({ url, borderRadius }: { url: string; borderRadius: number }) {
+  return <FastImage source={{ uri: url }} style={{ width: 16, height: 16, borderRadius }} />;
+}
 
 function renderValueIcon(icon: TokenDetailsRowIcon | undefined) {
   if (!icon) return undefined;
   if (icon.type === 'chain') return <ChainImage chainId={icon.chainId} position="relative" size={16} />;
-  return <RoundedSquareIcon url={icon.url} />;
+  return <ImageIcon url={icon.url} borderRadius={4} />;
+}
+
+type LaunchpadRow = { key: string; title: string; value: string; icon: string; valueIcon: ReactNode };
+
+function launchpadIcon(url: string | null | undefined) {
+  return url ? <ImageIcon url={url} borderRadius={8} /> : undefined;
 }
 
 const TokenDetailsContent = memo(function TokenDetailsContent({ classification }: { classification: AssetClassification }) {
-  const { accentColors, basicAsset } = useExpandedAssetSheetContext();
+  const { accentColors, assetMetadata, basicAsset } = useExpandedAssetSheetContext();
   const { rows, infoText } = classification;
+  const launchpad = assetMetadata?.launchpad?.launchpad;
+  const launchpadRows = (
+    [
+      launchpad?.name
+        ? {
+            key: 'protocol',
+            title: i18n.t(i18n.l.expanded_state.sections.about.protocol),
+            value: launchpad.name,
+            icon: '􀐞',
+            valueIcon: launchpadIcon(launchpad.protocolIconURL),
+          }
+        : undefined,
+      launchpad?.platform
+        ? {
+            key: 'created_via',
+            title: i18n.t(i18n.l.expanded_state.sections.about.created_via),
+            value: launchpad.platform,
+            icon: '􁝸',
+            valueIcon: launchpadIcon(launchpad.platformIconURL),
+          }
+        : undefined,
+    ] satisfies (LaunchpadRow | undefined)[]
+  ).filter(row => !!row);
+  const rowCount = rows.length + launchpadRows.length;
 
   const openAssetTypeInfo = useCallback(
     (title: string, infoText: InfoTextPart[]) =>
@@ -50,7 +80,7 @@ const TokenDetailsContent = memo(function TokenDetailsContent({ classification }
   );
 
   return (
-    <Box gap={4} marginBottom={rows.length % 2 === 1 ? '-12px' : undefined}>
+    <Box gap={4} marginBottom={rowCount % 2 === 1 ? '-12px' : undefined}>
       {rows.map((row, index) => (
         <AssetInfoItem
           key={row.key}
@@ -68,6 +98,18 @@ const TokenDetailsContent = memo(function TokenDetailsContent({ classification }
               : undefined
           }
           highlighted={index % 2 === 0}
+          truncateValue
+        />
+      ))}
+      {launchpadRows.map((row, index) => (
+        <AssetInfoItem
+          key={row.key}
+          accentColor={accentColors.color}
+          title={row.title}
+          value={row.value}
+          icon={row.icon}
+          valueIcon={row.valueIcon}
+          highlighted={(rows.length + index) % 2 === 0}
           truncateValue
         />
       ))}
