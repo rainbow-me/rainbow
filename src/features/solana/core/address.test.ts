@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { base58 } from '@scure/base';
+import { describe, expect, it, vi } from 'vitest';
 
 import { base58Decode, base58Encode, isSolanaAddress, requireSolanaAddress, SOLANA_ADDRESS_BYTE_LENGTH } from './address';
 
@@ -120,17 +121,13 @@ describe('isSolanaAddress', () => {
    * quadratic in the input length, and this function is the natural gate for a
    * pasted recipient address of arbitrary length.
    */
-  it('rejects on length before decoding, so a hostile paste cannot block the thread', () => {
+  it('rejects on length before decoding, so a hostile paste cannot block the thread', ({ onTestFinished }) => {
+    const decode = vi.spyOn(base58, 'decode').mockReturnValue(new Uint8Array());
+    onTestFinished(() => decode.mockRestore());
+
     const hostile = 'z'.repeat(100_000);
-    const startedAt = Date.now();
     expect(isSolanaAddress(hostile)).toBe(false);
-    /*
-     * A budget rather than a measurement. Decoding this input takes seconds, so any
-     * threshold well under a second distinguishes "rejected on length" from
-     * "decoded"; 200 ms leaves room for a loaded machine while staying two orders of
-     * magnitude below the cost this guards against.
-     */
-    expect(Date.now() - startedAt).toBeLessThan(200);
+    expect(decode).not.toHaveBeenCalled();
   });
 
   it('accepts both ends of the length range a 32-byte value can encode to', () => {
