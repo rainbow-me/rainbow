@@ -16,8 +16,6 @@ vi.mock('@/state/assets/userAssetsStoreManager', async () => ({
 
 vi.mock('@/state/wallets/walletsStore', async () => ({
   useWalletsStore: (await import('@storesjs/stores')).createBaseStore(() => ({ accountAddress: '', wallets: null })),
-  getWalletAddresses: (wallets: Record<string, { addresses: { address: string }[] }> | null) =>
-    Object.values(wallets || {}).flatMap(wallet => wallet.addresses.map(account => account.address)),
 }));
 
 const SELECTED = '0xAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAaAa';
@@ -263,18 +261,24 @@ describe('useWalletSummaryQueryStore', () => {
     expect(requestedAddresses()).toEqual(sorted(SELECTED, OWNED, WATCHED));
   });
 
-  it('drops cached entries of removed wallets in every currency', async () => {
+  it('drops cached entries of removed and hidden accounts in every currency', async () => {
     await loadStore();
     currencyStore.setState({ currency: 'EUR' });
     await vi.advanceTimersByTimeAsync(0);
 
-    wallets.setState({ wallets: { owned: WALLETS.owned, watched: { ...WALLETS.watched, addresses: [] } } });
+    const ownedWithHiddenAccount = {
+      ...WALLETS.owned,
+      addresses: WALLETS.owned.addresses.map(account => (account.address === OWNED ? { ...account, visible: false } : account)),
+    };
+    wallets.setState({ wallets: { owned: ownedWithHiddenAccount, watched: { ...WALLETS.watched, addresses: [] } } });
     await refresh();
 
     const { entries } = store.getState();
-    expect(entries.USD?.[lower(WATCHED)]).toBeUndefined();
-    expect(entries.EUR?.[lower(WATCHED)]).toBeUndefined();
-    expect(entries.USD?.[lower(OWNED)]).toBeDefined();
+    for (const currency of ['USD', 'EUR'] as const) {
+      expect(entries[currency]?.[lower(WATCHED)]).toBeUndefined();
+      expect(entries[currency]?.[lower(OWNED)]).toBeUndefined();
+      expect(entries[currency]?.[lower(SELECTED)]).toBeDefined();
+    }
   });
 
   it('refreshes only due wallets after a restart', async () => {
@@ -282,14 +286,21 @@ describe('useWalletSummaryQueryStore', () => {
     // Flushes the debounced persist write.
     await vi.advanceTimersByTimeAsync(time.seconds(10));
     unsubscribe?.();
+    destroyStore(store);
     post.mockClear();
 
     vi.resetModules();
     await loadStore();
+    expect(post).not.toHaveBeenCalled();
+    expect(store.getState().entries.USD?.[lower(WATCHED)]?.balance?.assetValue).toBe(100);
 
+    unsubscribe?.();
+    destroyStore(store);
+    vi.setSystemTime(Date.now() + time.minutes(3));
+    vi.resetModules();
+    await loadStore();
     expect(post).toHaveBeenCalledTimes(1);
     expect(requestedAddresses()).toEqual(sorted(SELECTED));
-    expect(store.getState().entries.USD?.[lower(WATCHED)]?.balance?.assetValue).toBe(100);
   });
 
   it('discards the previous persisted summary format', async () => {

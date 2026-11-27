@@ -6,7 +6,7 @@ import { getVisibleWalletAddresses } from '@/features/wallet/utils/visibleWallet
 import { time } from '@/framework/core/utils/time';
 import { getAddysHttpClient } from '@/resources/addys/client';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
+import { useWalletsStore } from '@/state/wallets/walletsStore';
 
 // Each address in a /summary request costs a backend balances lookup, so only the selected
 // address follows the store's staleTime; the rest are requested once their entry is this old.
@@ -89,7 +89,10 @@ async function fetchWalletSummary(params: WalletSummaryArgs, abortController: Ab
 
 function setWalletSummary({ data, params, set }: SetDataParams<FetchedWalletSummary, WalletSummaryArgs, WalletSummaryState>): void {
   set(state => {
-    const walletAddresses = new Set(getWalletAddresses(useWalletsStore.getState().wallets).map(address => address.toLowerCase()));
+    // Removing a wallet that shares a secret phrase with others only hides its account, so prune against visible accounts.
+    const { accountAddress, wallets } = useWalletsStore.getState();
+    const { owned, watched } = getVisibleWalletAddresses(wallets);
+    const walletAddresses = new Set([...owned, ...watched, accountAddress.toLowerCase()]);
     const entries: WalletSummaryState['entries'] = {};
 
     for (const [currency, currencyEntries] of Object.entries(state.entries) as [NativeCurrencyKey, WalletSummaryEntries][]) {
@@ -140,6 +143,7 @@ export const useWalletSummaryQueryStore = createQueryStore<FetchedWalletSummary,
       watchedAddresses: $ => $(useWalletsStore, state => getVisibleWalletAddresses(state.wallets).watched, shallowEqual),
     },
     cacheTime: time.zero,
+    keepPreviousData: true,
     retry: 10,
     staleTime: time.minutes(2),
   },
