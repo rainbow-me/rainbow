@@ -13,14 +13,14 @@ import { getWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStor
 const OWNED_ADDRESS_MAX_AGE = time.hours(1);
 const WATCHED_ADDRESS_MAX_AGE = time.days(1);
 
-export type WalletSummaryBalance = {
+type WalletSummaryBalance = {
   assetValue: number | null;
   positionsValue: number | null;
   claimablesValue: number | null;
   transactions: number;
 };
 
-export type WalletSummaryEntry = {
+type WalletSummaryEntry = {
   /** When the last successful request including this address was sent. */
   fetchedAt: number;
   /** `null` when no response has returned this address yet. */
