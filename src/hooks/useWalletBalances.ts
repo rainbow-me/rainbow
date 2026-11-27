@@ -6,7 +6,7 @@ import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDi
 import { type AllRainbowWallets } from '@/features/wallet/types';
 import { add } from '@/helpers/utilities';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
-import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
+import { useWalletSummaryEntries } from '@/state/wallets/useWalletSummaryStore';
 import { getWalletAddresses } from '@/state/wallets/walletsStore';
 
 export type WalletBalance = {
@@ -29,29 +29,29 @@ export type WalletBalanceResult = {
  * @returns Balances for all wallets
  */
 export const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBalanceResult => {
-  const summaryData = useWalletSummary();
+  const summaryEntries = useWalletSummaryEntries();
+  const nativeCurrency = userAssetsStoreManager(state => state.currency);
 
   const balances = useMemo(() => {
     const result: Record<Address, WalletBalance> = {};
 
-    if (!summaryData || !wallets) {
+    if (!summaryEntries || !wallets) {
       return result;
     }
 
-    const nativeCurrency = userAssetsStoreManager.getState().currency;
     const allAddresses = getWalletAddresses(wallets);
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const summary = summaryData.addresses?.[lowerCaseAddress]?.summary;
+      const summary = summaryEntries[lowerCaseAddress]?.balance;
 
       if (!summary) {
         continue;
       }
 
-      const assetBalance = summary.asset_value?.toString() || '0';
-      const positionsBalance = summary.positions_value?.toString() || '0';
-      const claimablesBalance = summary.claimables_value?.toString() || '0';
+      const assetBalance = summary.assetValue?.toString() || '0';
+      const positionsBalance = summary.positionsValue?.toString() || '0';
+      const claimablesBalance = summary.claimablesValue?.toString() || '0';
 
       const totalAccountBalance = add(assetBalance, add(positionsBalance, claimablesBalance));
 
@@ -66,7 +66,7 @@ export const useWalletBalances = (wallets: AllRainbowWallets | null): WalletBala
     }
 
     return result;
-  }, [summaryData, wallets]);
+  }, [summaryEntries, wallets, nativeCurrency]);
 
   return {
     balances,

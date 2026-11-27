@@ -22,6 +22,7 @@ import {
   setSelectedWallet as setSelectedWalletInKeychain,
 } from '@/features/wallet/data/walletKeychain';
 import { type AllRainbowWallets, type RainbowAccount, type RainbowWallet } from '@/features/wallet/types';
+import { getVisibleWalletAddresses } from '@/features/wallet/utils/visibleWalletAddresses';
 import { watchingAlert } from '@/features/wallet/utils/watchingAlert';
 import { time } from '@/framework/core/utils/time';
 import { ensureValidHex, isValidHex } from '@/handlers/web3';
@@ -698,16 +699,7 @@ export const getWalletAddresses = (wallets: AllRainbowWallets | null) => {
 };
 
 export function getOwnedNormalizedWalletAddresses(): string[] {
-  const wallets = useWalletsStore.getState().wallets;
-
-  if (!wallets) return [];
-
-  return getConsistentArray(
-    Object.values(wallets).flatMap(wallet => {
-      if (wallet.type === WalletTypes.readOnly) return [];
-      return (wallet.addresses ?? []).filter(account => account.visible).map(account => account.address.toLowerCase());
-    })
-  );
+  return getVisibleWalletAddresses(useWalletsStore.getState().wallets).owned;
 }
 
 export const useAccountAddress = () => useWalletsStore(state => state.accountAddress);
