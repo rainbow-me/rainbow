@@ -6,7 +6,7 @@ import { decodeSolanaKey } from '@/features/wallet/core/solanaAccount';
 import { type AccountPrivateKeyData } from '@/features/wallet/types';
 
 const authenticationPrompt = { title: 'Authenticate to use Solana' };
-const keyForAddress = (address: string) => `rainbow.account-key.v1/solana/${requireSolanaAddress(address, 'Invalid Solana address')}`;
+const keyForAddress = (address: string) => `${requireSolanaAddress(address, 'Invalid Solana address')}_rainbowSolanaPrivateKey`;
 
 export class SolanaAuthenticationCancelled extends Error {
   constructor() {

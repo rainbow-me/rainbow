@@ -34,7 +34,7 @@ describe('Solana keychain isolation', () => {
   it('uses the shared policy unchanged when it returns simulator options', async () => {
     vi.mocked(kc.getPrivateAccessControlOptions).mockResolvedValue({});
     await saveSolanaKey(node.address, node.privateKey);
-    expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
+    expect(kc.setObject).toHaveBeenCalledWith(`${record.address}_rainbowSolanaPrivateKey`, record, {
       authenticationPrompt: { title: 'Authenticate to use Solana' },
     });
     const bytes = await readSolanaKey(record.address);
@@ -49,14 +49,14 @@ describe('Solana keychain isolation', () => {
     expect(bytes).toEqual(node.privateKey);
     bytes.fill(0);
     expect(kc.getPrivateAccessControlOptions).not.toHaveBeenCalled();
-    expect(kc.getObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, {
+    expect(kc.getObject).toHaveBeenCalledWith(`${record.address}_rainbowSolanaPrivateKey`, {
       authenticationPrompt: { title: 'Authenticate to use Solana' },
     });
   });
 
   it('writes a protected, network-independent record outside the legacy backup suffix without reading it back', async () => {
     await saveSolanaKey(node.address, node.privateKey);
-    expect(kc.setObject).toHaveBeenCalledWith(`rainbow.account-key.v1/solana/${record.address}`, record, {
+    expect(kc.setObject).toHaveBeenCalledWith(`${record.address}_rainbowSolanaPrivateKey`, record, {
       ...options,
       authenticationPrompt: { title: 'Authenticate to use Solana' },
     });
@@ -78,7 +78,7 @@ describe('Solana keychain isolation', () => {
     });
     await saveSolanaKey(node.address, node.privateKey);
     expect(kc.has).not.toHaveBeenCalled();
-    expect(kc.setObject).toHaveBeenCalledExactlyOnceWith(`rainbow.account-key.v1/solana/${node.address}`, record, {
+    expect(kc.setObject).toHaveBeenCalledExactlyOnceWith(`${node.address}_rainbowSolanaPrivateKey`, record, {
       ...options,
       authenticationPrompt: { title: 'Authenticate to use Solana' },
     });

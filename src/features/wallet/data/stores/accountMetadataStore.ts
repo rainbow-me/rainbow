@@ -7,7 +7,7 @@ export type EnabledSolanaAccount = AccountMetadataRecord & {
   sourceEvmAddress: string;
 };
 
-export const solanaAccountId = (walletId: string, index: number) => JSON.stringify([walletId, index]);
+export const solanaAccountId = (walletId: string, index: number) => `${walletId}-${index}`;
 
 export const useAccountMetadataStore = createBaseStore<{ accounts: Record<string, EnabledSolanaAccount> }>(() => ({ accounts: {} }), {
   storageKey: 'solanaAccountMetadata',
