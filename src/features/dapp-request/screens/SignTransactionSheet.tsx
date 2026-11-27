@@ -681,7 +681,7 @@ export const SignTransactionSheet = () => {
                     isBalanceEnough={isBalanceEnough}
                     isPersonalSignRequest={isPersonalSignRequest}
                     isLoading={txSimulationLoading}
-                    isSimulationUnavailable={!!txSimulationApiError || isSimulationUnsupported}
+                    isSimulationFailedOrUnsupported={!!txSimulationApiError || isSimulationUnsupported}
                     noChanges={noChanges}
                     simulation={simulationResult?.simulationData}
                     simulationError={simulationResult?.simulationError}
