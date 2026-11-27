@@ -56,7 +56,7 @@ import { deviceUtils } from '@/utils/deviceUtils';
 import ethereumUtils from '@/utils/ethereumUtils';
 
 import { RequestDetailsCard } from '../components/RequestDetailsCard';
-import { RequestSimulationCard } from '../components/RequestSimulationCard';
+import { RequestSimulationCard, type SimulationUnavailableReason } from '../components/RequestSimulationCard';
 import { SignedMessageCard } from '../components/SignedMessageCard';
 import { useConfirmTransaction } from '../hooks/useConfirmTransaction';
 import { useHasEnoughBalance } from '../hooks/useHasEnoughBalance';
@@ -222,6 +222,9 @@ export const SignTransactionSheet = () => {
     chainId,
   });
 
+  // Unknown support (networks persisted before the field existed) still tries the simulation.
+  const isChainSimulationDisabled = useBackendNetworksStore.getState().getChainSimulationSupport(chainId)?.enabled === false;
+
   const {
     data: simulationResult,
     isLoading: txSimulationLoading,
@@ -238,9 +241,17 @@ export const SignTransactionSheet = () => {
       transactionDetails,
     },
     {
-      enabled: !isPersonalSignRequest,
+      enabled: !isPersonalSignRequest && !isChainSimulationDisabled,
     }
   );
+
+  const simulationUnavailableReason: SimulationUnavailableReason | undefined = isPersonalSignRequest
+    ? 'personalSign'
+    : isChainSimulationDisabled
+      ? 'unsupportedChain'
+      : txSimulationApiError
+        ? 'failed'
+        : undefined;
 
   const itemCount =
     (simulationResult?.simulationData?.in?.length || 0) +
@@ -673,9 +684,8 @@ export const SignTransactionSheet = () => {
                     chainId={chainId}
                     expandedCardBottomInset={expandedCardBottomInset}
                     isBalanceEnough={isBalanceEnough}
-                    isPersonalSignRequest={isPersonalSignRequest}
                     isLoading={txSimulationLoading}
-                    txSimulationApiError={txSimulationApiError}
+                    simulationUnavailableReason={simulationUnavailableReason}
                     noChanges={noChanges}
                     simulation={simulationResult?.simulationData}
                     simulationError={simulationResult?.simulationError}
