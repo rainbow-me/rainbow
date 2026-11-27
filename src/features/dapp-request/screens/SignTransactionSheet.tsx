@@ -228,7 +228,7 @@ export const SignTransactionSheet = () => {
 
   const {
     data: simulationResult,
-    isLoading: isSimulationQueryLoading,
+    isLoading: txSimulationLoading,
     error: txSimulationApiError,
   } = useSimulation(
     {
@@ -245,8 +245,6 @@ export const SignTransactionSheet = () => {
       enabled: !isPersonalSignRequest && !isSimulationUnsupported,
     }
   );
-  // A disabled query without data still reports isLoading.
-  const txSimulationLoading = isSimulationQueryLoading && !isSimulationUnsupported;
 
   const itemCount =
     (simulationResult?.simulationData?.in?.length || 0) +
