@@ -44,6 +44,7 @@ import { type WalletNotificationSettings } from '@/notifications/settings/types'
 import { type Contact } from '@/redux/contacts';
 import { type Claimable, type RainbowClaimable } from '@/resources/addys/claimables/types';
 import { type ExpandedSheetParamAsset } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
+import { type InfoTextPart } from '@/screens/expandedAssetSheet/utils/assetClassification';
 import { type ResponseByTheme } from '@/theme/types';
 import { type AreAllKeysOptional, type ExtractOptionalKeys } from '@/types/objects';
 
@@ -726,6 +727,15 @@ type ParamsByRoute = {
   [Routes.RNBW_STAKING_LEARN_SCREEN]: undefined;
   [Routes.RNBW_STAKING_SCREEN]: undefined;
   [Routes.RNBW_UNSTAKE_SHEET]: undefined;
+  [Routes.ASSET_TYPE_INFO_SHEET]: {
+    title: string;
+    infoText: InfoTextPart[];
+    tokenName: string;
+    iconUrl: string | undefined;
+    symbol: string;
+    chainId: ChainId;
+    accentColor: string;
+  };
   [Routes.SPOT_PNL_SHEET]: {
     address: string;
     chainId: ChainId;

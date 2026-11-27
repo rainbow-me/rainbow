@@ -74,6 +74,7 @@ import { ActivitySheetScreen } from '@/screens/ActivitySheetScreen';
 import { AirdropsSheet } from '@/screens/Airdrops/AirdropsSheet';
 import { ClaimAirdropSheet } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { ClaimClaimablePanel } from '@/screens/claimables/ClaimPanel';
+import { AssetTypeInfoSheet } from '@/screens/expandedAssetSheet/AssetTypeInfoSheet';
 import { ExpandedAssetSheet as ExpandedAssetSheetV2 } from '@/screens/expandedAssetSheet/ExpandedAssetSheet';
 import { LearnWebViewScreen } from '@/screens/LearnWebViewScreen';
 import { Portal } from '@/screens/Portal';
@@ -316,6 +317,7 @@ function BSNavigator() {
       <BSStack.Screen component={RnbwMembershipTiersSheet} name={Routes.RNBW_MEMBERSHIP_TIERS_SHEET} />
       <BSStack.Screen component={SpotPnlSheet} name={Routes.SPOT_PNL_SHEET} />
       <BSStack.Screen component={SpotPnlExcludedTokensSheet} name={Routes.SPOT_PNL_EXCLUDED_TOKENS_SHEET} />
+      <BSStack.Screen component={AssetTypeInfoSheet} name={Routes.ASSET_TYPE_INFO_SHEET} />
     </BSStack.Navigator>
   );
 }

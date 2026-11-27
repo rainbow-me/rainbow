@@ -19,6 +19,7 @@ import useAccountAsset from '@/hooks/useAccountAsset';
 import useAdditionalAssetData, { type TokenMetadata } from '@/hooks/useAdditionalAssetData';
 import useColorForAsset from '@/hooks/useColorForAsset';
 import { useExternalToken, type FormattedExternalAsset } from '@/resources/assets/externalAssetsQuery';
+import { getAssetClassification, type AssetClassification } from '@/screens/expandedAssetSheet/utils/assetClassification';
 import { useSuperTokenStore } from '@/screens/token-launcher/state/rainbowSuperTokenStore';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
 import { useTheme } from '@/theme/ThemeContext';
@@ -31,6 +32,7 @@ export enum SectionId {
   HISTORY = 'history',
   HOLDERS = 'holders',
   ABOUT = 'about',
+  TOKEN_DETAILS = 'tokenDetails',
   DETAILS = 'details',
 }
 
@@ -42,6 +44,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.HISTORY]: true,
   [SectionId.HOLDERS]: true,
   [SectionId.ABOUT]: true,
+  [SectionId.TOKEN_DETAILS]: true,
   [SectionId.DETAILS]: true,
 };
 
@@ -85,6 +88,7 @@ type ExpandedAssetSheetContextType = {
   basicAsset: ExpandedSheetAsset;
   accountAsset: ParsedAddressAsset | undefined;
   assetMetadata: TokenMetadata | null | undefined;
+  assetClassification: AssetClassification | undefined;
   expandedSections: SharedValue<Record<SectionId, boolean>>;
   hideClaimSection: boolean;
   isOwnedAsset: boolean;
@@ -227,6 +231,12 @@ export function ExpandedAssetSheetContextProvider({
 
   const isRainbowToken = superMetadata?.rainbow ?? false;
 
+  const chainLabel = useBackendNetworksStore(state => state.getChainsLabel()[chainId]);
+  const assetClassification = useMemo(
+    () => getAssetClassification(superMetadata?.asset, { name: fullAsset.name, symbol: fullAsset.symbol, chainId, chainLabel }),
+    [superMetadata?.asset, fullAsset.name, fullAsset.symbol, chainId, chainLabel]
+  );
+
   const accentColors: AssetAccentColors = useMemo(() => {
     const background = isDarkMode
       ? chroma(
@@ -271,6 +281,7 @@ export function ExpandedAssetSheetContextProvider({
         basicAsset: fullAsset,
         accountAsset,
         assetMetadata: superMetadata,
+        assetClassification,
         expandedSections,
         hideClaimSection,
         isOwnedAsset,

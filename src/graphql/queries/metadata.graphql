@@ -330,6 +330,18 @@ query externalToken($address: String!, $chainId: Int!, $currency: String) {
 
 query tokenMetadata($address: String!, $chainId: Int!, $currency: String) {
   token(address: $address, chainID: $chainId, currency: $currency) {
+    asset {
+      assetClass
+      issuer {
+        name
+        iconUrl
+      }
+      underlyingAsset {
+        name
+        ticker
+        iconUrl
+      }
+    }
     circulatingSupply
     colors {
       ...TokenColorsFragment

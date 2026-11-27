@@ -15,6 +15,7 @@ import {
   MarketStatsSection,
 } from './sections';
 import { NameAndLogoSection } from './sections/NameAndLogoSection';
+import { TokenDetailsSection } from './sections/TokenDetailsSection';
 import { TopHoldersSection } from './sections/TopHoldersSection';
 import { SHEET_FOOTER_HEIGHT } from './SheetFooter';
 
@@ -40,6 +41,7 @@ export const SheetContent = memo(function SheetContent({ accentColor }: { accent
             <Box gap={28}>
               <BalanceSection />
               <ClaimSection />
+              <TokenDetailsSection />
               <AboutSection placement={AboutPlacement.AFTER_CLAIM} />
               <MarketStatsSection />
               <TopHoldersSection />

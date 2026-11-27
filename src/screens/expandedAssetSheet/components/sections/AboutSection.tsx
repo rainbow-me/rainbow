@@ -1,5 +1,6 @@
 import React, { memo, useMemo } from 'react';
 
+import FastImage from 'react-native-fast-image';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { type Address } from 'viem';
 
@@ -21,10 +22,19 @@ type RowItem = {
   value: string;
 };
 
+/** Token Details shows the launchpad rows of classified tokens, and a token issuer replaces the creator */
+function useAboutLaunchpad() {
+  const { assetMetadata: metadata, assetClassification } = useExpandedAssetSheetContext();
+  const hasIssuer = !!assetClassification?.rows.some(row => row.key === 'token_issuer');
+  return {
+    creator: hasIssuer ? undefined : (metadata?.launchpad?.creatorAddress as Address | undefined),
+    launchpad: assetClassification ? undefined : metadata?.launchpad?.launchpad,
+  };
+}
+
 export const AboutContent = memo(function AboutContent() {
-  const { assetMetadata: metadata, accentColors } = useExpandedAssetSheetContext();
-  const launchpad = metadata?.launchpad?.launchpad;
-  const launchpadCreator = metadata?.launchpad?.creatorAddress as Address | undefined;
+  const { accentColors } = useExpandedAssetSheetContext();
+  const { creator: launchpadCreator, launchpad } = useAboutLaunchpad();
 
   const rowItems = useMemo(() => {
     const items: RowItem[] = [];
@@ -63,7 +73,9 @@ export const AboutContent = memo(function AboutContent() {
             title={item.title}
             value={item.value}
             icon={item.icon}
-            valueIconUrl={item.iconName}
+            valueIcon={
+              item.iconName ? <FastImage source={{ uri: item.iconName }} style={{ width: 16, height: 16, borderRadius: 8 }} /> : undefined
+            }
             // +1 due to creator row already highlighting
             highlighted={(index + 1) % 2 === 0}
           />
@@ -90,19 +102,19 @@ type AboutSectionProps = {
 };
 
 export const AboutSection = memo(function AboutSection({ placement }: AboutSectionProps) {
-  const { assetMetadata: metadata } = useExpandedAssetSheetContext();
+  const { creator: launchpadCreator, launchpad } = useAboutLaunchpad();
 
   const { hasContent, isDeemphasized } = useMemo(() => {
-    const hasCreator = !!metadata?.launchpad?.creatorAddress;
-    const hasProtocol = !!metadata?.launchpad?.launchpad?.name;
-    const hasPlatform = !!metadata?.launchpad?.launchpad?.platform;
+    const hasCreator = !!launchpadCreator;
+    const hasProtocol = !!launchpad?.name;
+    const hasPlatform = !!launchpad?.platform;
 
     const hasContent = hasCreator || hasProtocol || hasPlatform;
     // De-emphasize if only creator exists (no protocol or platform)
     const isDeemphasized = hasCreator && !hasProtocol && !hasPlatform;
 
     return { hasContent, isDeemphasized };
-  }, [metadata]);
+  }, [launchpad?.name, launchpad?.platform, launchpadCreator]);
 
   if (!shouldShowAboutSection(placement, hasContent, isDeemphasized)) return null;
 

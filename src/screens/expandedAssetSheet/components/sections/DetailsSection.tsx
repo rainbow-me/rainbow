@@ -286,6 +286,11 @@ export const DetailsContent = memo(function DetailsContent() {
 });
 
 export const DetailsSection = memo(function DetailsSection() {
+  const { assetClassification } = useExpandedAssetSheetContext();
+
+  // Token Details takes this section's place for stablecoins and tokenized stocks
+  if (assetClassification) return null;
+
   return (
     <CollapsibleSection
       content={<DetailsContent />}

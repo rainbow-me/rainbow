@@ -160,6 +160,7 @@ const Routes = {
   RNBW_MEMBERSHIP_TIERS_SHEET: 'RnbwMembershipTiersSheet',
   SPOT_PNL_SHEET: 'SpotPnlSheet',
   SPOT_PNL_EXCLUDED_TOKENS_SHEET: 'SpotPnlExcludedTokensSheet',
+  ASSET_TYPE_INFO_SHEET: 'AssetTypeInfoSheet',
 } as const;
 
 export const NATIVE_ROUTES = new Set<Route>([

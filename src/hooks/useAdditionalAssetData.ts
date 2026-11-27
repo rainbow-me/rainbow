@@ -9,6 +9,7 @@ import { type Token } from '@/graphql/__generated__/metadata';
 // Types
 export type TokenMetadata = Pick<
   Token,
+  | 'asset'
   | 'description'
   | 'volume1d'
   | 'marketCap'
