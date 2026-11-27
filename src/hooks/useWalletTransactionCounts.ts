@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 
 import { type Address } from 'viem';
 
-import { useWalletSummary } from '@/state/wallets/useWalletSummaryStore';
-import { useWalletAddresses } from '@/state/wallets/walletsStore';
+import { getVisibleWalletAddresses } from '@/features/wallet/utils/visibleWalletAddresses';
+import { hasFetchedAddresses, useWalletSummaryEntries } from '@/state/wallets/useWalletSummaryStore';
+import { useWalletAddresses, useWalletsStore } from '@/state/wallets/walletsStore';
+import { shallowEqual } from '@/worklets/comparisons';
 
 export type WalletTransactionCountsResult = {
   transactionCounts: Record<string, number>;
@@ -15,25 +17,26 @@ export type WalletTransactionCountsResult = {
  * @returns Number of transactions originating from Rainbow for each wallet
  */
 export const useWalletTransactionCounts = (): WalletTransactionCountsResult => {
-  const summaryData = useWalletSummary();
+  const summaryEntries = useWalletSummaryEntries();
   const allAddresses = useWalletAddresses();
+  const ownedAddresses = useWalletsStore(state => getVisibleWalletAddresses(state.wallets).owned, shallowEqual);
 
   const transactionCounts = useMemo(() => {
     const result: Record<Address, number> = {};
 
-    if (!summaryData) return result;
+    if (!summaryEntries) return result;
 
     for (const address of allAddresses) {
       const lowerCaseAddress = address.toLowerCase() as Address;
-      const transactionCount = summaryData.addresses?.[lowerCaseAddress]?.meta.rainbow?.transactions || 0;
+      const transactionCount = summaryEntries[lowerCaseAddress]?.balance?.transactions || 0;
       result[lowerCaseAddress] = transactionCount;
     }
 
     return result;
-  }, [summaryData, allAddresses]);
+  }, [summaryEntries, allAddresses]);
 
   return {
     transactionCounts,
-    isLoading: !summaryData,
+    isLoading: !hasFetchedAddresses(summaryEntries, ownedAddresses),
   };
 };
