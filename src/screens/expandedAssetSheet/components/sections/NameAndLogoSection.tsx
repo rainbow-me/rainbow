@@ -17,17 +17,19 @@ export const NameAndLogoSection = memo(function NameAndLogoSection() {
   const { basicAsset: asset, isRainbowToken, accentColors, assetClassification } = useExpandedAssetSheetContext();
   const shouldUseRainbowCoinEffect = useExperimentalFlag(RAINBOW_COIN_EFFECT);
   const { isDarkMode } = useColorMode();
+  const name = assetClassification?.header?.name ?? asset.name;
+  const iconUrl = assetClassification?.header?.iconUrl ?? asset.iconUrl;
 
   return (
     <Box gap={20}>
       <Box alignItems="center" flexDirection="row" justifyContent="space-between">
-        {(isRainbowToken || shouldUseRainbowCoinEffect) && asset.iconUrl ? (
-          <RainbowCoinEffect color={accentColors.color} imageUrl={asset.iconUrl} size={44} />
+        {(isRainbowToken || shouldUseRainbowCoinEffect) && iconUrl ? (
+          <RainbowCoinEffect color={accentColors.color} imageUrl={iconUrl} size={44} />
         ) : (
           <RainbowCoinIcon
             chainSize={20}
             size={44}
-            icon={asset.iconUrl ?? ''}
+            icon={iconUrl ?? ''}
             chainId={asset.chainId}
             color={accentColors.color}
             symbol={asset.symbol}
@@ -45,7 +47,7 @@ export const NameAndLogoSection = memo(function NameAndLogoSection() {
               testID={`chart-header-${asset.name}`}
               weight={'heavy'}
             >
-              {asset.name}
+              {name}
             </Text>
           </TextShadow>
         </Box>

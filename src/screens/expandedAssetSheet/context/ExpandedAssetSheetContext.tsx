@@ -32,6 +32,7 @@ export enum SectionId {
   HISTORY = 'history',
   HOLDERS = 'holders',
   ABOUT = 'about',
+  TOKEN_DETAILS = 'tokenDetails',
   DETAILS = 'details',
 }
 
@@ -43,6 +44,7 @@ const DEFAULT_SECTIONS_STATE: Record<SectionId, boolean> = {
   [SectionId.HISTORY]: true,
   [SectionId.HOLDERS]: true,
   [SectionId.ABOUT]: true,
+  [SectionId.TOKEN_DETAILS]: true,
   [SectionId.DETAILS]: true,
 };
 

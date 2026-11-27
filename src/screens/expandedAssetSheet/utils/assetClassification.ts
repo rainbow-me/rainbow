@@ -14,22 +14,24 @@ type TokenInfo = {
   chainLabel: string | undefined;
 };
 
-export type AboutRowIcon = { type: 'image'; url: string } | { type: 'chain'; chainId: ChainId };
+export type TokenDetailsRowIcon = { type: 'image'; url: string } | { type: 'chain'; chainId: ChainId };
 
-export type AboutRow = {
-  key: 'asset_type' | 'underlying_asset' | 'issuer' | 'onchain_ticker' | 'offchain_ticker' | 'blockchain';
+export type TokenDetailsRow = {
+  key: 'asset_type' | 'underlying_asset' | 'token_issuer' | 'onchain_ticker' | 'stock_ticker' | 'blockchain';
   title: string;
   value: string;
   icon: string;
-  valueIcon?: AboutRowIcon;
+  valueIcon?: TokenDetailsRowIcon;
 };
 
 export type InfoTextPart = { text: string; emphasized: boolean };
 
 export type AssetClassification = {
   label: string;
-  rows: AboutRow[];
+  rows: TokenDetailsRow[];
   infoText: InfoTextPart[] | undefined;
+  /** Shown in the sheet header instead of the token's own name and icon */
+  header?: { name: string; iconUrl: string | undefined };
 };
 
 const PLACEHOLDER = /%\{(\w+)\}/g;
@@ -67,7 +69,7 @@ function nonEmpty(value: string | null | undefined): string | undefined {
   return value || undefined;
 }
 
-function imageIcon(url: string | null | undefined): AboutRowIcon | undefined {
+function imageIcon(url: string | null | undefined): TokenDetailsRowIcon | undefined {
   return url ? { type: 'image', url } : undefined;
 }
 
@@ -78,12 +80,12 @@ export function getAssetClassification(
   const issuerName = nonEmpty(asset?.issuer?.name);
   const underlyingName = nonEmpty(asset?.underlyingAsset?.name);
   const tokenName = nonEmpty(token.name);
-  const issuerRow: AboutRow | undefined = issuerName
+  const issuerRow: TokenDetailsRow | undefined = issuerName
     ? {
-        key: 'issuer',
-        title: i18n.t(i18n.l.expanded_state.sections.about.issuer),
+        key: 'token_issuer',
+        title: i18n.t(i18n.l.expanded_state.sections.token_details.token_issuer),
         value: issuerName,
-        icon: '􀉭',
+        icon: '􀐞',
         valueIcon: imageIcon(asset?.issuer?.iconUrl),
       }
     : undefined;
@@ -92,33 +94,33 @@ export function getAssetClassification(
     case AssetClass.TokenizedEquity: {
       const symbol = nonEmpty(token.symbol);
       const ticker = nonEmpty(asset.underlyingAsset?.ticker);
-      const rows: (AboutRow | undefined)[] = [
+      const rows: (TokenDetailsRow | undefined)[] = [
         {
           key: 'asset_type',
-          title: i18n.t(i18n.l.expanded_state.sections.about.asset_type),
+          title: i18n.t(i18n.l.expanded_state.sections.token_details.asset_type),
           value: i18n.t(i18n.l.expanded_state.asset_type.tokenized_stock),
           icon: '􀬎',
         },
         underlyingName
           ? {
               key: 'underlying_asset',
-              title: i18n.t(i18n.l.expanded_state.sections.about.underlying_asset),
+              title: i18n.t(i18n.l.expanded_state.sections.token_details.underlying_asset),
               value: underlyingName,
-              icon: '􀐞',
+              icon: '􀤨',
               valueIcon: imageIcon(asset.underlyingAsset?.iconUrl),
             }
           : undefined,
         issuerRow,
         symbol
-          ? { key: 'onchain_ticker', title: i18n.t(i18n.l.expanded_state.sections.about.onchain_ticker), value: symbol, icon: '􀉣' }
+          ? { key: 'onchain_ticker', title: i18n.t(i18n.l.expanded_state.sections.token_details.onchain_ticker), value: symbol, icon: '􀉣' }
           : undefined,
         ticker
-          ? { key: 'offchain_ticker', title: i18n.t(i18n.l.expanded_state.sections.about.offchain_ticker), value: ticker, icon: '􀆪' }
+          ? { key: 'stock_ticker', title: i18n.t(i18n.l.expanded_state.sections.token_details.stock_ticker), value: ticker, icon: '􁎢' }
           : undefined,
         token.chainLabel
           ? {
               key: 'blockchain',
-              title: i18n.t(i18n.l.expanded_state.sections.about.blockchain),
+              title: i18n.t(i18n.l.expanded_state.sections.token_details.blockchain),
               value: token.chainLabel,
               icon: '􀤆',
               valueIcon: { type: 'chain', chainId: token.chainId },
@@ -134,13 +136,14 @@ export function getAssetClassification(
           issuer: issuerName,
           chain: token.chainLabel,
         }),
+        header: underlyingName ? { name: underlyingName, iconUrl: nonEmpty(asset.underlyingAsset?.iconUrl) } : undefined,
       };
     }
     case AssetClass.Stablecoin: {
-      const rows: (AboutRow | undefined)[] = [
+      const rows: (TokenDetailsRow | undefined)[] = [
         {
           key: 'asset_type',
-          title: i18n.t(i18n.l.expanded_state.sections.about.asset_type),
+          title: i18n.t(i18n.l.expanded_state.sections.token_details.asset_type),
           value: i18n.t(i18n.l.expanded_state.asset_type.stablecoin),
           icon: '􀬎',
         },

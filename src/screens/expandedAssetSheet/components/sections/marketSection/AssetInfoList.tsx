@@ -83,10 +83,11 @@ export function AssetInfoItem({
           <Box flexDirection="row" flexShrink={truncateValue ? 1 : undefined} alignItems="center" gap={4}>
             {valueIcon}
             <Box flexShrink={truncateValue ? 1 : undefined}>
-              <TextShadow blur={12} shadowOpacity={0.24}>
+              <TextShadow blur={12} disabled={!info} shadowOpacity={0.24}>
                 <Text
                   align="right"
-                  color={{ custom: accentColor }}
+                  // Only tappable values take the accent
+                  color={info ? { custom: accentColor } : 'label'}
                   ellipsizeMode="tail"
                   numberOfLines={truncateValue ? 1 : undefined}
                   weight="semibold"

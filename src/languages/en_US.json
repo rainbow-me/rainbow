@@ -764,12 +764,15 @@
           "created_by": "Creator",
           "protocol": "Protocol",
           "created_via": "Created Via",
-          "what_is": "What is %{assetName}?",
+          "what_is": "What is %{assetName}?"
+        },
+        "token_details": {
+          "title": "Token Details",
           "asset_type": "Asset Type",
           "underlying_asset": "Underlying Asset",
-          "issuer": "Issuer",
+          "token_issuer": "Token Issuer",
           "onchain_ticker": "Onchain Ticker",
-          "offchain_ticker": "Offchain Ticker",
+          "stock_ticker": "Stock Ticker",
           "blockchain": "Blockchain",
           "about_asset_type": "About %{assetType}"
         },

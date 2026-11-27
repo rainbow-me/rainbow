@@ -17,13 +17,12 @@ import { type Address } from 'viem';
 import { pulsingConfig, sliderConfig } from '@/__swaps__/screens/Swap/constants';
 import { AnimatedImage } from '@/components/AnimatedComponents/AnimatedImage';
 import { TIMING_CONFIGS } from '@/components/animations/animationConfigs';
-import { AnimatedText, Bleed, Box, Text, TextIcon, TextShadow, useBackgroundColor } from '@/design-system';
+import { AnimatedText, Bleed, Box, Text, TextIcon, useBackgroundColor, useForegroundColor } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
 import { formatAddressForDisplay } from '@/features/address/core/formatAddress';
 import { useStableValue } from '@/hooks/useStableValue';
 import { fetchAndSetEnsData } from '@/screens/Airdrops/ClaimAirdropSheet';
 import { Row } from '@/screens/expandedAssetSheet/components/shared/Row';
-import { useExpandedAssetSheetContext } from '@/screens/expandedAssetSheet/context/ExpandedAssetSheetContext';
 import { useTheme } from '@/theme/ThemeContext';
 import { addressHashedColorIndex, addressHashedEmoji } from '@/utils/profileUtils';
 
@@ -45,25 +44,23 @@ const CreatorAddress = ({
   creatorAddress: string;
   loading: SharedValue<boolean>;
 }) => {
-  const { accentColors } = useExpandedAssetSheetContext();
+  const labelColor = useForegroundColor('label');
 
-  const loadingColor = opacity(accentColors.color, 0.3);
+  const loadingColor = opacity(labelColor, 0.3);
   const fallbackAddress = formatAddressForDisplay(creatorAddress, 4, 6);
   const ensAddressOrFallback = useDerivedValue(() => ensOrAddress.value || fallbackAddress);
 
   const animatedTextOpacity = useAnimatedStyle(() => ({
-    color: withTiming(loading.value ? loadingColor : accentColors.color, TIMING_CONFIGS.slowFadeConfig),
+    color: withTiming(loading.value ? loadingColor : labelColor, TIMING_CONFIGS.slowFadeConfig),
     opacity: loading.value
       ? withRepeat(withSequence(withTiming(0.5, pulsingConfig), withTiming(1, pulsingConfig)), -1, true)
       : withSpring(1, sliderConfig),
   }));
 
   return (
-    <TextShadow blur={12} shadowOpacity={0.24}>
-      <AnimatedText align="right" size="17pt" weight="semibold" style={animatedTextOpacity}>
-        {ensAddressOrFallback}
-      </AnimatedText>
-    </TextShadow>
+    <AnimatedText align="right" size="17pt" weight="semibold" style={animatedTextOpacity}>
+      {ensAddressOrFallback}
+    </AnimatedText>
   );
 };
 

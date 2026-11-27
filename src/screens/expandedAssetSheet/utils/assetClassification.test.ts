@@ -49,9 +49,15 @@ describe('getAssetClassification', () => {
         icon: expect.any(String),
         valueIcon: { type: 'image', url: NVDA_ICON },
       },
-      { key: 'issuer', title: 'Issuer', value: 'Robinhood', icon: expect.any(String), valueIcon: { type: 'image', url: ROBINHOOD_ICON } },
+      {
+        key: 'token_issuer',
+        title: 'Token Issuer',
+        value: 'Robinhood',
+        icon: expect.any(String),
+        valueIcon: { type: 'image', url: ROBINHOOD_ICON },
+      },
       { key: 'onchain_ticker', title: 'Onchain Ticker', value: 'NVDA', icon: expect.any(String) },
-      { key: 'offchain_ticker', title: 'Offchain Ticker', value: 'NVDA', icon: expect.any(String) },
+      { key: 'stock_ticker', title: 'Stock Ticker', value: 'NVDA', icon: expect.any(String) },
       {
         key: 'blockchain',
         title: 'Blockchain',
@@ -73,10 +79,10 @@ describe('getAssetClassification', () => {
   });
 
   test.each<[string, Partial<AssetClassificationInput>, Partial<typeof stockToken>, string[]]>([
-    ['underlying asset null', { underlyingAsset: null }, {}, ['underlying_asset', 'offchain_ticker']],
+    ['underlying asset null', { underlyingAsset: null }, {}, ['underlying_asset', 'stock_ticker']],
     ['underlying name empty', { underlyingAsset: { ...nvidia, name: '' } }, {}, ['underlying_asset']],
-    ['issuer null', { issuer: null }, {}, ['issuer']],
-    ['issuer name empty', { issuer: { name: '', iconUrl: ROBINHOOD_ICON } }, {}, ['issuer']],
+    ['issuer null', { issuer: null }, {}, ['token_issuer']],
+    ['issuer name empty', { issuer: { name: '', iconUrl: ROBINHOOD_ICON } }, {}, ['token_issuer']],
     ['chain label missing', {}, { chainLabel: undefined }, ['blockchain']],
     ['token name empty', {}, { name: '' }, []],
   ])('a stock with %s keeps its label but hides the ⓘ', (_, assetOverride, tokenOverride, hiddenRows) => {
@@ -90,7 +96,7 @@ describe('getAssetClassification', () => {
 
   test.each<[string, Partial<AssetClassificationInput>, Partial<typeof stockToken>, string]>([
     ['symbol empty', {}, { symbol: '' }, 'onchain_ticker'],
-    ['underlying ticker empty', { underlyingAsset: { ...nvidia, ticker: '' } }, {}, 'offchain_ticker'],
+    ['underlying ticker empty', { underlyingAsset: { ...nvidia, ticker: '' } }, {}, 'stock_ticker'],
   ])('a stock with %s hides only that row', (_, assetOverride, tokenOverride, hiddenRow) => {
     const result = getAssetClassification({ ...stock, ...assetOverride }, { ...stockToken, ...tokenOverride });
 
@@ -105,7 +111,7 @@ describe('getAssetClassification', () => {
       stockToken
     );
 
-    expect(result?.rows.find(row => row.key === 'issuer')).toMatchObject({ value: 'Robinhood', valueIcon: undefined });
+    expect(result?.rows.find(row => row.key === 'token_issuer')).toMatchObject({ value: 'Robinhood', valueIcon: undefined });
     expect(result?.rows.find(row => row.key === 'underlying_asset')).toMatchObject({ value: 'NVIDIA Corporation', valueIcon: undefined });
   });
 
@@ -125,7 +131,7 @@ describe('getAssetClassification', () => {
     expect(result?.label).toBe('Stablecoin');
     expect(result?.rows.map(({ key, value }) => [key, value])).toEqual([
       ['asset_type', 'Stablecoin'],
-      ['issuer', 'Circle'],
+      ['token_issuer', 'Circle'],
     ]);
     expect(infoString(result)).toBe(info);
   });
@@ -133,7 +139,7 @@ describe('getAssetClassification', () => {
   test.each<[string, AssetClassificationInput, Partial<typeof stablecoinToken>, string[]]>([
     ['no issuer', { ...stablecoin('US Dollar'), issuer: null }, {}, ['asset_type']],
     ['an empty issuer name', { ...stablecoin('US Dollar'), issuer: { name: '', iconUrl: '' } }, {}, ['asset_type']],
-    ['an empty token name', stablecoin('US Dollar'), { name: '' }, ['asset_type', 'issuer']],
+    ['an empty token name', stablecoin('US Dollar'), { name: '' }, ['asset_type', 'token_issuer']],
   ])('a stablecoin with %s hides the ⓘ', (_, asset, tokenOverride, rows) => {
     const result = getAssetClassification(asset, { ...stablecoinToken, ...tokenOverride });
 
@@ -144,8 +150,22 @@ describe('getAssetClassification', () => {
   test('a stablecoin without an underlying asset keeps its issuer row but hides the ⓘ', () => {
     const result = getAssetClassification(stablecoin(null), stablecoinToken);
 
-    expect(rowKeys(result)).toEqual(['asset_type', 'issuer']);
+    expect(rowKeys(result)).toEqual(['asset_type', 'token_issuer']);
     expect(result?.infoText).toBeUndefined();
+  });
+
+  test.each<[string, AssetClassificationInput, AssetClassification['header']]>([
+    ['a full stock', stock, { name: 'NVIDIA Corporation', iconUrl: NVDA_ICON }],
+    [
+      'a stock with an empty underlying icon',
+      { ...stock, underlyingAsset: { ...nvidia, iconUrl: '' } },
+      { name: 'NVIDIA Corporation', iconUrl: undefined },
+    ],
+    ['a stock with an empty underlying name', { ...stock, underlyingAsset: { ...nvidia, name: '' } }, undefined],
+    ['a stock without an underlying asset', { ...stock, underlyingAsset: null }, undefined],
+    ['a stablecoin with an underlying asset', stablecoin('US Dollar'), undefined],
+  ])('header for %s', (_, asset, header) => {
+    expect(getAssetClassification(asset, stockToken)?.header).toEqual(header);
   });
 
   test('no output ever shows a placeholder', () => {
