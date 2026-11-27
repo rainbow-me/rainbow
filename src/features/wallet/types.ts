@@ -1,6 +1,7 @@
 import { type HDNode } from '@ethersproject/hdnode';
 
 import { type EthereumAddress } from '@/entities/wallet';
+import { type SolanaAddress } from '@/features/solana/core/address';
 import { type HardwareKey } from '@/features/wallet/core/hardwareWalletKey';
 import { type EthereumPrivateKey, type EthereumWalletSeed } from '@/features/wallet/core/walletDerivation';
 import { type EthereumWalletType } from '@/helpers/walletTypes';
@@ -74,3 +75,14 @@ export interface MigratedSecretsResult {
 }
 
 export const DEFAULT_WALLET_NAME = 'My Wallet';
+
+// Additive Solana records; legacy wallet and keychain types above retain their contracts.
+export type SupportedCaipNamespace = 'eip155' | 'solana';
+export type WalletAddress = EthereumAddress | SolanaAddress;
+export type AccountProfile = Omit<RainbowAccount, 'address' | 'ens'> & { walletId: RainbowWallet['id'] };
+export type AccountRef = Pick<AccountProfile, 'walletId' | 'index'>;
+export type AccountAddressMetadata = { address: WalletAddress; ens?: string | null };
+export type AccountAddresses = Readonly<Partial<Record<SupportedCaipNamespace, AccountAddressMetadata>>>;
+export type MultiAddressAccount = AccountProfile & { addresses: AccountAddresses; address?: never };
+export type AccountMetadataRecord = AccountRef & { address: WalletAddress; namespace: SupportedCaipNamespace; version: 1 };
+export type AccountPrivateKeyData = { address: WalletAddress; privateKey: string; format: 'ed25519-seed-base58'; version: 1 };
