@@ -4,6 +4,7 @@ import { difference } from 'lodash';
 import { useMMKVObject } from 'react-native-mmkv';
 import { atom, useRecoilState, useSetRecoilState } from 'recoil';
 
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { EditAction } from '@/helpers/EditAction';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 import { useAccountAddress } from '@/state/wallets/walletsStore';
@@ -31,7 +32,7 @@ export default function useCoinListEditOptions() {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
         return {
           ...(prev ?? {}),
-          [uniqueId.toLowerCase()]: true,
+          [uniqueId.endsWith(`_${SOLANA_CHAIN_ID}`) ? uniqueId : uniqueId.toLowerCase()]: true,
         };
       });
     },
@@ -42,7 +43,7 @@ export default function useCoinListEditOptions() {
     (uniqueId: string) => {
       setPinnedCoinsObject((prev: BooleanMap | undefined) => {
         const newPinnedCoins = { ...(prev ?? {}) };
-        delete newPinnedCoins[uniqueId.toLowerCase()];
+        delete newPinnedCoins[uniqueId.endsWith(`_${SOLANA_CHAIN_ID}`) ? uniqueId : uniqueId.toLowerCase()];
         return newPinnedCoins;
       });
     },
@@ -93,7 +94,7 @@ export function useCoinListFinishEditingOptions() {
   const selectedItemsNonReactive = useRef<string[]>(undefined);
   selectedItemsNonReactive.current = selectedItems;
 
-  const [pinnedCoins = {}, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
+  const [pinnedCoins = INITIAL_PINNED_COINS, setPinnedCoinsObject] = useMMKVObject<BooleanMap>('pinned-coins-obj-' + accountAddress);
 
   const currentAction = useMemo(() => {
     const newSelectedCoinsLength = selectedItems.length;

@@ -8,8 +8,12 @@ import { Icon } from '@/components/icons';
 import { LiveTokenText } from '@/components/live-token-text/LiveTokenText';
 import { Text } from '@/design-system';
 import { opacity } from '@/design-system/utils/opacity';
+import { type ParsedAddressAsset } from '@/entities/tokens';
 import type { NativeCurrencyKey } from '@/features/currency/types';
+import { convertAmountToNativeDisplay } from '@/features/currency/utils/nativeDisplay';
 import { ChainId } from '@/features/network/types/backendNetworks';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
+import { selectSolanaBalance, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { formatLiquidityCappedBalance } from '@/features/token/ui/utils/formatLiquidityCappedBalance';
 import { memoizeLast } from '@/framework/core/utils/memoizeLast';
 import { toSignificantDigits } from '@/helpers/utilities';
@@ -20,6 +24,7 @@ import Routes from '@/navigation/routesNames';
 import { select24hChange } from '@/state/liveTokens/selectors';
 import { type TokenData } from '@/state/liveTokens/types';
 import { borders, colors, padding, shadow } from '@/styles';
+import { shallowEqual } from '@/worklets/comparisons';
 
 import { type ExtendedState } from '../core/RawRecyclerList';
 
@@ -84,12 +89,6 @@ interface MemoizedBalanceCoinRowProps {
 const MemoizedBalanceCoinRow = React.memo(
   ({ uniqueId, nativeCurrency, theme, nativeCurrencySymbol, isHidden, maybeCallback }: MemoizedBalanceCoinRowProps) => {
     const item = useAccountAsset(uniqueId, nativeCurrency);
-    const nativeBalanceDisplay = item?.balance?.display ?? '';
-    const chainId = item?.chainId || ChainId.mainnet;
-    const tokenBalanceAmount = item?.balance?.amount ?? '0';
-    const percentChange = item?.native?.change?.replace('%', '');
-    const priceUpdatedAt = item?.price?.changed_at ?? 0;
-
     const handlePress = useCallback(() => {
       if (maybeCallback.current) {
         maybeCallback.current();
@@ -99,85 +98,161 @@ const MemoizedBalanceCoinRow = React.memo(
       }
     }, [item, maybeCallback]);
 
-    const tokenBalanceSelector = useMemo(
-      () =>
-        memoizeLast((token: TokenData) => {
-          const result = formatLiquidityCappedBalance(token, tokenBalanceAmount, nativeCurrency);
-          return `${result.isCapped ? '~' : ''}${result.balance}`;
-        }),
-      [nativeCurrency, tokenBalanceAmount]
-    );
-
     return (
-      <View style={sx.flex} testID={'fast-coin-info'}>
-        <ButtonPressAnimation onPress={handlePress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
-          <View style={[sx.container]}>
-            <View style={sx.iconContainer}>
-              <RainbowCoinIcon
-                icon={item?.icon_url}
-                chainId={chainId}
-                symbol={item?.symbol || ''}
-                color={item?.colors?.primary || item?.colors?.fallback || undefined}
-              />
-            </View>
-
-            <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
-              <View style={sx.row}>
-                <View style={sx.textWrapper}>
-                  <Text numberOfLines={1} color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
-                    {item?.name}
-                  </Text>
-                </View>
-                <LiveTokenText
-                  autoSubscribe={false}
-                  selector={tokenBalanceSelector}
-                  tokenId={uniqueId}
-                  // Because we need to this update if the balance changes regardless of if the price is newer, we set this to 0
-                  fallbackUpdatedAt={0}
-                  fallback={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
-                  color={{ custom: theme.colors.dark }}
-                  size={'16px / 22px (Deprecated)'}
-                  weight="bold"
-                  align="right"
-                  testID={`balance-coin-row-value-${item?.name}`}
-                />
-              </View>
-
-              <View style={[sx.row, sx.bottom]}>
-                <View style={sx.textWrapper}>
-                  <Text color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} size="14px / 19px (Deprecated)" weight="bold">
-                    {nativeBalanceDisplay}
-                  </Text>
-                </View>
-                <LiveTokenText
-                  autoSubscribe={false}
-                  selector={select24hChange}
-                  format={formatPercentChange}
-                  tokenId={uniqueId}
-                  fallbackUpdatedAt={priceUpdatedAt}
-                  fallback={formatPercentChange(percentChange)}
-                  priceChangeColors={{
-                    positive: theme.colors.green,
-                    negative: theme.colors.blueGreyDark50,
-                    neutral: theme.colors.blueGreyDark50,
-                  }}
-                  color={'label'}
-                  size="14px / 19px (Deprecated)"
-                  weight="bold"
-                  align="right"
-                />
-              </View>
-            </View>
-          </View>
-        </ButtonPressAnimation>
-      </View>
+      <BalanceCoinRowContent
+        uniqueId={uniqueId}
+        nativeCurrency={nativeCurrency}
+        theme={theme}
+        nativeCurrencySymbol={nativeCurrencySymbol}
+        isHidden={isHidden}
+        item={item}
+        onPress={handlePress}
+      />
     );
   }
 );
 
+const MemoizedSolanaBalanceCoinRow = React.memo(function SolanaBalanceCoinRow({
+  uniqueId,
+  nativeCurrency,
+  theme,
+  nativeCurrencySymbol,
+  isHidden,
+  maybeCallback,
+}: MemoizedBalanceCoinRowProps) {
+  const balance = useSolanaWalletBalances(state => selectSolanaBalance(state, uniqueId), shallowEqual);
+  const handlePress = useCallback(() => maybeCallback.current?.(), [maybeCallback]);
+  if (!balance) return null;
+  const item: BalanceCoinRowAsset = {
+    chainId: SOLANA_CHAIN_ID,
+    name: balance.name,
+    symbol: balance.symbol,
+    icon_url: balance.iconUrl,
+    balance: { amount: balance.amount, display: `${balance.amount} ${balance.rawUnits ? 'base units' : balance.symbol}` },
+    native: {
+      balance: { display: convertAmountToNativeDisplay(balance.value ?? '0', nativeCurrency) },
+      change: balance.relativeChange24h?.toString(),
+    },
+  };
+  // shortcut: normal taps stay inactive until the expanded sheet supports Solana; editing uses the shared callback.
+  return (
+    <BalanceCoinRowContent
+      uniqueId={uniqueId}
+      nativeCurrency={nativeCurrency}
+      theme={theme}
+      nativeCurrencySymbol={nativeCurrencySymbol}
+      isHidden={isHidden}
+      item={item}
+      onPress={handlePress}
+    />
+  );
+});
+
+type BalanceCoinRowAsset = Pick<ParsedAddressAsset, 'chainId' | 'name' | 'symbol' | 'icon_url' | 'colors' | 'balance' | 'native' | 'price'>;
+
+const BalanceCoinRowContent = React.memo(function BalanceCoinRowContent({
+  uniqueId,
+  nativeCurrency,
+  theme,
+  nativeCurrencySymbol,
+  isHidden,
+  item,
+  onPress,
+}: Omit<MemoizedBalanceCoinRowProps, 'maybeCallback'> & {
+  item: BalanceCoinRowAsset | undefined;
+  onPress: () => void;
+}) {
+  const nativeBalanceDisplay = item?.balance?.display ?? '';
+  const chainId = item?.chainId || ChainId.mainnet;
+  const tokenBalanceAmount = item?.balance?.amount ?? '0';
+  const percentChange = item?.native?.change?.replace('%', '');
+  const priceUpdatedAt = item?.price?.changed_at ?? 0;
+  const tokenBalanceSelector = useMemo(
+    () =>
+      memoizeLast((token: TokenData) => {
+        const result = formatLiquidityCappedBalance(token, tokenBalanceAmount, nativeCurrency);
+        return `${result.isCapped ? '~' : ''}${result.balance}`;
+      }),
+    [nativeCurrency, tokenBalanceAmount]
+  );
+
+  return (
+    <View style={sx.flex} testID={'fast-coin-info'}>
+      <ButtonPressAnimation onPress={onPress} scaleTo={0.96} testID={`balance-coin-row-${item?.name}`}>
+        <View style={[sx.container]}>
+          <View style={sx.iconContainer}>
+            <RainbowCoinIcon
+              icon={item?.icon_url}
+              chainId={chainId}
+              symbol={item?.symbol || ''}
+              color={item?.colors?.primary || item?.colors?.fallback || undefined}
+            />
+          </View>
+
+          <View style={[sx.innerContainer, isHidden && sx.hiddenRow]}>
+            <View style={sx.row}>
+              <View style={sx.textWrapper}>
+                <Text numberOfLines={1} color="primary (Deprecated)" size="16px / 22px (Deprecated)" weight="semibold">
+                  {item?.name}
+                </Text>
+              </View>
+              <LiveTokenText
+                autoSubscribe={false}
+                selector={tokenBalanceSelector}
+                tokenId={uniqueId}
+                // Because we need to this update if the balance changes regardless of if the price is newer, we set this to 0
+                fallbackUpdatedAt={0}
+                fallback={item?.native?.balance?.display ?? `${nativeCurrencySymbol}0.00`}
+                color={{ custom: theme.colors.dark }}
+                size={'16px / 22px (Deprecated)'}
+                weight="bold"
+                align="right"
+                testID={`balance-coin-row-value-${item?.name}`}
+              />
+            </View>
+
+            <View style={[sx.row, sx.bottom]}>
+              <View style={sx.textWrapper}>
+                <Text color={{ custom: theme.colors.blueGreyDark50 }} numberOfLines={1} size="14px / 19px (Deprecated)" weight="bold">
+                  {nativeBalanceDisplay}
+                </Text>
+              </View>
+              <LiveTokenText
+                autoSubscribe={false}
+                selector={select24hChange}
+                format={formatPercentChange}
+                tokenId={uniqueId}
+                fallbackUpdatedAt={priceUpdatedAt}
+                fallback={formatPercentChange(percentChange)}
+                priceChangeColors={{
+                  positive: theme.colors.green,
+                  negative: theme.colors.blueGreyDark50,
+                  neutral: theme.colors.blueGreyDark50,
+                }}
+                color={'label'}
+                size="14px / 19px (Deprecated)"
+                weight="bold"
+                align="right"
+              />
+            </View>
+          </View>
+        </View>
+      </ButtonPressAnimation>
+    </View>
+  );
+});
+
 MemoizedBalanceCoinRow.displayName = 'MemoizedBalanceCoinRow';
 
-export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: { uniqueId: string; extendedState: ExtendedState }) {
+export default React.memo(function BalanceCoinRow({
+  uniqueId,
+  extendedState,
+  isSolana = false,
+}: {
+  uniqueId: string;
+  extendedState: ExtendedState;
+  isSolana?: boolean;
+}) {
   const { theme, nativeCurrencySymbol, nativeCurrency, hiddenAssets, pinnedCoins, toggleSelectedCoin, isCoinListEdited } = extendedState;
 
   const onPress = useCallback(() => {
@@ -192,11 +267,13 @@ export default React.memo(function BalanceCoinRow({ uniqueId, extendedState }: {
   const isHidden = hiddenAssets.has(uniqueId);
   const isPinned = pinnedCoins[uniqueId];
 
+  const Row = isSolana ? MemoizedSolanaBalanceCoinRow : MemoizedBalanceCoinRow;
+
   return (
     <View style={[sx.rootContainer, !isCoinListEdited && sx.nonEditMode]}>
       {isCoinListEdited && <CoinCheckButton isHidden={isHidden} isPinned={isPinned} onPress={onPress} theme={theme} uniqueId={uniqueId} />}
 
-      <MemoizedBalanceCoinRow
+      <Row
         isHidden={isHidden}
         maybeCallback={maybeCallback}
         nativeCurrency={nativeCurrency}

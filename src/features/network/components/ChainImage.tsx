@@ -1,19 +1,21 @@
 import React, { memo, useMemo } from 'react';
-import { View, type StyleProp, type ViewStyle } from 'react-native';
+import { Image, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { FasterImageView } from '@candlefinance/faster-image';
 
 import { DEFAULT_FASTER_IMAGE_CONFIG } from '@/components/images/ImgixImage';
 import { useColorMode } from '@/design-system';
+import { SOLANA_NETWORK_BADGE } from '@/features/solana/constants/networkAssets';
+import { SOLANA_CHAIN_ID } from '@/features/solana/core/chainId';
 import { TRANSPARENT_PIXEL_BASE64 } from '@/framework/ui/utils/transparentPixelBase64';
 
 import { useBackendNetworksStore } from '../stores/backendNetworksStore';
-import { type ChainId } from '../types/backendNetworks';
+import { type SupportedChainId } from '../types/supportedChainId';
 
 type ChainImageProps = {
   badgeXPosition?: number;
   badgeYPosition?: number;
-  chainId: ChainId | null | undefined;
+  chainId: SupportedChainId | null | undefined;
   position?: 'absolute' | 'relative';
   showBadge?: boolean;
   size?: number;
@@ -21,9 +23,9 @@ type ChainImageProps = {
 };
 
 export const ChainImage = memo(function ChainImage({
+  chainId,
   badgeXPosition = 0,
   badgeYPosition = 0,
-  chainId,
   position = 'absolute',
   showBadge = true,
   size = 20,
@@ -37,19 +39,26 @@ export const ChainImage = memo(function ChainImage({
 
   if (!chainId || !showBadge) return null;
 
-  const badgeUrl = useBackendNetworksStore.getState().getChainsBadge()[chainId];
-  if (!badgeUrl) return null;
+  const badgeSource = chainId === SOLANA_CHAIN_ID ? SOLANA_NETWORK_BADGE : undefined;
+
+  const badgeUrl =
+    (chainId && chainId !== SOLANA_CHAIN_ID ? useBackendNetworksStore.getState().getChainsBadge()[chainId] : undefined) ?? '';
+  if (!badgeUrl && !badgeSource) return null;
 
   return (
     <View style={[style, containerStyle]}>
-      <FasterImageView
-        source={{
-          ...DEFAULT_FASTER_IMAGE_CONFIG,
-          base64Placeholder: TRANSPARENT_PIXEL_BASE64,
-          url: badgeUrl,
-        }}
-        style={iconStyle}
-      />
+      {badgeSource ? (
+        <Image source={badgeSource} style={iconStyle} />
+      ) : (
+        <FasterImageView
+          source={{
+            ...DEFAULT_FASTER_IMAGE_CONFIG,
+            base64Placeholder: TRANSPARENT_PIXEL_BASE64,
+            url: badgeUrl,
+          }}
+          style={iconStyle}
+        />
+      )}
     </View>
   );
 });

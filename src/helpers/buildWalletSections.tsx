@@ -11,12 +11,13 @@ import { type Network } from '@/features/network/types/backendNetworks';
 import { type PerpsWalletListData } from '@/features/perps/types';
 import { type PolymarketWalletListData } from '@/features/polymarket/types';
 import { type RainbowPositions } from '@/features/positions/types';
+import { type SolanaBalance } from '@/features/solana/core/balances';
 import { type BooleanMap } from '@/hooks/useCoinListEditOptions';
 import { type Language } from '@/languages';
 import { type ClaimablesStore } from '@/state/claimables/claimables';
 import { type Collection, type CollectionId } from '@/state/nfts/types';
 
-import { buildBriefCoinsList, buildBriefUniqueTokenList } from './assets';
+import { buildBriefCoinsList, buildBriefUniqueTokenList, type CoinListAsset } from './assets';
 
 const CONTENT_PLACEHOLDER: CellTypes[] = [
   { type: CellType.LOADING_ASSETS, uid: 'loadings-asset-1' },
@@ -51,9 +52,11 @@ const EMPTY_WALLET_CONTENT_WITH_DISCOVER: CellTypes[] = [
 
 const ONLY_NFTS_CONTENT: CellTypes[] = [{ type: CellType.ETH_CARD, uid: 'eth-card' }];
 const EMPTY_ARRAY: CellTypes[] = [];
+const EMPTY_SOLANA_BALANCES: Pick<SolanaBalance, 'uniqueId' | 'value'>[] = [];
 
 export type WalletSectionsState = {
   sortedAssets: ParsedAddressAsset[];
+  solanaBalances?: Pick<SolanaBalance, 'uniqueId' | 'value'>[];
   accountBalanceDisplay: string | undefined;
   hiddenAssets: Set<UniqueId>;
   isCoinListEdited: boolean;
@@ -85,6 +88,7 @@ export type WalletSectionsState = {
   isDismissedRnbwFeatureCard?: boolean;
 };
 
+const solanaBalancesSelector = (state: WalletSectionsState) => state.solanaBalances ?? EMPTY_SOLANA_BALANCES;
 const sortedAssetsSelector = (state: WalletSectionsState) => state.sortedAssets;
 const accountBalanceDisplaySelector = (state: WalletSectionsState) => state.accountBalanceDisplay;
 const hiddenAssetsSelector = (state: WalletSectionsState) => state.hiddenAssets;
@@ -390,7 +394,11 @@ const withTokensHeaderSection = ({
 }): CellTypes[] => {
   // Only show tokens header if we have token content (not empty wallet state)
   const hasTokenContent = contentSection.some(
-    item => item.type === CellType.COIN || item.type === CellType.COIN_DIVIDER || item.type === CellType.LOADING_ASSETS
+    item =>
+      item.type === CellType.COIN ||
+      item.type === CellType.SOLANA_COIN ||
+      item.type === CellType.COIN_DIVIDER ||
+      item.type === CellType.LOADING_ASSETS
   );
   const hasPerpsContent = perpsSection[0]?.type !== CellType.EMPTY_ROW;
 
@@ -419,11 +427,22 @@ const withBriefBalanceSection = (
   pinnedCoins: BooleanMap,
   hiddenAssets: Set<UniqueId>,
   collections: Map<CollectionId, Collection> | null,
-  discoverEnabled: boolean
+  discoverEnabled: boolean,
+  solanaBalances: Pick<SolanaBalance, 'uniqueId' | 'value'>[]
 ): BalanceSectionResult => {
-  const { briefAssets } = buildBriefCoinsList(sortedAssets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
+  const assets: CoinListAsset[] = solanaBalances.length
+    ? [
+        ...sortedAssets,
+        ...solanaBalances.map(balance => ({
+          uniqueId: balance.uniqueId,
+          native: { balance: { amount: balance.value ?? '0' } },
+          cellType: CellType.SOLANA_COIN as const,
+        })),
+      ].sort((a, b) => (Number(b.native?.balance?.amount) || 0) - (Number(a.native?.balance?.amount) || 0))
+    : sortedAssets;
+  const { briefAssets } = buildBriefCoinsList(assets, nativeCurrency, isCoinListEdited, pinnedCoins, hiddenAssets);
 
-  const hasTokens = briefAssets?.length;
+  const hasTokens = briefAssets?.length || solanaBalances.length;
   const hasNFTs = (collections?.size ?? 0) > 0;
   const hasNFTsOnly = !hasTokens && hasNFTs;
 
@@ -547,6 +566,7 @@ const briefBalanceSectionSelector = createSelector(
     hiddenAssetsSelector,
     collectionsSelector,
     discoverEnabledSelector,
+    solanaBalancesSelector,
   ],
   withBriefBalanceSection
 );

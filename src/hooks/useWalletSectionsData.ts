@@ -19,6 +19,7 @@ import { usePolymarketPositions } from '@/features/polymarket/stores/derived/use
 import { type PolymarketPosition, type PolymarketWalletListData } from '@/features/polymarket/types';
 import { usePositionsStore } from '@/features/positions/stores/positionsStore';
 import { useRnbwFeatureCard } from '@/features/rnbw-rewards/hooks/useRnbwFeatureCard';
+import { useSolanaBalanceList, useSolanaWalletBalances } from '@/features/solana/data/solanaBalancesStore';
 import { buildBriefWalletSectionsSelector, type WalletSectionsState } from '@/helpers/buildWalletSections';
 import useHiddenTokens from '@/hooks/useHiddenTokens';
 import useShowcaseTokens from '@/hooks/useShowcaseTokens';
@@ -64,8 +65,11 @@ export default function useWalletSectionsData({
   const rnbwRewardsEnabled = (remoteConfig.rnbw_rewards_enabled || experimentalConfig[RNBW_REWARDS]) && !IS_TEST;
 
   const hiddenAssets = useUserAssetsStore(state => state.hiddenAssets);
-  const isLoadingUserAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
+  const isLoadingEvmAssets = useUserAssetsStore(state => state.getStatus('isInitialLoad'));
   const sortedAssets = useUserAssetsStore(state => state.legacyUserAssets);
+  const solanaBalances = useSolanaBalanceList();
+  const isLoadingSolanaAssets = useSolanaWalletBalances(state => state.isLoading);
+  const isLoadingUserAssets = isLoadingEvmAssets || (type === 'wallet' && isLoadingSolanaAssets);
 
   const positionsData = usePositionsStore(state => state.getData());
   const positions = useMemo(() => {
@@ -135,6 +139,7 @@ export default function useWalletSectionsData({
       network,
       pinnedCoins,
       sortedAssets,
+      solanaBalances: type === 'wallet' ? solanaBalances : undefined,
       accountBalanceDisplay: accountWithBalance?.balancesMinusHiddenBalances,
       isLoadingBalance: !accountWithBalance?.balancesMinusHiddenBalances,
       hiddenTokens,
@@ -177,6 +182,7 @@ export default function useWalletSectionsData({
     network,
     pinnedCoins,
     sortedAssets,
+    solanaBalances,
     accountWithBalance?.balancesMinusHiddenBalances,
     hiddenTokens,
     isReadOnlyWallet,

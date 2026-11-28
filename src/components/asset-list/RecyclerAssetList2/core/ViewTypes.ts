@@ -11,6 +11,7 @@ import { type Claimable } from '@/resources/addys/claimables/types';
 export enum CellType {
   ASSETS_HEADER_SPACE_AFTER = 'ASSETS_HEADER_SPACE_AFTER',
   COIN = 'COIN',
+  SOLANA_COIN = 'SOLANA_COIN',
   COIN_DIVIDER = 'COIN_DIVIDER',
   PROFILE_ACTION_BUTTONS_ROW = 'PROFILE_ACTION_BUTTONS_ROW',
   PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER = 'PROFILE_ACTION_BUTTONS_ROW_SPACE_AFTER',
@@ -93,6 +94,8 @@ export type AssetsHeaderExtraData = {
   value: string;
   isLoadingBalance: boolean;
 };
+export type SolanaCoinExtraData = { type: CellType.SOLANA_COIN; uniqueId: string };
+
 export type CoinExtraData = { type: CellType.COIN; uniqueId: string };
 export type NFTExtraData = {
   type: CellType.NFT;
@@ -192,6 +195,7 @@ export type CellExtraData =
   | LegacyNFTFamilyExtraData
   | CoinDividerExtraData
   | CoinExtraData
+  | SolanaCoinExtraData
   | NFTExtraData
   | LegacyNFTExtraData
   | NFTsHeaderExtraData
