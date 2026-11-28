@@ -11,8 +11,17 @@ import { getProvider } from '@/handlers/web3';
 import { fetchExternalToken } from '@/resources/assets/externalAssetsQuery';
 import { ManagedExecutionFailedError } from '@rainbow-me/solana-sdk';
 
+import { SOLANA_MAINNET_CHAIN } from '../core/chainId';
 import { SWAP_ASSETS } from '../core/swap';
-import { checkMvpExecution, executeMvpTrade, prepareMvpTrade, prepareSwapTrade, useSolanaMvpExecutionStore } from './mvpTrades';
+import { parseSolanaSearchResults } from '../core/tokenSearch';
+import {
+  checkMvpExecution,
+  executeMvpTrade,
+  getSwapBalances,
+  prepareMvpTrade,
+  prepareSwapTrade,
+  useSolanaMvpExecutionStore,
+} from './mvpTrades';
 
 const mocks = vi.hoisted(() => ({
   prepare: vi.fn(),
@@ -271,7 +280,7 @@ describe('MVP SDK entry points', () => {
 
 describe('normal swap UI SDK entry points', () => {
   it.each(['sol', 'usdc', 'bonk'] as const)('prepares a variable Base ETH amount to %s and uses the EVM signer', async output => {
-    const trade = await prepareSwapTrade('base-eth', output, '0.000123');
+    const trade = await prepareSwapTrade(SWAP_ASSETS['base-eth'], SWAP_ASSETS[output], '0.000123');
     expect(mocks.prepare).toHaveBeenCalledWith(
       expect.objectContaining({
         account: wallet.address,
@@ -287,12 +296,12 @@ describe('normal swap UI SDK entry points', () => {
   });
   it('rejects an unfunded Base buy before preparing or unlocking', async () => {
     mocks.baseBalance.mockResolvedValue(1n);
-    await expect(prepareSwapTrade('base-eth', 'bonk', '0.001')).rejects.toThrow('Insufficient Base ETH');
+    await expect(prepareSwapTrade(SWAP_ASSETS['base-eth'], SWAP_ASSETS['bonk'], '0.001')).rejects.toThrow('Insufficient Base ETH');
     expect(mocks.prepare).not.toHaveBeenCalled();
     expect(loadWallet).not.toHaveBeenCalled();
   });
   it('rechecks Base funds after unlock and never submits when the balance was spent', async () => {
-    const trade = await prepareSwapTrade('base-eth', 'bonk', '0.001');
+    const trade = await prepareSwapTrade(SWAP_ASSETS['base-eth'], SWAP_ASSETS['bonk'], '0.001');
     mocks.baseBalance.mockResolvedValue(1n);
     await expect(executeMvpTrade(trade)).rejects.toThrow('Insufficient Base ETH');
     expect(mocks.execute).not.toHaveBeenCalled();
@@ -300,15 +309,15 @@ describe('normal swap UI SDK entry points', () => {
   });
   it('requires SOL fee reserve for native and token sources', async () => {
     mocks.balance.mockResolvedValue({ value: 999999n });
-    await expect(prepareSwapTrade('bonk', 'usdc', '1')).rejects.toThrow('0.001 SOL');
+    await expect(prepareSwapTrade(SWAP_ASSETS['bonk'], SWAP_ASSETS['usdc'], '1')).rejects.toThrow('0.001 SOL');
     mocks.balance.mockResolvedValue({ value: 1000001n });
-    await expect(prepareSwapTrade('sol', 'bonk', '0.001')).rejects.toThrow('0.001 SOL');
+    await expect(prepareSwapTrade(SWAP_ASSETS['sol'], SWAP_ASSETS['bonk'], '0.001')).rejects.toThrow('0.001 SOL');
     expect(mocks.prepare).not.toHaveBeenCalled();
   });
   it('blocks identity swaps, excessive precision, and token amounts above the balance', async () => {
-    await expect(prepareSwapTrade('sol', 'sol', '1')).rejects.toThrow('different tokens');
-    await expect(prepareSwapTrade('bonk', 'sol', '1.123456')).rejects.toThrow('valid token amount');
-    await expect(prepareSwapTrade('bonk', 'sol', '9999999')).rejects.toThrow('Insufficient BONK');
+    await expect(prepareSwapTrade(SWAP_ASSETS['sol'], SWAP_ASSETS['sol'], '1')).rejects.toThrow('different tokens');
+    await expect(prepareSwapTrade(SWAP_ASSETS['bonk'], SWAP_ASSETS['sol'], '1.123456')).rejects.toThrow('valid token amount');
+    await expect(prepareSwapTrade(SWAP_ASSETS['bonk'], SWAP_ASSETS['sol'], '9999999')).rejects.toThrow('Insufficient BONK');
     expect(mocks.prepare).not.toHaveBeenCalled();
   });
   it('rejects a quote if the account changes during preparation', async () => {
@@ -318,7 +327,7 @@ describe('normal swap UI SDK entry points', () => {
       });
       return {};
     });
-    await expect(prepareSwapTrade('base-eth', 'bonk', '0.001')).rejects.toThrow('account changed');
+    await expect(prepareSwapTrade(SWAP_ASSETS['base-eth'], SWAP_ASSETS['bonk'], '0.001')).rejects.toThrow('account changed');
     expect(loadWallet).not.toHaveBeenCalled();
   });
   it('uses the Solana signer and validates the actual fee before signing the reviewed message', async () => {
@@ -329,7 +338,7 @@ describe('normal swap UI SDK entry points', () => {
     mocks.execute.mockImplementation(async (_prepared, client) =>
       client.signer.signTransactionMessage({ cluster: 'mainnet', messageBytes: new Uint8Array([1, 2, 3]) })
     );
-    const trade = await prepareSwapTrade('sol', 'bonk', '0.001');
+    const trade = await prepareSwapTrade(SWAP_ASSETS['sol'], SWAP_ASSETS['bonk'], '0.001');
     expect(mocks.prepare.mock.calls[0][0].gasless).toBeUndefined();
     await executeMvpTrade(trade);
     expect(mocks.fee).toHaveBeenCalledTimes(2);
@@ -347,7 +356,7 @@ describe('normal swap UI SDK entry points', () => {
     mocks.execute.mockImplementation(async (_prepared, client) =>
       client.signer.signTransactionMessage({ cluster: 'mainnet', messageBytes: new Uint8Array([1]) })
     );
-    const trade = await prepareSwapTrade('sol', 'bonk', '0.001');
+    const trade = await prepareSwapTrade(SWAP_ASSETS['sol'], SWAP_ASSETS['bonk'], '0.001');
     await expect(executeMvpTrade(trade)).rejects.toThrow('Insufficient SOL');
     expect(sign).not.toHaveBeenCalled();
     expect(useSolanaMvpExecutionStore.getState().attempt).toBeNull();
@@ -361,10 +370,10 @@ describe('normal swap UI SDK entry points', () => {
       await client.signer.signTransactionMessage({ cluster: 'mainnet', messageBytes: new Uint8Array([1]) });
       throw new Error('network unavailable');
     });
-    const trade = await prepareSwapTrade('sol', 'bonk', '0.001');
+    const trade = await prepareSwapTrade(SWAP_ASSETS['sol'], SWAP_ASSETS['bonk'], '0.001');
     await expect(executeMvpTrade(trade)).rejects.toThrow('network unavailable');
     expect(useSolanaMvpExecutionStore.getState().attempt?.status).toBe('SUBMISSION_UNCERTAIN');
-    await expect(prepareSwapTrade('base-eth', 'bonk', '0.001')).rejects.toThrow('previous execution');
+    await expect(prepareSwapTrade(SWAP_ASSETS['base-eth'], SWAP_ASSETS['bonk'], '0.001')).rejects.toThrow('previous execution');
   });
 });
 
@@ -395,7 +404,7 @@ it.each([
       ],
     });
   const amount = input === 'sol' ? '0.001' : '1';
-  const trade = await prepareSwapTrade(input, output, amount);
+  const trade = await prepareSwapTrade(SWAP_ASSETS[input], SWAP_ASSETS[output], amount);
   expect(mocks.prepare).toHaveBeenCalledWith(
     expect.objectContaining({
       account: account.address,
@@ -409,8 +418,8 @@ it.each([
 
 it('estimates the reviewed Solana message fee, ignoring the sponsored provider subtotal', async () => {
   mocks.fee.mockResolvedValueOnce({ value: 15000n }).mockResolvedValueOnce({ value: 25000n });
-  const first = await prepareSwapTrade('bonk', 'sol', '100000');
-  const second = await prepareSwapTrade('bonk', 'sol', '100000');
+  const first = await prepareSwapTrade(SWAP_ASSETS['bonk'], SWAP_ASSETS['sol'], '100000');
+  const second = await prepareSwapTrade(SWAP_ASSETS['bonk'], SWAP_ASSETS['sol'], '100000');
   expect(first.networkFeeLamports).toBe(15000n);
   expect(second.networkFeeLamports).toBe(25000n);
   expect(withSolanaSigner).not.toHaveBeenCalled();
@@ -418,7 +427,7 @@ it('estimates the reviewed Solana message fee, ignoring the sponsored provider s
 });
 
 it('reports zero user-paid network fees for the required gasless Base route without a Solana fee RPC', async () => {
-  const trade = await prepareSwapTrade('base-eth', 'sol', '0.001');
+  const trade = await prepareSwapTrade(SWAP_ASSETS['base-eth'], SWAP_ASSETS['sol'], '0.001');
   expect(trade.networkFeeLamports).toBe(0n);
   expect(mocks.fee).not.toHaveBeenCalled();
 });
@@ -426,7 +435,43 @@ it('reports zero user-paid network fees for the required gasless Base route with
 it.each([null, new Error('RPC unavailable')])('does not offer a Solana review with an unknown fee: %s', async value => {
   if (value instanceof Error) mocks.fee.mockRejectedValueOnce(value);
   else mocks.fee.mockResolvedValueOnce({ value });
-  await expect(prepareSwapTrade('bonk', 'sol', '100000')).rejects.toThrow();
+  await expect(prepareSwapTrade(SWAP_ASSETS['bonk'], SWAP_ASSETS['sol'], '100000')).rejects.toThrow();
   expect(withSolanaSigner).not.toHaveBeenCalled();
   expect(mocks.execute).not.toHaveBeenCalled();
+});
+
+it('buys an arbitrary search result using its mint and precision, then sells it through the same signer path', async () => {
+  const mint = 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN';
+  const [asset] = parseSolanaSearchResults({
+    sections: [
+      {
+        type: 'SECTION_TYPE_TOKENS',
+        items: [
+          {
+            id: mint,
+            token: { name: 'Jupiter', symbol: 'JUP', instances: [{ assetId: `${SOLANA_MAINNET_CHAIN}/token:${mint}`, decimals: 6 }] },
+          },
+        ],
+      },
+    ],
+  });
+  const buy = await prepareSwapTrade(SWAP_ASSETS['base-eth'], asset, '0.001');
+  expect(mocks.prepare.mock.calls[0][0].destination).toEqual({ asset: solanaToken(address(mint)), recipient: account.address });
+  await executeMvpTrade(buy);
+  expect(mocks.execute.mock.calls[0][0]).toBe(buy.prepared);
+  useSolanaMvpExecutionStore.setState({ attempt: null });
+
+  mocks.send.mockResolvedValue({
+    value: [{ account: { data: { parsed: { info: { owner: account.address, mint, tokenAmount: { amount: '1234567' } } } } } }],
+  });
+  const balances = await getSwapBalances(account, [asset, asset]);
+  expect(balances).toEqual({ [mint]: 1234567n });
+  const sell = await prepareSwapTrade(asset, SWAP_ASSETS.sol, '1.234567');
+  expect(mocks.prepare.mock.lastCall?.[0].source).toEqual({
+    asset: solanaToken(address(mint)),
+    amount: { kind: 'exact-input', input: 1234567n },
+  });
+  await executeMvpTrade(sell);
+  expect(withSolanaSigner).toHaveBeenCalled();
+  expect(mocks.execute.mock.lastCall?.[0]).toBe(sell.prepared);
 });

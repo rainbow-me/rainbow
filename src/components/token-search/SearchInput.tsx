@@ -29,6 +29,7 @@ export const SearchInput = ({
   onSearchQueryChange,
   placeholder,
   enablePaste,
+  maxPasteLength,
   showButtonWhenNoAsset,
   isSearchFocused,
   isTokenListFocused,
@@ -41,6 +42,7 @@ export const SearchInput = ({
   onSearchQueryChange: (text: string) => void;
   placeholder: string;
   enablePaste: boolean;
+  maxPasteLength?: number;
   showButtonWhenNoAsset: boolean;
   isSearchFocused: Readonly<SharedValue<boolean>>;
   isTokenListFocused: Readonly<SharedValue<boolean>>;
@@ -143,6 +145,7 @@ export const SearchInput = ({
             isSearchFocused={isSearchFocused}
             isTokenListFocused={isTokenListFocused}
             enablePaste={enablePaste}
+            maxPasteLength={maxPasteLength}
             showButtonWhenNoAsset={showButtonWhenNoAsset}
             pastedSearchInputValue={pastedSearchInputValue}
             onPasteSearchQuery={onSearchQueryChange}

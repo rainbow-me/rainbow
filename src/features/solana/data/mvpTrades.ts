@@ -20,14 +20,7 @@ import {
   validateMvpReview,
   type MvpRoute,
 } from '@/features/solana/core/mvpRoutes';
-import {
-  SOL_FEE_RESERVE,
-  SWAP_ASSETS,
-  swapInputAmount,
-  validateSwapReview,
-  type SolanaSwapAssetId,
-  type SwapAssetId,
-} from '@/features/solana/core/swap';
+import { SOL_FEE_RESERVE, swapInputAmount, validateSwapReview, type SolanaSwapAsset, type SwapAsset } from '@/features/solana/core/swap';
 import { configureSolanaMvpSdk, takeSolanaRouteMessage } from '@/features/solana/data/mvpSdk';
 import { type PreparedSwap } from '@/features/solana/data/swapTypes';
 import { assertSolanaSource, getEnabledSolanaAccount } from '@/features/wallet/data/enableSolanaAccount';
@@ -179,7 +172,7 @@ export async function executeMvpTrade(trade: MvpTrade | PreparedSwap): Promise<v
     );
   };
   try {
-    if (trade.route === 'buy' || trade.route === 'buyBonk' || (trade.route === 'swap' && trade.inputAsset === 'base-eth')) {
+    if (trade.route === 'buy' || trade.route === 'buyBonk' || (trade.route === 'swap' && trade.sourceChain === 'evm')) {
       const provider = getProvider({ chainId: ChainId.base });
       const signer = await loadWallet({ address: trade.account.sourceEvmAddress, provider });
       if (!(signer instanceof Wallet) || signer.address.toLowerCase() !== trade.account.sourceEvmAddress.toLowerCase()) {
@@ -207,7 +200,7 @@ export async function executeMvpTrade(trade: MvpTrade | PreparedSwap): Promise<v
                       rpc.getBalance(address(trade.account.address), { commitment: 'confirmed' }).send(),
                     ]);
                     if (fee.value === null) throw new Error('Unable to estimate the Solana network fee. Review a fresh quote.');
-                    if (balance.value < fee.value + (trade.inputAsset === 'sol' ? trade.input : 0n))
+                    if (balance.value < fee.value + (trade.inputAsset.asset.kind === 'native' ? trade.input : 0n))
                       throw new Error('Insufficient SOL for the swap and network fee.');
                     assertAccount(trade.account);
                     validateSwapReview(trade);
@@ -224,7 +217,7 @@ export async function executeMvpTrade(trade: MvpTrade | PreparedSwap): Promise<v
   } catch (error) {
     if (error instanceof ManagedExecutionFailedError && error.executionId === trade.prepared.executionId) {
       setSubmissionStatus(RelayExecutionStatus.Failed);
-    } else if (trade.route === 'swap' && trade.inputAsset !== 'base-eth' && !signatureProduced) {
+    } else if (trade.route === 'swap' && trade.sourceChain !== 'evm' && !signatureProduced) {
       // No signature left the signer, so this attempt cannot have funded a source transaction.
       useSolanaMvpExecutionStore.setState(state => (state.attempt?.executionId === trade.prepared.executionId ? { attempt: null } : state));
     }
@@ -248,62 +241,69 @@ export async function checkMvpExecution(): Promise<ExecutionStatus> {
   return status;
 }
 
-export async function getSwapBalances(account: EnabledSolanaAccount): Promise<Record<SwapAssetId, bigint>> {
+export async function getSwapBalances(account: EnabledSolanaAccount, assets: readonly SwapAsset[]): Promise<Record<string, bigint>> {
   assertAccount(account);
-  const [baseEth, sol, usdc, bonk] = await Promise.all([
-    getProvider({ chainId: ChainId.base }).getBalance(account.sourceEvmAddress),
-    rpc.getBalance(address(account.address), { commitment: 'confirmed' }).send(),
-    tokenBalance(account.address, SOLANA_USDC),
-    tokenBalance(account.address, BONK),
-  ]);
+  const uniqueAssets = [...new Map(assets.map(asset => [asset.id, asset])).values()];
+  const balances = await Promise.all(
+    uniqueAssets.map(async asset => {
+      const balance =
+        asset.chain === 'evm'
+          ? BigInt((await getProvider({ chainId: ChainId.base }).getBalance(account.sourceEvmAddress)).toString())
+          : asset.asset.kind === 'native'
+            ? (await rpc.getBalance(address(account.address), { commitment: 'confirmed' }).send()).value
+            : await tokenBalance(account.address, asset.asset.address);
+      return [asset.id, balance] as const;
+    })
+  );
   assertAccount(account);
-  return { 'base-eth': BigInt(baseEth.toString()), 'sol': sol.value, usdc, bonk };
+  return Object.fromEntries(balances);
 }
 
-async function assertSwapFunds(account: EnabledSolanaAccount, asset: SwapAssetId, amount: bigint): Promise<void> {
+async function assertSwapFunds(account: EnabledSolanaAccount, asset: SwapAsset, amount: bigint): Promise<void> {
   assertAccount(account);
-  if (asset === 'base-eth') {
+  if (asset.chain === 'evm') {
     const balance = await getProvider({ chainId: ChainId.base }).getBalance(account.sourceEvmAddress);
     if (BigInt(balance.toString()) < amount) throw new Error('Insufficient Base ETH for this swap.');
   } else {
     const sol = (await rpc.getBalance(address(account.address), { commitment: 'confirmed' }).send()).value;
-    const balance = asset === 'sol' ? sol : await tokenBalance(account.address, SWAP_ASSETS[asset].asset.address);
-    if (balance < amount) throw new Error(`Insufficient ${SWAP_ASSETS[asset].symbol} for this swap.`);
-    if (sol < SOL_FEE_RESERVE + (asset === 'sol' ? amount : 0n)) throw new Error('Keep at least 0.001 SOL available for network fees.');
+    const balance = asset.asset.kind === 'native' ? sol : await tokenBalance(account.address, asset.asset.address);
+    if (balance < amount) throw new Error(`Insufficient ${asset.symbol} for this swap.`);
+    if (sol < SOL_FEE_RESERVE + (asset.asset.kind === 'native' ? amount : 0n))
+      throw new Error('Keep at least 0.001 SOL available for network fees.');
   }
   assertAccount(account);
 }
 
-export async function prepareSwapTrade(inputAsset: SwapAssetId, outputAsset: SolanaSwapAssetId, amount: string): Promise<PreparedSwap> {
+export async function prepareSwapTrade(inputAsset: SwapAsset, outputAsset: SolanaSwapAsset, amount: string): Promise<PreparedSwap> {
   const account = getEnabledSolanaAccount();
-  if (inputAsset === outputAsset) throw new Error('Select two different tokens.');
+  if (inputAsset.id === outputAsset.id) throw new Error('Select two different tokens.');
   const input = swapInputAmount(amount, inputAsset);
   assertNoPendingAttempt();
   configureSolanaMvpSdk();
   await assertSwapFunds(account, inputAsset, input);
-  const destination = { asset: SWAP_ASSETS[outputAsset].asset, recipient: address(account.address) };
+  const destination = { asset: outputAsset.asset, recipient: address(account.address) };
   let trade: PreparedSwap;
-  if (inputAsset === 'base-eth') {
+  if (inputAsset.chain === 'evm') {
     const prepared = await execute.prepare.route({
       account: getAddress(account.sourceEvmAddress),
       publicClient: createDelegationPublicClient(ChainId.base),
-      source: { asset: SWAP_ASSETS[inputAsset].asset, amount: { kind: 'exact-input', input } },
+      source: { asset: inputAsset.asset, amount: { kind: 'exact-input', input } },
       destination,
       gasless: true,
       sponsorship: 'required',
     });
-    trade = { route: 'swap', account, inputAsset, outputAsset, input, prepared, networkFeeLamports: 0n };
+    trade = { route: 'swap', sourceChain: 'evm', account, inputAsset, outputAsset, input, prepared, networkFeeLamports: 0n };
   } else {
     const prepared = await execute.prepare.route({
       account: address(account.address),
-      source: { asset: SWAP_ASSETS[inputAsset].asset, amount: { kind: 'exact-input', input } },
+      source: { asset: inputAsset.asset, amount: { kind: 'exact-input', input } },
       destination,
       sponsorship: 'required',
     });
     const message = takeSolanaRouteMessage(prepared.executionId);
     const fee = await rpc.getFeeForMessage(message, { commitment: 'confirmed' }).send();
     if (fee.value === null) throw new Error('Unable to estimate the Solana network fee. Review a fresh quote.');
-    trade = { route: 'swap', account, inputAsset, outputAsset, input, prepared, networkFeeLamports: fee.value };
+    trade = { route: 'swap', sourceChain: 'solana', account, inputAsset, outputAsset, input, prepared, networkFeeLamports: fee.value };
   }
   assertAccount(account);
   assertNoPendingAttempt();

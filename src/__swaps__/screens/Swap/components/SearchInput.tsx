@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { useDerivedValue } from 'react-native-reanimated';
 
@@ -6,6 +6,8 @@ import { NavigationSteps } from '@/__swaps__/screens/Swap/hooks/useSwapNavigatio
 import { useSwapContext } from '@/__swaps__/screens/Swap/providers/swap-provider';
 import { useSwapsSearchStore } from '@/__swaps__/screens/Swap/resources/search/searchV2';
 import { SearchInput as BaseSearchInput } from '@/components/token-search/SearchInput';
+import { useSolanaBalancesAddress } from '@/features/solana/data/solanaBalancesStore';
+import { useSolanaInputSearchQuery } from '@/features/solana/data/solanaTokenSearchStore';
 import * as i18n from '@/languages';
 import { useUserAssetsStore } from '@/state/assets/userAssets';
 
@@ -30,7 +32,15 @@ export const SearchInput = ({
     AnimatedSwapStyles,
   } = useSwapContext();
 
-  const onInputSearchQueryChange = useUserAssetsStore(state => state.setSearchQuery);
+  const solanaAddress = useSolanaBalancesAddress();
+  const setInputSearchQuery = useUserAssetsStore(state => state.setSearchQuery);
+  const onInputSearchQueryChange = useCallback(
+    (text: string) => {
+      setInputSearchQuery(text);
+      if (useSolanaBalancesAddress.getState()) useSolanaInputSearchQuery.setState(text, true);
+    },
+    [setInputSearchQuery]
+  );
 
   const progress = output ? outputProgress : inputProgress;
   const isSearchFocused = useDerivedValue(() => progress.value === NavigationSteps.SEARCH_FOCUSED);
@@ -44,6 +54,7 @@ export const SearchInput = ({
       onSearchQueryChange={output ? onOutputSearchQueryChange : onInputSearchQueryChange}
       placeholder={output ? i18n.t(i18n.l.swap.find_a_token_to_buy) : i18n.t(i18n.l.swap.search_your_tokens)}
       enablePaste={output}
+      maxPasteLength={solanaAddress ? 44 : 42}
       showButtonWhenNoAsset={output}
       isSearchFocused={isSearchFocused}
       isTokenListFocused={isTokenListFocused}
