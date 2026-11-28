@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 
 import { type SolanaAssetId } from '@/__swaps__/types/assets';
 import { type SolanaBalance, type SolanaBalances } from '@/features/solana/core/balances';
 import { useIsSolanaEnabled } from '@/features/solana/hooks/useIsSolanaEnabled';
-import { useAccountMetadataStore } from '@/features/wallet/data/stores/accountMetadataStore';
+import { solanaAccountId, useAccountMetadataStore } from '@/features/wallet/data/stores/accountMetadataStore';
 import { EncryptionType, type RainbowWallet } from '@/features/wallet/types';
 import { EthereumWalletType } from '@/helpers/walletTypes';
 import { userAssetsStoreManager } from '@/state/assets/userAssetsStoreManager';
@@ -62,7 +62,7 @@ beforeEach(() => {
   useWalletsStore.setState({ wallets: { [wallet.id]: structuredClone(wallet) }, selected: wallet, walletReady: true, accountAddress: evm });
   useAccountMetadataStore.setState({
     accounts: {
-      '["balances-test",0]': {
+      [solanaAccountId(wallet.id, 0)]: {
         walletId: wallet.id,
         index: 0,
         sourceEvmAddress: evm,
@@ -311,7 +311,7 @@ describe('Solana balance persistence', () => {
     const mappings = useAccountMetadataStore.getState().accounts;
     vi.mocked(fetchSolanaBalances).mockResolvedValue({ ...data, address: otherAddress, total: '2' });
     useAccountMetadataStore.setState({
-      accounts: { '["balances-test",0]': { ...mappings['["balances-test",0]'], address: otherAddress } },
+      accounts: { [solanaAccountId(wallet.id, 0)]: { ...mappings[solanaAccountId(wallet.id, 0)], address: otherAddress } },
     });
     expect(useSolanaWalletBalances.getState().data).toBeNull();
     await useSolanaBalancesStore.getState().fetch(undefined, { staleTime: 0 });
