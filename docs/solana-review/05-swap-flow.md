@@ -27,3 +27,9 @@ The search update passes 253 tests across 21 files, including existing EVM searc
 The preview SDK, public RPC, Cloudflare service configuration, separate Solana controller and existing review block remain MVP constraints. Token favorites and expanded sheets are not added here. The feature flag does not by itself prove production safety; shared presentation also affects EVM.
 
 Store builds use remote `solana_enabled`; internal builds also honor the existing local override. No remote configuration values changed. Existing internal accounts using old Base64 key records must be re-enabled before signing; current storage uses Base58 without a legacy migration.
+
+## Unsupported gas polling
+
+PR5 also guards the shared `useMeteorology` hook with the existing backend Meteorology supported-chain list. Unsupported chains (including Solana while that service is disabled) do not start or continue automatic fee polling. Caller-disabled queries and the existing Anvil mock remain supported. The dedicated Solana swap fee calculation still uses `getFeeForMessage`.
+
+The native hook regression test switches from Base to Solana and advances the polling timer, removes backend support while mounted, and checks disabled queries and Anvil. The first two cases fail before the guard and pass after it. This confirms the polling mechanism; it does not identify the device behind the earlier production logs.

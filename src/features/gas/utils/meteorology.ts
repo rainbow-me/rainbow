@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 import { useQuery, type NotifyOnChangeProps } from '@tanstack/react-query';
 
 import { IS_TEST } from '@/env';
+import { useBackendNetworksStore } from '@/features/network/stores/backendNetworksStore';
 import { type ChainId } from '@/features/network/types/backendNetworks';
 import { isZero } from '@/helpers/utilities';
 import { createQueryKey, queryClient, type QueryConfig, type QueryFunctionArgs, type QueryFunctionResult } from '@/react-query';
@@ -74,8 +75,11 @@ export function useMeteorology<Selected = MeteorologyResult>(
     staleTime?: number;
   }
 ) {
+  const supportsMeteorology = useBackendNetworksStore(state => state.getMeteorologySupportedChainIds().includes(chainId));
+  const usesAnvilMock = useConnectedToAnvilStore(state => IS_TEST && state.connectedToAnvil);
+
   return useQuery(meteorologyQueryKey({ chainId }), meteorologyQueryFunction, {
-    enabled,
+    enabled: enabled !== false && (supportsMeteorology || usesAnvilMock),
     keepPreviousData,
     notifyOnChangeProps,
     onSuccess,
